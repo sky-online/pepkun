@@ -1,0 +1,6 @@
+.env
+node_modules/
+data/
+*.log
+server_out.txt
+server_err.txt

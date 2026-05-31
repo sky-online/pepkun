@@ -1,0 +1,15 @@
+{
+  "name": "pepkun",
+  "version": "0.1.0",
+  "description": "ペップ君 - AIサッカートレーニングメニュー生成",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "express": "^4.19.0",
+    "dotenv": "^16.4.0"
+  }
+}

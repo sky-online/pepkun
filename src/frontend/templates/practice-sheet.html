@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ペップ君 練習シート</title>
+<style>
+/* ===== 印刷設定 ===== */
+@page {
+  size: A4;
+  margin: 8mm 10mm;
+}
+@media print {
+  .no-print { display: none !important; }
+  body { margin: 0; padding: 0; }
+  .page-break { page-break-before: always; }
+  .drill-card { page-break-inside: avoid; }
+}
+
+/* ===== 基本スタイル ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Hiragino Kaku Gothic Pro', 'Noto Sans JP', 'Meiryo', sans-serif;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 190mm;
+  margin: 0 auto;
+  padding: 4mm;
+}
+
+/* ===== ヘッダー ===== */
+.sheet-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  border-bottom: 2.5px solid #1a1a6e;
+  padding-bottom: 3mm;
+  margin-bottom: 4mm;
+  gap: 4mm;
+}
+.sheet-logo {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #1a1a6e;
+  letter-spacing: 1px;
+}
+.sheet-logo span {
+  color: #e63329;
+}
+.sheet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3mm 6mm;
+  font-size: 8pt;
+}
+.sheet-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+}
+.sheet-meta-label {
+  color: #666;
+  font-size: 7pt;
+}
+.sheet-meta-value {
+  font-weight: 700;
+  color: #1a1a1a;
+  border-bottom: 1px solid #999;
+  min-width: 20mm;
+}
+.sheet-date {
+  font-size: 8pt;
+  color: #444;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ===== セッション概要 ===== */
+.session-theme {
+  background: #1a1a6e;
+  color: #fff;
+  padding: 2mm 4mm;
+  border-radius: 2px;
+  margin-bottom: 4mm;
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+}
+.session-theme-label {
+  font-size: 7pt;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.session-theme-text {
+  font-weight: 700;
+  font-size: 11pt;
+  flex: 1;
+}
+.session-concept {
+  font-size: 7pt;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* ===== ドリルカード ===== */
+.drill-card {
+  border: 1.5px solid #ccc;
+  border-radius: 3px;
+  margin-bottom: 4mm;
+  overflow: hidden;
+}
+.drill-header {
+  background: #f0f4ff;
+  border-bottom: 1.5px solid #ccc;
+  padding: 2mm 3mm;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+.drill-phase-badge {
+  font-size: 7pt;
+  font-weight: 700;
+  padding: 0.5mm 2mm;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.phase-warmup   { background: #ffe0b2; color: #e65100; }
+.phase-technical { background: #e8f5e9; color: #2e7d32; }
+.phase-group    { background: #e3f2fd; color: #1565c0; }
+.phase-game     { background: #fce4ec; color: #880e4f; }
+.phase-cooldown { background: #f3e5f5; color: #6a1b9a; }
+
+.drill-name {
+  font-weight: 800;
+  font-size: 10.5pt;
+  flex: 1;
+  color: #1a1a1a;
+}
+.drill-time {
+  font-size: 9pt;
+  font-weight: 700;
+  color: #1a1a6e;
+  white-space: nowrap;
+}
+
+/* ===== ドリル本体（図＋説明） ===== */
+.drill-body {
+  display: grid;
+  grid-template-columns: 72mm 1fr;
+  min-height: 42mm;
+}
+.drill-diagram {
+  border-right: 1.5px solid #ccc;
+  padding: 2mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fafafa;
+}
+.diagram-label {
+  font-size: 6.5pt;
+  color: #888;
+  margin-bottom: 1mm;
+  align-self: flex-start;
+}
+.field-svg {
+  width: 100%;
+  max-width: 66mm;
+}
+.diagram-legend {
+  display: flex;
+  gap: 3mm;
+  margin-top: 1.5mm;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+  font-size: 6.5pt;
+  color: #555;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.drill-desc {
+  padding: 2mm 3mm;
+  display: flex;
+  flex-direction: column;
+  gap: 2mm;
+}
+.desc-section-label {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5mm;
+}
+.desc-content {
+  font-size: 8.5pt;
+  line-height: 1.6;
+}
+.coaching-point {
+  display: flex;
+  gap: 1.5mm;
+  align-items: flex-start;
+}
+.coaching-icon {
+  color: #1a1a6e;
+  font-weight: 900;
+  font-size: 9pt;
+  flex-shrink: 0;
+  margin-top: 0.5px;
+}
+.connection-note {
+  background: #fffde7;
+  border-left: 3px solid #fbc02d;
+  padding: 1mm 2mm;
+  font-size: 7.5pt;
+  color: #5d4037;
+  font-style: italic;
+  margin-top: auto;
+}
+
+/* ===== 起こりうる現象 ===== */
+.drill-phenomena {
+  border-top: 1.5px dashed #ccc;
+  padding: 2mm 3mm;
+  background: #fff8f8;
+}
+.phenomena-label {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #c62828;
+  margin-bottom: 1mm;
+}
+.phenomena-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5mm 4mm;
+}
+.phenomena-item {
+  display: flex;
+  gap: 2mm;
+  align-items: flex-start;
+  font-size: 8pt;
+}
+.phenomena-arrow {
+  color: #c62828;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.phenomena-text { flex: 1; }
+.phenomena-fix { color: #1565c0; }
+
+/* ===== メモ欄 ===== */
+.drill-memo {
+  border-top: 1.5px solid #ccc;
+  padding: 2mm 3mm;
+}
+.memo-label {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 1.5mm;
+}
+.memo-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5mm;
+}
+.memo-line {
+  border-bottom: 0.5px solid #ddd;
+  min-height: 5mm;
+}
+
+/* ===== セッションメモ ===== */
+.session-memo {
+  border: 1.5px solid #1a1a6e;
+  border-radius: 3px;
+  padding: 2mm 3mm;
+  margin-top: 3mm;
+}
+.session-memo-header {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #1a1a6e;
+  margin-bottom: 2mm;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 1mm;
+  display: flex;
+  justify-content: space-between;
+}
+.session-memo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm;
+}
+.session-memo-block label {
+  font-size: 6.5pt;
+  color: #888;
+  display: block;
+  margin-bottom: 1mm;
+}
+.session-memo-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4.5mm;
+}
+.session-memo-line {
+  border-bottom: 0.5px solid #ccc;
+  min-height: 4.5mm;
+}
+
+/* ===== 凡例（シート下部） ===== */
+.sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3mm;
+  padding-top: 2mm;
+  border-top: 1px solid #eee;
+  font-size: 7pt;
+  color: #aaa;
+}
+.footer-legend {
+  display: flex;
+  gap: 4mm;
+  align-items: center;
+}
+
+/* ===== 印刷プレビューボタン ===== */
+.print-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #1a1a6e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  z-index: 1000;
+}
+.print-btn:hover { background: #2d2d9e; }
+</style>
+</head>
+<body>
+
+<!-- 印刷ボタン（印刷時は非表示） -->
+<button class="print-btn no-print" onclick="window.print()">🖨 印刷する</button>
+
+<!-- ===== SVG定義（プレイヤーアイコン・矢印等） ===== -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!--
+      Cマーカー（戦術ボードコマ）
+      構造：大きな円（体・頭）+ 太いC型アーク（腕）= 人を上から見た形
+      Cの開口部 = プレイヤーの正面の向き（回転で方向を変える）
+      正面デフォルト = 右向き（rotate=0）
+    -->
+    <symbol id="player-c" viewBox="-15 -15 30 30">
+      <!--
+        C型マーカー（戦術ボードコマ 30mm相当）
+        ─ 開口部（右側 +x）= プレイヤーの正面・進行方向
+        ─ rotate(θ) で向きを変える
+            rotate(0)=右向き / rotate(-90)=上向き / rotate(90)=下向き / rotate(180)=左向き
+        設計値：弧中心半径11 / ストローク幅8 → 外半径15 / 内半径7
+                体円 r=7（弧内径と完全一致 → シームレス融合）
+                開口角 ±60°（計120°）/ 先端 stroke-linecap="round"（丸みのある「手」）
+        端点計算：11×cos60°=5.5 / 11×sin60°≈9.53 → (5.5, ±9.53) は半径11の円上
+      -->
+      <!-- 腕：後方を240°かけて回り込む太いC字アーク -->
+      <path d="M 5.5,-9.53 A 11,11 0 1,0 5.5,9.53"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="8"
+            stroke-linecap="round"/>
+      <!-- 体：弧の内径(r=7)と面一の円 → 腕と体が完全融合 -->
+      <circle r="7" fill="currentColor"/>
+    </symbol>
+
+    <!-- ボール（サッカーボール柄） -->
+    <symbol id="ball" viewBox="-8 -8 16 16">
+      <circle cx="0" cy="0" r="7" fill="white" stroke="#222" stroke-width="1.2"/>
+      <!-- 五角形パターン（中央） -->
+      <polygon points="0,-3.5 3.3,1.1 2,3.6 -2,3.6 -3.3,1.1"
+               fill="#222" stroke="none"/>
+      <!-- 放射状ライン -->
+      <line x1="0" y1="-7" x2="0" y2="-3.5" stroke="#222" stroke-width="0.9"/>
+      <line x1="6.6" y1="2.2" x2="3.3" y2="1.1" stroke="#222" stroke-width="0.9"/>
+      <line x1="4.1" y1="-5.7" x2="2" y2="-3" stroke="#222" stroke-width="0.9"/>
+      <line x1="-4.1" y1="-5.7" x2="-2" y2="-3" stroke="#222" stroke-width="0.9"/>
+      <line x1="-6.6" y1="2.2" x2="-3.3" y2="1.1" stroke="#222" stroke-width="0.9"/>
+    </symbol>
+
+    <!-- コーン -->
+    <symbol id="cone" viewBox="-6 -8 12 12">
+      <polygon points="0,-8 5,4 -5,4" fill="#ff9800" stroke="#e65100" stroke-width="0.8"/>
+      <ellipse cx="0" cy="4" rx="5" ry="2" fill="#e65100" opacity="0.6"/>
+    </symbol>
+
+    <!-- 矢印マーカー：移動 -->
+    <marker id="arrow-move" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0,0.5 L0,6.5 L6,3.5 z" fill="#444"/>
+    </marker>
+    <!-- 矢印マーカー：パス -->
+    <marker id="arrow-pass" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0,0.5 L0,6.5 L6,3.5 z" fill="#e63329"/>
+    </marker>
+    <!-- 矢印マーカー：ドリブル -->
+    <marker id="arrow-dribble" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0,0.5 L0,6.5 L6,3.5 z" fill="#1a1a6e"/>
+    </marker>
+  </defs>
+</svg>
+
+<!-- ===== シートヘッダー ===== -->
+<div class="sheet-header">
+  <div class="sheet-logo">⚽ペップ<span>君</span></div>
+  <div class="sheet-meta">
+    <div class="sheet-meta-item">
+      <span class="sheet-meta-label">チーム</span>
+      <span class="sheet-meta-value" data-field="teamName">FC サンプル</span>
+    </div>
+    <div class="sheet-meta-item">
+      <span class="sheet-meta-label">年代</span>
+      <span class="sheet-meta-value" data-field="ageGroup">U-12</span>
+    </div>
+    <div class="sheet-meta-item">
+      <span class="sheet-meta-label">人数</span>
+      <span class="sheet-meta-value" data-field="players">16名</span>
+    </div>
+    <div class="sheet-meta-item">
+      <span class="sheet-meta-label">時間</span>
+      <span class="sheet-meta-value" data-field="duration">90分</span>
+    </div>
+    <div class="sheet-meta-item">
+      <span class="sheet-meta-label">場所</span>
+      <span class="sheet-meta-value" data-field="venue">ハーフコート</span>
+    </div>
+  </div>
+  <div class="sheet-date" data-field="date">2026年 5月 28日（水）</div>
+</div>
+
+<!-- セッションテーマ -->
+<div class="session-theme">
+  <span class="session-theme-label">今日のテーマ</span>
+  <span class="session-theme-text" data-field="theme">ビルドアップ〜縦への前進</span>
+  <span class="session-concept" data-field="concept">コンセプト：ポゼッションから深さを作る</span>
+</div>
+
+
+<!-- ===== ドリル①：ウォームアップ ===== -->
+<div class="drill-card">
+  <div class="drill-header">
+    <span class="drill-phase-badge phase-warmup">ウォームアップ</span>
+    <span class="drill-name">方向転換ランニング + 首振り習慣</span>
+    <span class="drill-time">⏱ 15分</span>
+  </div>
+
+  <div class="drill-body">
+    <!-- 図 -->
+    <div class="drill-diagram">
+      <div class="diagram-label">オーガナイズ</div>
+      <svg class="field-svg" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+        <!-- フィールド枠 -->
+        <rect x="2" y="2" width="196" height="136" fill="#e8f5e0" stroke="#4caf50" stroke-width="2" rx="2"/>
+        <!-- センターライン -->
+        <line x1="100" y1="2" x2="100" y2="138" stroke="#4caf50" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+        <!-- センターサークル -->
+        <circle cx="100" cy="70" r="25" fill="none" stroke="#4caf50" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+        <!-- コーン（マーカー） -->
+        <polygon points="30,30 34,38 26,38" fill="#ff9800" stroke="#e65100" stroke-width="0.5"/>
+        <polygon points="170,30 174,38 166,38" fill="#ff9800" stroke="#e65100" stroke-width="0.5"/>
+        <polygon points="30,110 34,118 26,118" fill="#ff9800" stroke="#e65100" stroke-width="0.5"/>
+        <polygon points="170,110 174,118 166,118" fill="#ff9800" stroke="#e65100" stroke-width="0.5"/>
+        <!-- 移動矢印（ジグザグ） -->
+        <polyline points="30,38 30,70 100,70 100,110 170,110" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-move)" opacity="0.7"/>
+        <!-- 選手（赤チーム：右向き） -->
+        <use href="#player-c" x="30" y="30" width="16" height="16" color="#e63329" transform="translate(30,30) rotate(0) translate(-8,-8)"/>
+        <use href="#player-c" x="50" y="30" width="16" height="16" color="#e63329" transform="translate(50,30) rotate(0) translate(-8,-8)"/>
+        <use href="#player-c" x="70" y="30" width="16" height="16" color="#e63329" transform="translate(70,30) rotate(0) translate(-8,-8)"/>
+        <!-- 首振り表現 -->
+        <text x="100" y="55" text-anchor="middle" font-size="7" fill="#1a1a6e" font-weight="bold">首振り！</text>
+        <text x="100" y="64" text-anchor="middle" font-size="6" fill="#555">（受ける前に確認）</text>
+      </svg>
+      <div class="diagram-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#e63329"></div>攻撃</div>
+        <div class="legend-item"><svg width="12" height="8"><line x1="0" y1="4" x2="10" y2="4" stroke="#333" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrow-move)"/></svg>移動</div>
+        <div class="legend-item"><svg width="12" height="8" viewBox="0 0 12 8"><polygon points="5,0 9,7 1,7" fill="#ff9800"/></svg>コーン</div>
+      </div>
+    </div>
+
+    <!-- 説明 -->
+    <div class="drill-desc">
+      <div>
+        <div class="desc-section-label">やり方</div>
+        <div class="desc-content">
+          ① コーン4本を四角形に配置（約20m×15m）<br>
+          ② コーンをジグザグに通りながらジョギング<br>
+          ③ 各コーン手前で方向転換 → 首を振って前後の確認<br>
+          ④ 「止まる→確認→動く」のリズムを体に入れる<br>
+          ⑤ テンポを上げてダッシュに移行（後半7分）
+        </div>
+      </div>
+      <div>
+        <div class="desc-section-label">コーチングポイント</div>
+        <div class="coaching-point">
+          <span class="coaching-icon">▶</span>
+          <span class="desc-content"><strong>「動く前に首を振ろう」</strong><br>次のコーンに走り出す前に必ず顔を上げる習慣を作る</span>
+        </div>
+      </div>
+      <div class="connection-note">
+        次のドリルへ：首振りで情報を取る習慣が、ボールを受ける前の「体の向き」づくりに直結する
+      </div>
+    </div>
+  </div>
+
+  <!-- 起こりうる現象 -->
+  <div class="drill-phenomena">
+    <div class="phenomena-label">⚠ 起こりうる現象と対処法</div>
+    <div class="phenomena-grid">
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>首振りしないまま走る</strong><br>
+          <span class="phenomena-fix">◎ コーンに色シール → 「何色？」と聞いて確認を習慣化</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>テンポが速すぎてダラダラ走りになる</strong><br>
+          <span class="phenomena-fix">◎ ジョグ80% → コーン手前は必ず「止まる」ルールに戻す</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- メモ -->
+  <div class="drill-memo">
+    <div class="memo-label">📝 実際どうだったか（メモ）</div>
+    <div class="memo-lines">
+      <div class="memo-line"></div>
+      <div class="memo-line"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ドリル②：テクニカル ===== -->
+<div class="drill-card">
+  <div class="drill-header">
+    <span class="drill-phase-badge phase-technical">テクニカル</span>
+    <span class="drill-name">体の向きを作ってパス受け（2タッチ）</span>
+    <span class="drill-time">⏱ 20分</span>
+  </div>
+
+  <div class="drill-body">
+    <div class="drill-diagram">
+      <div class="diagram-label">オーガナイズ</div>
+      <svg class="field-svg" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="196" height="136" fill="#e8f5e0" stroke="#4caf50" stroke-width="2" rx="2"/>
+        <!-- グリッドライン -->
+        <line x1="100" y1="2" x2="100" y2="138" stroke="#4caf50" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+        <!-- パスライン -->
+        <line x1="50" y1="70" x2="150" y2="70" stroke="#e63329" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-pass)"/>
+        <line x1="150" y1="70" x2="100" y2="35" stroke="#e63329" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-pass)"/>
+        <!-- 選手A（赤・右向き = 相手方向を向く） -->
+        <use href="#player-c" x="50" y="70" width="20" height="20" color="#e63329" transform="translate(50,70) rotate(0) translate(-10,-10)"/>
+        <!-- 選手B（赤・左向き = 受け手：正対） -->
+        <use href="#player-c" x="150" y="70" width="20" height="20" color="#e63329" transform="translate(150,70) rotate(180) translate(-10,-10)"/>
+        <!-- 選手C（赤・下向き = サポート） -->
+        <use href="#player-c" x="100" y="35" width="20" height="20" color="#e63329" transform="translate(100,35) rotate(90) translate(-10,-10)"/>
+        <!-- ボール -->
+        <use href="#ball" x="50" y="70" width="14" height="14" transform="translate(50,70) translate(-7,-7)"/>
+        <!-- ラベル -->
+        <text x="40" y="85" font-size="7" fill="#e63329" font-weight="bold">A</text>
+        <text x="155" y="75" font-size="7" fill="#e63329" font-weight="bold">B（正対）</text>
+        <text x="88" y="30" font-size="7" fill="#e63329" font-weight="bold">C</text>
+        <text x="95" y="115" text-anchor="middle" font-size="6.5" fill="#1a1a6e">Cの開口部 = 体の向き（正面）</text>
+      </svg>
+      <div class="diagram-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#e63329"></div>攻撃</div>
+        <div class="legend-item"><svg width="14" height="8" viewBox="0 0 14 8"><line x1="0" y1="4" x2="12" y2="4" stroke="#e63329" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-pass)"/></svg>パス</div>
+      </div>
+    </div>
+
+    <div class="drill-desc">
+      <div>
+        <div class="desc-section-label">やり方</div>
+        <div class="desc-content">
+          ① A・B・C の三角形を作る（距離10〜12m）<br>
+          ② A→B にパス。Bは受ける前に首振り・体の向きを作る<br>
+          ③ BはCへ2タッチで縦パス<br>
+          ④ 役割をローテーション<br>
+          ⑤ 後半：守備者1人追加（プレッシャー下での判断）
+        </div>
+      </div>
+      <div>
+        <div class="desc-section-label">コーチングポイント</div>
+        <div class="coaching-point">
+          <span class="coaching-icon">▶</span>
+          <span class="desc-content"><strong>「ボールが来る前に向きを決めろ」</strong><br>受けてから向くのではなく、<em>受ける前</em>に体の向きをCの形で確認</span>
+        </div>
+      </div>
+      <div class="connection-note">
+        次のドリルへ：体の向きを作る習慣が、次の3v1での縦への判断スピードに直結する
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-phenomena">
+    <div class="phenomena-label">⚠ 起こりうる現象と対処法</div>
+    <div class="phenomena-grid">
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>受けてから向く（向きが遅い）</strong><br>
+          <span class="phenomena-fix">◎ 「受ける前！」の声かけ。Bが止まってから声で合図</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>パスの強さ・精度が不安定</strong><br>
+          <span class="phenomena-fix">◎ 距離を縮める（8m→5m）。「止まったボール」から再開</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>Cへの縦パスを出せずエスケープ多用</strong><br>
+          <span class="phenomena-fix">◎ 「縦が空いていたら必ず縦」ルール。回数カウント</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>守備者追加後に慌てて精度が落ちる</strong><br>
+          <span class="phenomena-fix">◎ 「止める」を最優先。精度 > スピード の順番を伝える</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-memo">
+    <div class="memo-label">📝 実際どうだったか（メモ）</div>
+    <div class="memo-lines">
+      <div class="memo-line"></div>
+      <div class="memo-line"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ドリル③：グループ戦術 ===== -->
+<div class="drill-card">
+  <div class="drill-header">
+    <span class="drill-phase-badge phase-group">グループ戦術</span>
+    <span class="drill-name">4v2 ポゼッション → 縦パス優先</span>
+    <span class="drill-time">⏱ 25分</span>
+  </div>
+
+  <div class="drill-body">
+    <div class="drill-diagram">
+      <div class="diagram-label">オーガナイズ（10m × 10m）</div>
+      <svg class="field-svg" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="180" height="140" fill="#e8f5e0" stroke="#4caf50" stroke-width="2" rx="2"/>
+        <!-- 中央ライン -->
+        <line x1="100" y1="10" x2="100" y2="150" stroke="#4caf50" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.4"/>
+        <!-- 守備者（青） -->
+        <use href="#player-c" x="85" y="80" width="20" height="20" color="#1565c0" transform="translate(85,80) rotate(180) translate(-10,-10)"/>
+        <use href="#player-c" x="115" y="80" width="20" height="20" color="#1565c0" transform="translate(115,80) rotate(180) translate(-10,-10)"/>
+        <!-- 攻撃者（赤）4名 -->
+        <use href="#player-c" x="30" y="55" width="18" height="18" color="#e63329" transform="translate(30,55) rotate(0) translate(-9,-9)"/>
+        <use href="#player-c" x="170" y="55" width="18" height="18" color="#e63329" transform="translate(170,55) rotate(180) translate(-9,-9)"/>
+        <use href="#player-c" x="30" y="115" width="18" height="18" color="#e63329" transform="translate(30,115) rotate(0) translate(-9,-9)"/>
+        <use href="#player-c" x="170" y="115" width="18" height="18" color="#e63329" transform="translate(170,115) rotate(180) translate(-9,-9)"/>
+        <!-- ボール -->
+        <use href="#ball" x="30" y="55" width="12" height="12" transform="translate(30,55) translate(-6,-6)"/>
+        <!-- パスライン -->
+        <line x1="30" y1="55" x2="170" y2="55" stroke="#e63329" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-pass)" opacity="0.7"/>
+        <!-- ラベル -->
+        <text x="80" y="95" font-size="7" fill="#1565c0" font-weight="bold">D1</text>
+        <text x="110" y="95" font-size="7" fill="#1565c0" font-weight="bold">D2</text>
+        <text x="13" y="52" font-size="7" fill="#e63329" font-weight="bold">A</text>
+        <text x="155" y="52" font-size="7" fill="#e63329" font-weight="bold">B</text>
+        <text x="13" y="112" font-size="7" fill="#e63329" font-weight="bold">C</text>
+        <text x="155" y="112" font-size="7" fill="#e63329" font-weight="bold">D</text>
+        <text x="100" y="155" text-anchor="middle" font-size="6" fill="#888">4v2（縦パス通過でポイント）</text>
+      </svg>
+      <div class="diagram-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#e63329"></div>攻撃4名</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>守備2名</div>
+      </div>
+    </div>
+
+    <div class="drill-desc">
+      <div>
+        <div class="desc-section-label">やり方</div>
+        <div class="desc-content">
+          ① 10m×10mの正方形。4v2のポゼッション<br>
+          ② 縦方向に縦パスが通ったら1点（優先順位①）<br>
+          ③ 縦が無ければ横・バックでやり直し（優先順位③）<br>
+          ④ 守備が奪ったら攻守交代<br>
+          ⑤ バリエーション：枠を広げてボランチ的なポジションを追加
+        </div>
+      </div>
+      <div>
+        <div class="desc-section-label">コーチングポイント</div>
+        <div class="coaching-point">
+          <span class="coaching-icon">▶</span>
+          <span class="desc-content"><strong>「縦が空いたら迷わず縦！」</strong><br>安全なパスより「縦への前進」を優先する判断基準を全員で共有する</span>
+        </div>
+      </div>
+      <div class="connection-note">
+        次のドリルへ：4v2で磨いた「縦への判断」を、次のゲームで実際の試合状況の中で発揮する
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-phenomena">
+    <div class="phenomena-label">⚠ 起こりうる現象と対処法</div>
+    <div class="phenomena-grid">
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>安全なパスばかりで縦を狙わない</strong><br>
+          <span class="phenomena-fix">◎ 「縦パス2本でポゼッション1点」のルール。数値化で意識付け</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>ボールを奪われてすぐリズムが崩れる</strong><br>
+          <span class="phenomena-fix">◎ 「奪われたらすぐ切り替え！」の声かけ。ネガトラの意識付け</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-memo">
+    <div class="memo-label">📝 実際どうだったか（メモ）</div>
+    <div class="memo-lines">
+      <div class="memo-line"></div>
+      <div class="memo-line"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ドリル④：ゲーム ===== -->
+<div class="drill-card">
+  <div class="drill-header">
+    <span class="drill-phase-badge phase-game">ゲーム</span>
+    <span class="drill-name">（4+GK）v（4+GK） ビルドアップゲーム（GKから必ず繋ぐ）</span>
+    <span class="drill-time">⏱ 25分</span>
+  </div>
+
+  <div class="drill-body">
+    <div class="drill-diagram">
+      <div class="diagram-label">オーガナイズ（ハーフコート）</div>
+      <svg class="field-svg" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- フィールド枠 -->
+        <rect x="2" y="2" width="196" height="156" fill="#e8f5e0" stroke="#4caf50" stroke-width="2" rx="2"/>
+        <!-- ゴール（上：青ゴール） -->
+        <rect x="82" y="2" width="36" height="7" fill="#fff" stroke="#333" stroke-width="1.5"/>
+        <!-- ゴール（下：赤ゴール） -->
+        <rect x="82" y="151" width="36" height="7" fill="#fff" stroke="#333" stroke-width="1.5"/>
+        <!-- センターライン -->
+        <line x1="2" y1="80" x2="198" y2="80" stroke="#4caf50" stroke-width="1" stroke-dasharray="5,3" opacity="0.6"/>
+        <!-- 攻撃方向 -->
+        <text x="12" y="60" font-size="6" fill="#1a1a6e" font-weight="bold">▲</text>
+        <text x="6" y="70" font-size="5.5" fill="#1a1a6e">攻撃</text>
+
+        <!-- ── 赤チーム（攻撃・ビルドアップ）──
+             GK：Cの開口部＝正面＝フィールド方向（上向き）→ rotate(-90)
+             フィールド選手もすべて上向き（前線へ展開）                  -->
+        <!-- GK赤（自ゴール前でビルドアップ開始） -->
+        <use href="#player-c" x="100" y="146" width="16" height="16" color="#e63329" transform="translate(100,146) rotate(-90) translate(-8,-8)"/>
+        <text x="113" y="150" font-size="5.5" fill="#e63329" font-weight="bold">GK</text>
+        <!-- CB左（ビルドアップで開く） -->
+        <use href="#player-c" x="48" y="118" width="16" height="16" color="#e63329" transform="translate(48,118) rotate(-90) translate(-8,-8)"/>
+        <!-- CB右（ビルドアップで開く） -->
+        <use href="#player-c" x="152" y="118" width="16" height="16" color="#e63329" transform="translate(152,118) rotate(-90) translate(-8,-8)"/>
+        <!-- ボランチ（中継点） -->
+        <use href="#player-c" x="100" y="92" width="16" height="16" color="#e63329" transform="translate(100,92) rotate(-90) translate(-8,-8)"/>
+        <!-- FW（前線で縦受け狙い） -->
+        <use href="#player-c" x="100" y="55" width="16" height="16" color="#e63329" transform="translate(100,55) rotate(-90) translate(-8,-8)"/>
+
+        <!-- ── 青チーム（守備・プレッシング）──
+             GK：Cの開口部＝正面＝フィールド方向（下向き）→ rotate(90)
+             フィールド選手：赤のビルドアップを潰しにくる下向き      -->
+        <!-- GK青（青ゴール前） -->
+        <use href="#player-c" x="100" y="14" width="16" height="16" color="#1565c0" transform="translate(100,14) rotate(90) translate(-8,-8)"/>
+        <text x="113" y="18" font-size="5.5" fill="#1565c0" font-weight="bold">GK</text>
+        <!-- プレスL（赤CB左を狙う） -->
+        <use href="#player-c" x="52" y="105" width="16" height="16" color="#1565c0" transform="translate(52,105) rotate(90) translate(-8,-8)"/>
+        <!-- プレスR（赤CB右を狙う） -->
+        <use href="#player-c" x="148" y="105" width="16" height="16" color="#1565c0" transform="translate(148,105) rotate(90) translate(-8,-8)"/>
+        <!-- DM（中央パスレーン封鎖） -->
+        <use href="#player-c" x="100" y="70" width="16" height="16" color="#1565c0" transform="translate(100,70) rotate(90) translate(-8,-8)"/>
+        <!-- CF（カウンター待機） -->
+        <use href="#player-c" x="100" y="42" width="16" height="16" color="#1565c0" transform="translate(100,42) rotate(90) translate(-8,-8)"/>
+
+        <!-- ボール（赤GK保持） -->
+        <use href="#ball" x="100" y="139" width="12" height="12" transform="translate(100,139) translate(-6,-6)"/>
+        <!-- ビルドアップ選択肢（GK→CB） -->
+        <line x1="96" y1="139" x2="55" y2="122" stroke="#e63329" stroke-width="1.5" stroke-dasharray="5,2" marker-end="url(#arrow-pass)" opacity="0.65"/>
+        <line x1="104" y1="139" x2="145" y2="122" stroke="#e63329" stroke-width="1.5" stroke-dasharray="5,2" marker-end="url(#arrow-pass)" opacity="0.65"/>
+        <!-- スタート注釈（viewBox内のy=155に配置） -->
+        <text x="100" y="155" text-anchor="middle" font-size="5.5" fill="#1a1a6e" font-weight="bold">★ GKから必ず繋いでスタート</text>
+      </svg>
+      <div class="diagram-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#e63329"></div>赤：攻撃（GK+4）</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>青：守備（GK+4）</div>
+        <div class="legend-item"><svg width="18" height="8"><line x1="0" y1="4" x2="16" y2="4" stroke="#e63329" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-pass)"/></svg>パス選択肢</div>
+      </div>
+    </div>
+
+    <div class="drill-desc">
+      <div>
+        <div class="desc-section-label">やり方・ルール</div>
+        <div class="desc-content">
+          ① （GK+4）v（GK+4）＝10名。残り6名はローテーション。ハーフコート<br>
+          ② <strong>必ずGKからパスを繋いでスタート</strong>（ロングボール禁止）<br>
+          ③ 縦への前進ルート → サポート受け → 最後はシュート<br>
+          ④ ゴール後も必ずGKからリスタート<br>
+          ⑤ 後半：プレス強度を上げて制限時間ゲーム（5分×3本）
+        </div>
+      </div>
+      <div>
+        <div class="desc-section-label">コーチングポイント</div>
+        <div class="coaching-point">
+          <span class="coaching-icon">▶</span>
+          <span class="desc-content"><strong>「今日練習したことを出す時間！」</strong><br>体の向き・縦への判断 → 自分で気づかせる。コーチは止めすぎない</span>
+        </div>
+      </div>
+      <div class="connection-note">
+        今日のすべて：首振り→体の向き→縦への判断がゲームで発揮されているか観察する
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-phenomena">
+    <div class="phenomena-label">⚠ 起こりうる現象と対処法</div>
+    <div class="phenomena-grid">
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>ゲームになると練習の動きが出なくなる</strong><br>
+          <span class="phenomena-fix">◎ 一度止めて「さっきの練習で何をやった？」と問いかけ</span>
+        </div>
+      </div>
+      <div class="phenomena-item">
+        <span class="phenomena-arrow">→</span>
+        <div class="phenomena-text">
+          <strong>GKからの繋ぎを嫌がって蹴ってしまう</strong><br>
+          <span class="phenomena-fix">◎ プレスを一時的に弱める。成功体験を作ってから強度を上げる</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-memo">
+    <div class="memo-label">📝 実際どうだったか（メモ）</div>
+    <div class="memo-lines">
+      <div class="memo-line"></div>
+      <div class="memo-line"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== セッション全体メモ ===== -->
+<div class="session-memo">
+  <div class="session-memo-header">
+    <span>📋 セッション全体の振り返り（CIレポート）</span>
+    <span style="font-size:7pt; color:#888">このメモをペップ君に話しかけると次の練習計画に反映されます</span>
+  </div>
+  <div class="session-memo-grid">
+    <div class="session-memo-block">
+      <label>✅ 良かったこと・できていたこと</label>
+      <div class="session-memo-lines">
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+      </div>
+    </div>
+    <div class="session-memo-block">
+      <label>⚠ 課題・改善したいこと</label>
+      <div class="session-memo-lines">
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+      </div>
+    </div>
+    <div class="session-memo-block">
+      <label>💡 次回への引継ぎ・やりたいこと</label>
+      <div class="session-memo-lines">
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+      </div>
+    </div>
+    <div class="session-memo-block">
+      <label>👤 気になった選手・個別対応メモ</label>
+      <div class="session-memo-lines">
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+        <div class="session-memo-line"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- フッター -->
+<div class="sheet-footer">
+  <div>⚽ ペップ君 by FunForward Group</div>
+  <div class="footer-legend">
+    <svg width="60" height="14" viewBox="0 0 60 14">
+      <!-- 凡例：Cの向き = 正面の向き -->
+      <text x="0" y="10" font-size="6" fill="#666">C開口部 = 体の正面の向き</text>
+    </svg>
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <use href="#player-c" x="8" y="8" width="16" height="16" color="#e63329" transform="translate(8,8) rotate(0) translate(-8,-8)"/>
+    </svg><span style="font-size:7pt">赤=攻撃</span>
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <use href="#player-c" x="8" y="8" width="16" height="16" color="#1565c0" transform="translate(8,8) rotate(0) translate(-8,-8)"/>
+    </svg><span style="font-size:7pt">青=守備</span>
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <use href="#player-c" x="8" y="8" width="16" height="16" color="#9e9e9e" transform="translate(8,8) rotate(0) translate(-8,-8)"/>
+    </svg><span style="font-size:7pt">白=中立</span>
+  </div>
+  <div>1 / 1</div>
+</div>
+
+</body>
+</html>
