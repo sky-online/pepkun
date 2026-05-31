@@ -896,7 +896,16 @@ async function doGenerate() {
       body: JSON.stringify({ ...params, conversationId: menuConvId }),
     });
     const json = await res.json();
-    if (!json.ok) throw new Error(json.error);
+    if (!json.ok) {
+      if (json.limitReached) {
+        appendBubble('menu', 'pep', `🎯 ${json.error}\n\nご利用ありがとうございました！感想を山村コーチにお伝えください⚽`);
+        renderMenuCurrentEmpty();
+        document.getElementById('generatingBar').classList.remove('show');
+        setWaiting('menu', false);
+        return;
+      }
+      throw new Error(json.error);
+    }
     lastMenuParams  = params;
     lastMenuSession = json.data.session;
     renderMenuResult(json.data.session);

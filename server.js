@@ -30,6 +30,26 @@ const INVITE_CODES = new Set(
 
 // コードが未設定（開発中）なら認証スキップ
 const AUTH_ENABLED = INVITE_CODES.size > 0;
+const GENERATE_LIMIT = parseInt(process.env.GENERATE_LIMIT || '5', 10);
+
+// 招待コードごとの生成回数管理
+const USAGE_COUNT_FILE = path.join(__dirname, 'data', 'invite-counts.json');
+
+function loadCounts() {
+  try { return JSON.parse(fs.readFileSync(USAGE_COUNT_FILE, 'utf8')); } catch { return {}; }
+}
+function saveCounts(counts) {
+  try {
+    const dir = path.dirname(USAGE_COUNT_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(USAGE_COUNT_FILE, JSON.stringify(counts, null, 2), 'utf8');
+  } catch (e) { console.error('[counts]', e.message); }
+}
+function getInviteCode(req) {
+  const cookie = req.headers.cookie || '';
+  const match = cookie.match(/invite=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 function requireInvite(req, res, next) {
   if (!AUTH_ENABLED) return next();
@@ -127,6 +147,19 @@ app.post('/api/chat', async (req, res) => {
 // ── メニュー生成 ──────────────────────────────────────────────────
 app.post('/api/generate', async (req, res) => {
   try {
+    // 生成回数チェック
+    if (AUTH_ENABLED) {
+      const code = getInviteCode(req);
+      const counts = loadCounts();
+      const used = counts[code] || 0;
+      if (used >= GENERATE_LIMIT) {
+        return res.status(429).json({
+          ok: false,
+          error: `テスト枠を使い切りました（${GENERATE_LIMIT}回/${GENERATE_LIMIT}回）。フィードバックをお送りください！`,
+          limitReached: true,
+        });
+      }
+    }
     const params = {
       teamName: req.body.teamName || '未設定',
       ageGroup:  req.body.ageGroup  || 'U-12',
@@ -147,6 +180,14 @@ app.post('/api/generate', async (req, res) => {
 
     console.log('[generate]', params);
     const result = await generateSession(params, context);
+
+    // 生成成功後にカウントアップ
+    if (AUTH_ENABLED) {
+      const code = getInviteCode(req);
+      const counts = loadCounts();
+      counts[code] = (counts[code] || 0) + 1;
+      saveCounts(counts);
+    }
 
     if (req.body.conversationId) {
       clearConversation(req.body.conversationId);
@@ -249,6 +290,16 @@ button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 
   // 直近20件
   const recent = [...logs].reverse().slice(0, 20);
 
+  // 招待コード別生成回数
+  const counts = loadCounts();
+  const codeRows = AUTH_ENABLED
+    ? [...INVITE_CODES].map(c =>
+        `<tr><td>${c}</td><td>${counts[c] || 0} / ${GENERATE_LIMIT}</td>
+         <td><div style="background:#e0e6f0;border-radius:4px;height:8px;width:100px;display:inline-block;vertical-align:middle">
+         <div style="background:#1a1a6e;border-radius:4px;height:8px;width:${Math.min(100,(counts[c]||0)/GENERATE_LIMIT*100)}px"></div></div></td></tr>`
+      ).join('')
+    : '<tr><td colspan="3">認証無効（開発モード）</td></tr>';
+
   const typeRows = Object.entries(byType).map(([t, v]) =>
     `<tr><td>${t}</td><td>${v.calls}</td><td>$${v.cost.toFixed(4)}</td></tr>`).join('');
   const recentRows = recent.map(l =>
@@ -283,6 +334,8 @@ tr:hover td{background:#f8f9ff}
   <div class="card"><div class="card-label">キャッシュ読込</div><div class="card-value">${(total.cache_read/1000).toFixed(1)}K</div></div>
   <div class="card warn"><div class="card-label">推定総コスト</div><div class="card-value cost">$${total.cost.toFixed(4)}</div></div>
 </div>
+<h2>招待コード別 生成回数（上限${GENERATE_LIMIT}回）</h2>
+<table><tr><th>コード</th><th>使用回数</th><th>進捗</th></tr>${codeRows}</table>
 <h2>種類別集計</h2>
 <table><tr><th>種類</th><th>コール数</th><th>推定コスト</th></tr>${typeRows}</table>
 <h2>直近20件</h2>
