@@ -248,8 +248,11 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .next-step-card{background:linear-gradient(135deg,#e8f5e9,#f0f4ff);border:1.5px solid #4caf50;border-radius:12px;padding:14px 16px;max-width:85%}
 .next-step-title{font-size:12px;font-weight:700;color:#2e7d32;margin-bottom:6px}
 .next-step-desc{font-size:12px;color:#444;line-height:1.65;margin-bottom:10px}
+.next-step-btns{display:flex;flex-direction:column;gap:7px;margin-top:10px}
 .next-step-btn{background:#1a1a6e;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:background .2s;text-align:center}
 .next-step-btn:hover{background:#0d0d4f}
+.next-step-btn-sub{background:none;border:1.5px solid #1a1a6e;color:#1a1a6e;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;transition:all .2s;text-align:center}
+.next-step-btn-sub:hover{background:#eef0fb}
 
 /* ─── Mobile ─────────────────────────────────── */
 /* On desktop always show both cols */
@@ -735,14 +738,20 @@ function suggestNextStep(type, doc) {
   const cfg = NEXT_STEP[type];
   if (!cfg || !cfg.check(doc)) return;
   const msgs = document.getElementById('msgs-' + type);
-  if (!msgs || msgs.querySelector('.next-step-card')) return; // already shown
+  if (!msgs || msgs.querySelector('.next-step-card')) return;
   const row = document.createElement('div');
   row.className = 'bubble-row pep';
   row.innerHTML = `<div class="avatar pep">P</div>
     <div class="next-step-card">
       <div class="next-step-title">${cfg.title}</div>
       <div class="next-step-desc">${cfg.desc}</div>
-      <button class="next-step-btn" onclick="switchSection('${cfg.section}')">${cfg.btn}</button>
+      <div class="next-step-btns">
+        <button class="next-step-btn" onclick="switchSection('${cfg.section}')">${cfg.btn}</button>
+        <button class="next-step-btn-sub" onclick="this.closest('.next-step-card').querySelector('.next-step-deepen').style.display='block';this.style.display='none'">💬 もっと深く話す</button>
+        <div class="next-step-deepen" style="display:none;font-size:12px;color:#555;padding:6px 2px;line-height:1.6">
+          続けて話しかけてください。準備ができたら上の「${cfg.btn.replace('→','')}」ボタンで次に進めます。
+        </div>
+      </div>
     </div>`;
   msgs.appendChild(row);
   scrollBottom(type);
