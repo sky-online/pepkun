@@ -7,41 +7,96 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:linear-gradient(135deg,#1a1a6e,#2a2aae);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:20px;padding:40px 36px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
-.logo{font-size:28px;font-weight:900;color:#1a1a6e;margin-bottom:6px}
+.wrap{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:420px;width:100%}
+
+/* 機能紹介カード */
+.features{background:rgba(255,255,255,.1);border-radius:16px;padding:22px 24px;width:100%;color:#fff}
+.features-title{font-size:13px;font-weight:700;opacity:.75;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;text-align:center}
+.feature-list{display:flex;flex-direction:column;gap:10px}
+.feature-item{display:flex;align-items:flex-start;gap:12px}
+.feature-icon{font-size:22px;flex-shrink:0;line-height:1}
+.feature-text{}
+.feature-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.feature-desc{font-size:11px;opacity:.75;line-height:1.6}
+.flow{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15);flex-wrap:wrap}
+.flow-step{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+.flow-arrow{color:rgba(255,255,255,.5);font-size:11px}
+
+/* コード入力カード */
+.card{background:#fff;border-radius:20px;padding:32px 28px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.logo{font-size:26px;font-weight:900;color:#1a1a6e;margin-bottom:4px}
 .logo span{color:#e63329}
-.logo-sub{font-size:12px;color:#888;margin-bottom:28px}
-h2{font-size:16px;color:#333;margin-bottom:8px;font-weight:700}
-.desc{font-size:13px;color:#888;line-height:1.7;margin-bottom:24px}
-.input-wrap{position:relative;margin-bottom:14px}
-input{width:100%;border:2px solid #e0e6f0;border-radius:10px;padding:13px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;letter-spacing:2px;text-align:center}
+.logo-sub{font-size:11px;color:#888;margin-bottom:22px}
+.beta-badge{display:inline-block;background:#e63329;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:3px 10px;margin-bottom:16px;letter-spacing:.5px}
+h2{font-size:15px;color:#333;margin-bottom:6px;font-weight:700}
+.desc{font-size:12px;color:#888;line-height:1.7;margin-bottom:20px}
+input{width:100%;border:2px solid #e0e6f0;border-radius:10px;padding:13px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;letter-spacing:3px;text-align:center;margin-bottom:12px}
 input:focus{border-color:#1a1a6e}
-button{width:100%;background:#e63329;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+button{width:100%;background:#e63329;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
 button:hover{background:#c0271f}
 button:disabled{background:#ccc;cursor:not-allowed}
-.error{color:#e63329;font-size:13px;margin-top:10px;display:none}
-.note{font-size:11px;color:#bbb;margin-top:20px;line-height:1.6}
+.error{color:#e63329;font-size:12px;margin-top:8px;display:none}
+.note{font-size:10px;color:#bbb;margin-top:16px;line-height:1.7}
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">⚽ペップ<span>君</span></div>
-  <div class="logo-sub">AIサッカーチームサポート</div>
-  <h2>招待コードを入力してください</h2>
-  <p class="desc">ペップ君はクローズドβテスト中です。<br>コーチの方にお届けした招待コードを入力してください。</p>
-  <div class="input-wrap">
-    <input type="text" id="codeInput" placeholder="招待コードを入力" maxlength="20" autocomplete="off">
-  </div>
-  <button id="submitBtn" onclick="submitCode()">入力して始める</button>
-  <div class="error" id="errMsg">招待コードが正しくありません</div>
-  <p class="note">招待コードはコーチ仲間からの紹介で入手できます。</p>
-</div>
+<div class="wrap">
 
+  <!-- 機能紹介 -->
+  <div class="features">
+    <div class="features-title">⚽ ペップ君でできること</div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-text">
+          <div class="feature-name">チームコンセプトの言語化</div>
+          <div class="feature-desc">AIとの対話で「目指すサッカー」「大切にしたいこと」を整理。頭の中にあるビジョンを言葉にできます。</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text">
+          <div class="feature-name">チームの課題を可視化</div>
+          <div class="feature-desc">コンセプトと現状のギャップを自動分析。「何を優先すべきか」が一目でわかります。</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <div class="feature-name">AIが練習メニューを自動生成</div>
+          <div class="feature-desc">チームの課題・年代・人数に合わせた練習メニューをAIが即座に作成。SVGフィールド図・コーチングポイント付き。</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <span class="flow-step">🎯 コンセプト</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">📊 チーム状況</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">📅 プラン</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">⚽ メニュー生成</span>
+    </div>
+  </div>
+
+  <!-- コード入力 -->
+  <div class="card">
+    <div class="logo">⚽ペップ<span>君</span></div>
+    <div class="logo-sub">AIサッカーチームサポート</div>
+    <div class="beta-badge">β テスト中</div>
+    <h2>招待コードを入力してください</h2>
+    <p class="desc">限定テスト版のため招待コードが必要です。<br>コーチの方にお届けしたコードをご入力ください。</p>
+    <input type="text" id="codeInput" placeholder="招待コードを入力" maxlength="20" autocomplete="off">
+    <button id="submitBtn" onclick="submitCode()">入力して使ってみる →</button>
+    <div class="error" id="errMsg">招待コードが正しくありません</div>
+    <p class="note">※ テスト版のため生成回数に上限があります<br>ご利用後のフィードバックをぜひお聞かせください</p>
+  </div>
+
+</div>
 <script>
 document.getElementById('codeInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitCode();
 });
-
 async function submitCode() {
   const code = document.getElementById('codeInput').value.trim();
   if (!code) return;
@@ -61,13 +116,13 @@ async function submitCode() {
     } else {
       document.getElementById('errMsg').style.display = 'block';
       btn.disabled = false;
-      btn.textContent = '入力して始める';
+      btn.textContent = '入力して使ってみる →';
     }
   } catch {
     document.getElementById('errMsg').textContent = 'エラーが発生しました。再度お試しください。';
     document.getElementById('errMsg').style.display = 'block';
     btn.disabled = false;
-    btn.textContent = '入力して始める';
+    btn.textContent = '入力して使ってみる →';
   }
 }
 </script>
