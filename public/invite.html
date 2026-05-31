@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ ペップ君 — 招待コード入力</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:linear-gradient(135deg,#1a1a6e,#2a2aae);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:20px;padding:40px 36px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.logo{font-size:28px;font-weight:900;color:#1a1a6e;margin-bottom:6px}
+.logo span{color:#e63329}
+.logo-sub{font-size:12px;color:#888;margin-bottom:28px}
+h2{font-size:16px;color:#333;margin-bottom:8px;font-weight:700}
+.desc{font-size:13px;color:#888;line-height:1.7;margin-bottom:24px}
+.input-wrap{position:relative;margin-bottom:14px}
+input{width:100%;border:2px solid #e0e6f0;border-radius:10px;padding:13px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;letter-spacing:2px;text-align:center}
+input:focus{border-color:#1a1a6e}
+button{width:100%;background:#e63329;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+button:hover{background:#c0271f}
+button:disabled{background:#ccc;cursor:not-allowed}
+.error{color:#e63329;font-size:13px;margin-top:10px;display:none}
+.note{font-size:11px;color:#bbb;margin-top:20px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">⚽ペップ<span>君</span></div>
+  <div class="logo-sub">AIサッカーチームサポート</div>
+  <h2>招待コードを入力してください</h2>
+  <p class="desc">ペップ君はクローズドβテスト中です。<br>コーチの方にお届けした招待コードを入力してください。</p>
+  <div class="input-wrap">
+    <input type="text" id="codeInput" placeholder="招待コードを入力" maxlength="20" autocomplete="off">
+  </div>
+  <button id="submitBtn" onclick="submitCode()">入力して始める</button>
+  <div class="error" id="errMsg">招待コードが正しくありません</div>
+  <p class="note">招待コードはコーチ仲間からの紹介で入手できます。</p>
+</div>
+
+<script>
+document.getElementById('codeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitCode();
+});
+
+async function submitCode() {
+  const code = document.getElementById('codeInput').value.trim();
+  if (!code) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '確認中...';
+  document.getElementById('errMsg').style.display = 'none';
+  try {
+    const res = await fetch('/invite/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const json = await res.json();
+    if (json.ok) {
+      window.location.href = '/';
+    } else {
+      document.getElementById('errMsg').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '入力して始める';
+    }
+  } catch {
+    document.getElementById('errMsg').textContent = 'エラーが発生しました。再度お試しください。';
+    document.getElementById('errMsg').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '入力して始める';
+  }
+}
+</script>
+</body>
+</html>

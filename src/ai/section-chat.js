@@ -1,6 +1,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const fs = require('fs');
 const path = require('path');
+const { logUsage } = require('./usage-logger');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -163,6 +164,7 @@ async function sectionChat(type, userMessage) {
     messages,
   });
 
+  logUsage('claude-haiku-4-5-20251001', resp.usage, `section-${type}`);
   const raw = resp.content[0].text;
   const docDelta = extractDocUpdate(raw);
   const message  = stripDocUpdate(raw);

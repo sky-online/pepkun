@@ -1,4 +1,5 @@
 const Anthropic = require('@anthropic-ai/sdk');
+const { logUsage } = require('./usage-logger');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -196,6 +197,7 @@ async function generateSession(params, context = {}) {
     messages: [{ role: 'user', content: buildUserPrompt(params, context) }],
   });
 
+  logUsage('claude-sonnet-4-6', message.usage, 'generate');
   const text = message.content[0].text.trim();
 
   const start = text.indexOf('{');

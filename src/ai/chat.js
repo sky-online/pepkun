@@ -1,4 +1,5 @@
 const Anthropic = require('@anthropic-ai/sdk');
+const { logUsage } = require('./usage-logger');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -114,6 +115,7 @@ async function chatMessage(conversationId, userMessage, teamContext = null) {
     messages: conv.messages,
   });
 
+  logUsage('claude-haiku-4-5-20251001', response.usage, 'chat');
   const rawText = response.content[0].text;
   const generateParams = extractGenerateParams(rawText);
   const displayText = stripGenerateParams(rawText);
