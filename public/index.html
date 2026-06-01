@@ -159,7 +159,7 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .section-content{font-size:12px;color:#333;line-height:1.6}
 .coaching-focus{background:#f0f4ff;border-radius:6px;padding:6px 10px;font-size:11px;color:#1a1a6e;margin-top:5px}
 .connection-note{background:#f9f9f9;border-left:3px solid #4caf50;padding:6px 10px;font-size:11px;color:#555;border-radius:0 5px 5px 0;margin-top:8px}
-.drill-diagram{width:100%}
+.drill-diagram{width:100%;max-width:480px;margin:0 auto}
 .diagram-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:6px;text-align:center}
 .voice-cues{background:#e8f5e9;border-radius:8px;padding:10px 12px;margin-top:8px}
 .voice-cues-title{font-size:10px;font-weight:700;color:#2e7d32;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
@@ -1442,8 +1442,8 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;font-size:10.5pt
 .focus-box{background:#f0f4ff;border-radius:5px;padding:5px 9px;font-size:9pt;color:#1a1a6e;margin-top:3px}
 .conn{border-left:3px solid #4caf50;padding:4px 8px;font-size:9pt;color:#555;margin-top:5px;background:#f9f9f9;border-radius:0 4px 4px 0}
 
-.diagram{width:185px;flex-shrink:0}
-.diagram svg{width:100%;height:auto;display:block}
+.diagram{width:100%;max-width:380px;margin:8px auto 0}
+.diagram svg{width:100%;height:auto;display:block;border-radius:6px}
 
 .cp-section{background:#1a1a6e;color:#fff;border-radius:8px;padding:12px 16px;margin-top:10px;page-break-inside:avoid}
 .cp-section h2{font-size:9.5pt;opacity:.75;margin-bottom:8px}
@@ -1538,29 +1538,17 @@ function renderDiagramSVG(diagram) {
     parts.push(`<polygon points="${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}" fill="${color}" opacity=".9"/>`);
   });
 
-  // Players (C-shaped piece / 実物駒と同形状：塗りつぶしCリングセクタ)
+  // Players (シンプル塗りつぶし円)
   const COLORS = { teamA: '#1a1a6e', teamB: '#c62828', neutral: '#e65100' };
   const drawC = (players, key) => (players || []).forEach(p => {
     const cx = fx(p.x), cy = fy(p.y), c = COLORS[key];
-    const R = 9.5, ri = 4.0;           // 外半径・内半径（厚みのあるC）
-    const ang = 52 * Math.PI / 180;    // 開口部の半角（右側に104°開口）
-    // 外周の上下端点（開口上端・下端）
-    const oTx = (cx + R  * Math.cos(-ang)).toFixed(1), oTy = (cy + R  * Math.sin(-ang)).toFixed(1);
-    const oBx = (cx + R  * Math.cos( ang)).toFixed(1), oBy = (cy + R  * Math.sin( ang)).toFixed(1);
-    // 内周の上下端点
-    const iTx = (cx + ri * Math.cos(-ang)).toFixed(1), iTy = (cy + ri * Math.sin(-ang)).toFixed(1);
-    const iBx = (cx + ri * Math.cos( ang)).toFixed(1), iBy = (cy + ri * Math.sin( ang)).toFixed(1);
-    // 影
-    parts.push(`<ellipse cx="${cx}" cy="${cy+1.5}" rx="${R}" ry="${(R*.65).toFixed(1)}" fill="rgba(0,0,0,.18)"/>`);
-    // 塗りつぶしC（外周大弧→内周大弧で閉じる）
-    const d = `M${oTx},${oTy} A${R},${R} 0 1,1 ${oBx},${oBy} L${iBx},${iBy} A${ri},${ri} 0 1,0 ${iTx},${iTy} Z`;
-    parts.push(`<path d="${d}" fill="${c}" opacity=".95"/>`);
-    // ハイライト（立体感）
-    parts.push(`<path d="${`M${oTx},${oTy} A${R},${R} 0 0,1 ${(cx-R).toFixed(1)},${cy}`}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.5"/>`);
-    // ラベル（白文字）
+    const r = 8;
+    parts.push(`<circle cx="${cx}" cy="${cy+1}" r="${r}" fill="rgba(0,0,0,.2)"/>`);
+    parts.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}"/>`);
+    parts.push(`<circle cx="${cx-2}" cy="${cy-2}" r="${r*.45}" fill="rgba(255,255,255,.2)"/>`);
     if (p.label) {
       const fs = p.label.length > 2 ? '5' : '6.5';
-      parts.push(`<text x="${(cx-1.5).toFixed(1)}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="bold" fill="white">${h(p.label)}</text>`);
+      parts.push(`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="bold" fill="white">${h(p.label)}</text>`);
     }
   });
   drawC(diagram.teamA,    'teamA');
@@ -1576,13 +1564,7 @@ function renderDiagramSVG(diagram) {
   // Legend (C-shape style)
   const legY = diagram.notes ? H-28 : H-18;
   const drawLegC = (lx, ly, c) => {
-    const R2 = 6, ri2 = 2.5, ang2 = 52*Math.PI/180;
-    const oTx = (lx+R2*Math.cos(-ang2)).toFixed(1), oTy = (ly+R2*Math.sin(-ang2)).toFixed(1);
-    const oBx = (lx+R2*Math.cos( ang2)).toFixed(1), oBy = (ly+R2*Math.sin( ang2)).toFixed(1);
-    const iTx = (lx+ri2*Math.cos(-ang2)).toFixed(1), iTy = (ly+ri2*Math.sin(-ang2)).toFixed(1);
-    const iBx = (lx+ri2*Math.cos( ang2)).toFixed(1), iBy = (ly+ri2*Math.sin( ang2)).toFixed(1);
-    const d2 = `M${oTx},${oTy} A${R2},${R2} 0 1,1 ${oBx},${oBy} L${iBx},${iBy} A${ri2},${ri2} 0 1,0 ${iTx},${iTy} Z`;
-    parts.push(`<path d="${d2}" fill="${c}" opacity=".9"/>`);
+    parts.push(`<circle cx="${lx}" cy="${ly}" r="5" fill="${c}" opacity=".9"/>`);
   };
   drawLegC(10, legY, '#1a1a6e');
   parts.push(`<text x="20" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">攻</text>`);
