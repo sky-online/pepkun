@@ -152,15 +152,36 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .drill-name{font-weight:700;font-size:13px;flex:1}
 .drill-time{font-size:11px;color:#888;white-space:nowrap}
 .drill-body{padding:11px 13px}
-.drill-cols{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:start}
+.drill-cols{display:flex;flex-direction:column;gap:10px}
 .drill-info{}
 .drill-section{margin-bottom:7px}
 .section-label{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;margin-bottom:2px}
 .section-content{font-size:12px;color:#333;line-height:1.6}
 .coaching-focus{background:#f0f4ff;border-radius:6px;padding:6px 10px;font-size:11px;color:#1a1a6e;margin-top:5px}
 .connection-note{background:#f9f9f9;border-left:3px solid #4caf50;padding:6px 10px;font-size:11px;color:#555;border-radius:0 5px 5px 0;margin-top:8px}
-.drill-diagram{}
-.diagram-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;text-align:center}
+.drill-diagram{width:100%}
+.diagram-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:6px;text-align:center}
+.voice-cues{background:#e8f5e9;border-radius:8px;padding:10px 12px;margin-top:8px}
+.voice-cues-title{font-size:10px;font-weight:700;color:#2e7d32;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.voice-cue-item{font-size:12px;color:#1b5e20;padding:3px 0;border-bottom:1px solid rgba(46,125,50,.12);line-height:1.5}
+.voice-cue-item:last-child{border-bottom:none}
+.voice-cue-item::before{content:'💬 '}
+.troubleshoot{background:#fff8e1;border-radius:8px;padding:10px 12px;margin-top:8px}
+.troubleshoot-title{font-size:10px;font-weight:700;color:#e65100;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.trouble-item{margin-bottom:8px;font-size:12px;line-height:1.55}
+.trouble-item:last-child{margin-bottom:0}
+.trouble-problem{color:#bf360c;font-weight:700;margin-bottom:2px}
+.trouble-problem::before{content:'⚠️ '}
+.trouble-solution{color:#555;padding-left:4px}
+.trouble-solution::before{content:'→ '}
+.freeze-section{background:#e3f2fd;border-radius:8px;padding:10px 12px;margin-top:8px}
+.freeze-title{font-size:10px;font-weight:700;color:#1565c0;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.freeze-item{margin-bottom:8px;font-size:12px;line-height:1.55}
+.freeze-item:last-child{margin-bottom:0}
+.freeze-trigger{color:#0d47a1;font-weight:700;margin-bottom:2px}
+.freeze-trigger::before{content:'🛑 '}
+.freeze-coaching{color:#555;padding-left:4px}
+.freeze-coaching::before{content:'📢 '}
 .coaching-points-card{background:#1a1a6e;color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:12px}
 .coaching-points-card h3{font-size:11px;margin-bottom:9px;opacity:.75}
 .cp-item{margin-bottom:8px}
@@ -1184,9 +1205,24 @@ function renderMenuResult(s) {
               <div class="drill-section"><div class="section-label">やり方</div><div class="section-content">${h(drill.description)}</div></div>
               <div class="drill-section"><div class="section-label">オーガナイズ</div><div class="section-content">${h(drill.organization)}</div></div>
               <div class="coaching-focus">👁 ${h(drill.coachingFocus)}</div>
-              ${drill.connectionToNext ? `<div class="connection-note">→ ${h(drill.connectionToNext)}</div>` : ''}
             </div>
             ${diagSvg ? `<div class="drill-diagram"><div class="diagram-label">フィールド図</div>${diagSvg}</div>` : ''}
+            ${Array.isArray(drill.voiceCues) && drill.voiceCues.length ? `
+            <div class="voice-cues">
+              <div class="voice-cues-title">🎙 声かけ例</div>
+              ${drill.voiceCues.map(c => `<div class="voice-cue-item">${h(c)}</div>`).join('')}
+            </div>` : ''}
+            ${Array.isArray(drill.troubleshooting) && drill.troubleshooting.length ? `
+            <div class="troubleshoot">
+              <div class="troubleshoot-title">🔧 うまくいかないときは</div>
+              ${drill.troubleshooting.map(t => `<div class="trouble-item"><div class="trouble-problem">${h(t.problem)}</div><div class="trouble-solution">${h(t.solution)}</div></div>`).join('')}
+            </div>` : ''}
+            ${Array.isArray(drill.freezeMoments) && drill.freezeMoments.length ? `
+            <div class="freeze-section">
+              <div class="freeze-title">⏸ フリーズのタイミング</div>
+              ${drill.freezeMoments.map(f => `<div class="freeze-item"><div class="freeze-trigger">${h(f.trigger)}</div><div class="freeze-coaching">${h(f.coaching)}</div></div>`).join('')}
+            </div>` : ''}
+            ${drill.connectionToNext ? `<div class="connection-note">→ ${h(drill.connectionToNext)}</div>` : ''}
           </div>
         </div>
       </div>`;
@@ -1308,9 +1344,13 @@ function renderMenuResultInto(s, container) {
           <div class="drill-info">
             <div class="drill-section"><div class="section-label">目的</div><div class="section-content">${h(drill.objective)}</div></div>
             <div class="drill-section"><div class="section-label">やり方</div><div class="section-content">${h(drill.description)}</div></div>
+            <div class="drill-section"><div class="section-label">オーガナイズ</div><div class="section-content">${h(drill.organization)}</div></div>
             <div class="coaching-focus">👁 ${h(drill.coachingFocus)}</div>
           </div>
           ${diagSvg ? `<div class="drill-diagram"><div class="diagram-label">フィールド図</div>${diagSvg}</div>` : ''}
+          ${Array.isArray(drill.voiceCues) && drill.voiceCues.length ? `<div class="voice-cues"><div class="voice-cues-title">🎙 声かけ例</div>${drill.voiceCues.map(c=>`<div class="voice-cue-item">${h(c)}</div>`).join('')}</div>` : ''}
+          ${Array.isArray(drill.troubleshooting) && drill.troubleshooting.length ? `<div class="troubleshoot"><div class="troubleshoot-title">🔧 うまくいかないときは</div>${drill.troubleshooting.map(t=>`<div class="trouble-item"><div class="trouble-problem">${h(t.problem)}</div><div class="trouble-solution">${h(t.solution)}</div></div>`).join('')}</div>` : ''}
+          ${Array.isArray(drill.freezeMoments) && drill.freezeMoments.length ? `<div class="freeze-section"><div class="freeze-title">⏸ フリーズのタイミング</div>${drill.freezeMoments.map(f=>`<div class="freeze-item"><div class="freeze-trigger">${h(f.trigger)}</div><div class="freeze-coaching">${h(f.coaching)}</div></div>`).join('')}</div>` : ''}
         </div>
       </div>
     </div>`;
@@ -1551,7 +1591,7 @@ function renderDiagramSVG(diagram) {
   drawLegC(70, legY, '#e65100');
   parts.push(`<text x="80" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">中</text>`);
 
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-height:160px;border-radius:8px;display:block">${parts.join('')}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;border-radius:8px;display:block">${parts.join('')}</svg>`;
 }
 
 // ─── Shared chat helpers ────────────────────────────────────────
