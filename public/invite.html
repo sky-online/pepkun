@@ -134,6 +134,41 @@ nav {
   .sp-field { padding: 24px 20px; }
 }
 
+/* App UI Mirror */
+.app-session-head{background:linear-gradient(135deg,#1a1a6e,#2a2aae);color:#fff;border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.app-session-ttl{font-size:16px;font-weight:900;margin-bottom:7px}
+.app-session-meta{display:flex;flex-wrap:wrap;gap:7px;font-size:11px;opacity:.85}
+.app-meta-chip{background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px}
+.app-drill-card{background:#fff;border-radius:10px;box-shadow:0 1px 7px rgba(0,0,0,.07);overflow:hidden}
+.app-drill-hd{display:flex;align-items:center;gap:7px;padding:9px 13px;border-bottom:1px solid #eee}
+.app-phase{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.app-ph-warmup{background:#fff3e0;color:#e65100}
+.app-ph-technical{background:#e8f5e9;color:#2e7d32}
+.app-ph-tactical{background:#e3f2fd;color:#1565c0}
+.app-ph-game{background:#fce4ec;color:#c62828}
+.app-drill-nm{font-weight:700;font-size:13px;flex:1}
+.app-drill-tm{font-size:11px;color:#888;white-space:nowrap}
+.app-drill-bd{padding:11px 13px}
+.app-drill-cols{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.app-sec{margin-bottom:7px}
+.app-sec-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;margin-bottom:2px}
+.app-sec-val{font-size:12px;color:#333;line-height:1.6}
+.app-focus{background:#f0f4ff;border-radius:6px;padding:6px 10px;font-size:11px;color:#1a1a6e;margin-top:5px}
+.app-conn{background:#f9f9f9;border-left:3px solid #4caf50;padding:6px 10px;font-size:11px;color:#555;border-radius:0 5px 5px 0;margin-top:8px}
+.app-diag{width:220px;flex-shrink:0}
+.app-diag-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:6px;text-align:center}
+.app-voice{background:#e8f5e9;border-radius:8px;padding:10px 12px;margin-top:8px}
+.app-voice-ttl{font-size:10px;font-weight:700;color:#2e7d32;margin-bottom:6px;text-transform:uppercase}
+.app-voice-item{font-size:12px;color:#1b5e20;padding:3px 0;border-bottom:1px solid rgba(46,125,50,.12);line-height:1.5}
+.app-voice-item:last-child{border-bottom:none}
+.app-cp-card{background:#1a1a6e;color:#fff;border-radius:10px;padding:14px 18px;margin-top:10px}
+.app-cp-card h3{font-size:11px;margin-bottom:9px;opacity:.75}
+.app-cp-item{margin-bottom:8px}
+.app-cp-point{font-weight:700;font-size:13px;margin-bottom:3px}
+.app-cp-phrase{font-size:11px;opacity:.8}
+#drill-panel{padding:12px 0}
+@media (max-width:640px){.app-drill-cols{grid-template-columns:1fr}.app-diag{width:100%}}
+
 /* Features */
 .features { background: #fff; border-top: 1px solid #e0e0e0; }
 .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -272,14 +307,14 @@ footer {
 <section class="sec sample">
   <p class="sample-label">Sample</p>
   <h2 class="sec-en" style="margin-bottom:32px">生成される練習メニュー</h2>
-  <div class="sample-card">
-    <div class="sample-head">
-      <div class="sample-session-title">ゴール前の決定力を高める！シンプル＆正確フィニッシュセッション</div>
-      <div class="sample-meta">
-        <span>U-12</span>
-        <span>12名</span>
-        <span>60分</span>
-        <span>シュート・得点力</span>
+  <div class="sample-card" style="max-width:900px;background:#f0f4f8;border:none;box-shadow:none;padding:0;overflow:visible">
+    <div class="app-session-head">
+      <div class="app-session-ttl">ゴール前の決定力を高める！シンプル＆正確フィニッシュセッション</div>
+      <div class="app-session-meta">
+        <span class="app-meta-chip">12名</span>
+        <span class="app-meta-chip">60分</span>
+        <span class="app-meta-chip">U-12</span>
+        <span class="app-meta-chip">シュート・得点力</span>
       </div>
     </div>
     <div class="sample-tabs">
@@ -555,10 +590,184 @@ footer {
 </footer>
 
 <script>
-function showDrill(i) {
-  document.querySelectorAll('.sample-tab').forEach((t,j) => t.classList.toggle('active', i===j));
-  document.querySelectorAll('.sample-panel').forEach((p,j) => p.classList.toggle('active', i===j));
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function h(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── Field SVG (same logic as index.html) ─────────────────────────────────────
+function renderDiagramSVG(diagram){
+  if(!diagram)return'';
+  const isHalf=(diagram.fieldType||'half')!=='full';
+  const W=220,H=isHalf?150:280;
+  const parts=[];
+  parts.push(`<rect width="${W}" height="${H}" rx="4" fill="#3d8b37"/>`);
+  if(isHalf){
+    parts.push(`<rect x="6" y="6" width="${W-12}" height="${H-6}" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/>`);
+    const gw=52,gx=(W-gw)/2;
+    parts.push(`<rect x="${gx}" y="6" width="${gw}" height="16" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/>`);
+    const pw=110,px=(W-pw)/2;
+    parts.push(`<rect x="${px}" y="6" width="${pw}" height="38" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1"/>`);
+    parts.push(`<circle cx="${W/2}" cy="52" r="2.5" fill="rgba(255,255,255,.6)"/>`);
+  }else{
+    parts.push(`<rect x="6" y="6" width="${W-12}" height="${H-12}" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/>`);
+    parts.push(`<line x1="6" y1="${H/2}" x2="${W-6}" y2="${H/2}" stroke="rgba(255,255,255,.5)" stroke-width="1"/>`);
+    parts.push(`<circle cx="${W/2}" cy="${H/2}" r="${H/11}" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1"/>`);
+    parts.push(`<circle cx="${W/2}" cy="${H/2}" r="2.5" fill="rgba(255,255,255,.6)"/>`);
+    const gw=52,gx=(W-gw)/2;
+    parts.push(`<rect x="${gx}" y="6" width="${gw}" height="14" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/>`);
+    parts.push(`<rect x="${gx}" y="${H-20}" width="${gw}" height="14" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/>`);
+  }
+  const fx=x=>Math.round(x/100*W), fy=y=>Math.round(y/100*H);
+  (diagram.zones||[]).forEach(z=>{
+    parts.push(`<rect x="${fx(z.x)}" y="${fy(z.y)}" width="${fx(z.w)}" height="${fy(z.h)}" fill="rgba(255,255,100,.12)" stroke="rgba(255,255,100,.5)" stroke-width="1" stroke-dasharray="4,3"/>`);
+    if(z.label)parts.push(`<text x="${fx(z.x)+fx(z.w)/2}" y="${fy(z.y)+fy(z.h)/2}" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="rgba(255,255,150,.9)">${h(z.label)}</text>`);
+  });
+  (diagram.cones||[]).forEach(c=>{
+    const cx=fx(c.x),cy=fy(c.y);
+    parts.push(`<polygon points="${cx},${cy-7} ${cx-4},${cy+4} ${cx+4},${cy+4}" fill="#FFC107" stroke="#E65100" stroke-width=".5"/>`);
+  });
+  (diagram.arrows||[]).forEach(a=>{
+    const x1=fx(a.x1),y1=fy(a.y1),x2=fx(a.x2),y2=fy(a.y2);
+    const color=a.type==='pass'?'#90CAF9':'#FFB74D';
+    const dash=a.type==='pass'?'stroke-dasharray="6,4"':'';
+    const ang=Math.atan2(y2-y1,x2-x1);
+    const ex=x2-9*Math.cos(ang),ey=y2-9*Math.sin(ang);
+    const ax1=ex+5*Math.cos(ang+Math.PI/2),ay1=ey+5*Math.sin(ang+Math.PI/2);
+    const ax2=ex-5*Math.cos(ang+Math.PI/2),ay2=ey-5*Math.sin(ang+Math.PI/2);
+    parts.push(`<line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="2" ${dash} opacity=".9"/>`);
+    parts.push(`<polygon points="${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}" fill="${color}" opacity=".9"/>`);
+  });
+  const COLORS={teamA:'#1a1a6e',teamB:'#c62828',neutral:'#e65100'};
+  const drawC=(players,key)=>(players||[]).forEach(p=>{
+    const cx=fx(p.x),cy=fy(p.y),c=COLORS[key],r=8;
+    parts.push(`<circle cx="${cx}" cy="${cy+1}" r="${r}" fill="rgba(0,0,0,.2)"/>`);
+    parts.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}"/>`);
+    parts.push(`<circle cx="${cx-2}" cy="${cy-2}" r="${r*.45}" fill="rgba(255,255,255,.2)"/>`);
+    if(p.label){const fs=p.label.length>2?'5':'6.5';parts.push(`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="bold" fill="white">${h(p.label)}</text>`);}
+  });
+  drawC(diagram.teamA,'teamA');drawC(diagram.teamB,'teamB');drawC(diagram.neutrals,'neutral');
+  if(diagram.notes){
+    const noteStr=String(diagram.notes),MAX=28,lines=[];let rem=noteStr;
+    while(rem.length>0&&lines.length<2){if(rem.length<=MAX){lines.push(rem);rem='';}else{let cut=MAX;while(cut>18&&rem[cut]!==' '&&rem[cut]!=='、'&&rem[cut]!=='。')cut--;if(cut<=18)cut=MAX;lines.push(rem.slice(0,cut));rem=rem.slice(cut).trim();}}
+    const noteH=lines.length===1?15:26;
+    parts.push(`<rect x="0" y="${H-noteH}" width="${W}" height="${noteH}" fill="rgba(0,0,0,.45)"/>`);
+    lines.forEach((line,i)=>{const ty=H-noteH+10+i*12;parts.push(`<text x="${W/2}" y="${ty}" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.85)">${h(line)}</text>`);});
+  }
+  const usedNoteH=diagram.notes?(String(diagram.notes).length>28?26:15):0;
+  const legY=H-usedNoteH-14;
+  const drawLeg=(lx,ly,c)=>parts.push(`<circle cx="${lx}" cy="${ly}" r="5" fill="${c}" opacity=".9"/>`);
+  drawLeg(10,legY,'#1a1a6e');parts.push(`<text x="20" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">攻</text>`);
+  drawLeg(40,legY,'#c62828');parts.push(`<text x="50" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">守</text>`);
+  drawLeg(70,legY,'#e65100');parts.push(`<text x="80" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">中</text>`);
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;border-radius:8px;display:block">${parts.join('')}</svg>`;
 }
+
+// ── Sample Data ───────────────────────────────────────────────────────────────
+const SAMPLE={
+  coachingPoints:[
+    {point:"軸足をボールの横に正確に置く（シュートフォームの土台）",examplePhrase:"蹴る前に軸足！ボールの横15cmに置けてる？そこが決まれば絶対枠に行く！"},
+    {point:"ファーストタッチでゴールを向く（受けた瞬間にチャンスを作る）",examplePhrase:"ボールを受けた瞬間、おへそはゴールに向いてた？向いてたら次は絶対速い！"}
+  ],
+  drills:[
+    {phase:"warmup",name:"ゴールハンター・ボールマスタリー＋シュートゲート",duration:10,
+     objective:"足元の感覚を温めながら、ゴールを狙う意識をウォームアップから引き出す。",
+     description:"ペナルティエリア付近の広さ（約20m×20m）でコーン8本を散らばして配置。選手は全員ボールを持ち、自由にドリブル。コーチの「シュート！」の合図で、最寄りのコーンゲート（2本コーンで幅2mのゲート）を狙ってボールを転がして通過させる。通過したら1点。2分ごとにゲートの位置を変え、合計3セット実施。",
+     organization:"12名全員・ボール12個・コーン16本（ゲート8個）・20m×20mグリッド",
+     coachingFocus:"ゲートを狙う前に顔を上げてゲートの位置を確認しているか（首振り習慣）",
+     voiceCues:["顔上げて！ゲートどこ？","インサイドで丁寧に転がそう！"],
+     connectionToNext:"ゲートを狙う感覚ができたら、次は本物のゴールに向けたシュートフォームを固めていきます。足のどこで蹴るかを意識して次へ進もう。",
+     diagram:{fieldType:"half",teamA:[{x:15,y:48,label:"P1"},{x:35,y:68,label:"P2"},{x:55,y:52,label:"P3"},{x:75,y:68,label:"P4"},{x:28,y:82,label:"P5"},{x:65,y:40,label:"P6"},{x:48,y:88,label:"P7"},{x:82,y:84,label:"P8"}],teamB:[],neutrals:[],cones:[{x:8,y:28},{x:18,y:28},{x:42,y:18},{x:52,y:18},{x:70,y:30},{x:80,y:30},{x:12,y:58},{x:22,y:58}],arrows:[{x1:15,y1:48,x2:13,y2:30,type:"run"},{x1:55,y1:52,x2:75,y2:32,type:"run"}],notes:"コーン2本1組でゲート8個を散在配置。選手は自由にドリブルし合図でゲートへシュート。"}
+    },
+    {phase:"technical",name:"3ポイント・インサイドシュート精度ドリル",duration:12,
+     objective:"軸足の置き方・足の振り方を正しく身につけ、インサイドで枠内に正確に蹴る技術を習得する。",
+     description:"ゴール正面5m・斜め左7m・斜め右7mの3か所にコーンでシュートポイントを作る（各ポイント4名ずつ3列）。コーチがボールを各ポイントに転がし、選手は止めてからインサイドでゴールを狙う。「止める→軸足をボールの横に置く→インサイドで振り抜く」の3ステップを声に出しながら実施。打ち終わったら逆サイドの列の後ろに並ぶローテーション。3分×3セット。",
+     organization:"12名・3列4名・ゴール1個（または簡易ゴール）・コーン6本・ボール4個",
+     coachingFocus:"軸足がボールの真横（約15cm横）に踏み込めているか",
+     voiceCues:["軸足！ボールの横15cmに置けてる？そこが決まれば絶対枠に行く！","止める・置く・振り抜く、3ステップ声に出して！"],
+     connectionToNext:"正面・斜めからのシュートフォームが整ったら、次はパスを受けた後すぐにシュートを打つ「ファーストタッチ→シュート」の連動を練習します。",
+     diagram:{fieldType:"half",teamA:[{x:30,y:82,label:"P3"},{x:30,y:90,label:"P4"},{x:50,y:85,label:"P1"},{x:50,y:92,label:"P2"},{x:70,y:82,label:"P5"},{x:70,y:90,label:"P6"}],teamB:[{x:50,y:10,label:"GK"}],neutrals:[{x:50,y:73,label:"P"}],cones:[{x:30,y:75},{x:50,y:78},{x:70,y:75}],arrows:[{x1:50,y1:80,x2:50,y2:22,type:"run"},{x1:30,y1:78,x2:47,y2:20,type:"run"},{x1:70,y1:78,x2:53,y2:20,type:"run"}],notes:"正面・斜め左・斜め右の3列でローテーション。コーチがボールを転がして始動。"}
+    },
+    {phase:"technical",name:"ファーストタッチ→前向きシュートコンビネーション",duration:13,
+     objective:"パスを受けてから素早く前を向き、シュートまでの一連の動きをスムーズにつなげる。",
+     description:"ペナルティエリア付近（ゴールから約15m）に2列（各6名）。コーチまたはパス担当の選手がサイドからボールを出し、受ける選手はファーストタッチで前を向いてシュートを打つ。2タッチ以内でシュートを打つルールを設定。慣れてきたらパスのスピードを上げる。2列ローテーションで6分×2セット。",
+     organization:"12名・2列6名・ゴール1個・ボール4個・コーン4本（シュートゾーンの目安）",
+     coachingFocus:"ファーストタッチの方向がゴール向きになっているか（横か後ろに向いていないか）",
+     voiceCues:["ボールを受けた瞬間、おへそはゴールに向いてた？","迎えに行く！体を横向きにして受けよう！"],
+     connectionToNext:"ファーストタッチからシュートの個人技術が整ったら、今度は仲間と連携してチャンスを作る「型（パターン）」を練習します。",
+     diagram:{fieldType:"half",teamA:[{x:38,y:72,label:"受け手"},{x:38,y:82,label:"P2"},{x:62,y:72,label:"受け手2"},{x:62,y:82,label:"P5"}],teamB:[{x:50,y:10,label:"GK"}],neutrals:[{x:5,y:65,label:"パス出し"},{x:95,y:65,label:"パス出し2"}],cones:[],arrows:[{x1:5,y1:65,x2:35,y2:72,type:"pass"},{x1:95,y1:65,x2:65,y2:72,type:"pass"},{x1:38,y1:68,x2:47,y2:18,type:"run"},{x1:62,y1:68,x2:53,y2:18,type:"run"}],notes:"左右からパスを受けてファーストタッチ→即シュート。2列ローテーション。"}
+    },
+    {phase:"tactical",name:"3人連動フィニッシュ・ポジショナルパターン",duration:15,
+     objective:"ポジショニング（スペースの使い方）を活かして、3人でチャンスを作りシュートを打つ「型」を体に覚えさせる。",
+     description:"ハーフコートでCB役1名・MF役1名・FW役1名の3人組×4セット（3人×4組）。パターンは「CBからMFへパス→MFがターンしてFWへ縦パス→FWがゴールへシュート」を繰り返す。FWは斜め前に抜け出すタイミングを合わせること。慣れたらバリエーションも追加。4分×3セット（役割ローテーション）。",
+     organization:"12名（3人組×4組）・ハーフコート・ゴール1個・ボール4個・コーン6本",
+     coachingFocus:"FWが縦パスの前に斜めに動いて「受ける準備」ができているか（動き出しのタイミング）",
+     voiceCues:["FW、パスが来る前に動き出せ！","MF、ターンしてすぐ縦！迷わず！"],
+     connectionToNext:"3人の連動パターンが形になってきたら、最後はDF（守備）がいる実際のゲームでその型を試します。ゴール前の判断をゲームで発揮しよう！",
+     diagram:{fieldType:"half",teamA:[{x:50,y:30,label:"FW"},{x:45,y:55,label:"MF"},{x:42,y:80,label:"CB"}],teamB:[{x:50,y:10,label:"GK"}],neutrals:[],cones:[{x:35,y:45},{x:55,y:45}],arrows:[{x1:42,y1:78,x2:45,y2:58,type:"pass"},{x1:45,y1:53,x2:50,y2:34,type:"pass"},{x1:40,y1:58,x2:48,y2:33,type:"run"},{x1:50,y1:28,x2:50,y2:16,type:"run"}],notes:"CB→MF（ターン）→FW（斜め抜け出し）→シュートの3人連動パターン。"}
+    },
+    {phase:"game",name:"シュートゾーン侵入ゲーム 4v4+GK",duration:10,
+     objective:"練習してきたシュートフォーム・ファーストタッチ・連動パターンをゲームの中で自然に発揮する。",
+     description:"ハーフコートで4v4＋GK。ペナルティエリアの端から端を「シュートゾーン」として設定し、シュートゾーン内からシュートを打って決めたゴールは2点・ゾーン外からは0点。シュートゾーンへの侵入をルールで促すことで「中に入ってシュート」の意識を強制的に作る。GKは3分ローテーション。残り2分は全員得点を競う「1分1本勝負」形式でモチベーションアップ。",
+     organization:"12名（4v4＋GK×2組）・ハーフコート・ゴール1個・ボール4個・コーン4本（シュートゾーンライン）",
+     coachingFocus:"シュートゾーン内でボールを受けた瞬間にゴールを向けているか（前向きの姿勢）",
+     voiceCues:["ゾーンの中！前向いてシュート！","ファーストタッチ！おへそゴールに！"],
+     connectionToNext:null,
+     diagram:{fieldType:"half",teamA:[{x:35,y:28,label:"A3"},{x:55,y:30,label:"A4"},{x:28,y:50,label:"A1"},{x:45,y:52,label:"A2"}],teamB:[{x:48,y:22,label:"B3"},{x:72,y:24,label:"B4"},{x:38,y:45,label:"B1"},{x:55,y:48,label:"B2"}],neutrals:[{x:50,y:10,label:"GK"}],cones:[{x:10,y:38},{x:90,y:38}],zones:[{x:5,y:12,w:90,h:30,label:"シュートゾーン 2点"}],arrows:[{x1:28,y1:50,x2:35,y2:30,type:"run"},{x1:35,y1:26,x2:48,y2:15,type:"run"}],notes:"ペナルティエリア前をシュートゾーンとして設定。コーンのラインより前からのシュートは2点。"}
+    }
+  ]
+};
+
+// ── Drill Card Builder ────────────────────────────────────────────────────────
+const PHASE_LABEL={warmup:'ウォームアップ',technical:'テクニカル',tactical:'グループ戦術',game:'ゲーム'};
+const PHASE_CLS={warmup:'warmup',technical:'technical',tactical:'tactical',game:'game'};
+
+function buildDrillCard(drill, isLast){
+  const p=PHASE_LABEL[drill.phase]||drill.phase;
+  const cls=PHASE_CLS[drill.phase]||'game';
+  const svg=renderDiagramSVG(drill.diagram);
+  const voices=(drill.voiceCues||[]).map(c=>`<div class="app-voice-item">${h(c)}</div>`).join('');
+  const cpHtml=isLast?(SAMPLE.coachingPoints||[]).map(cp=>`<div class="app-cp-item"><div class="app-cp-point">▶ ${h(cp.point)}</div><div class="app-cp-phrase">💬 ${h(cp.examplePhrase)}</div></div>`).join(''):'';
+  return`
+<div class="app-drill-card">
+  <div class="app-drill-hd">
+    <span class="app-phase app-ph-${cls}">${p}</span>
+    <span class="app-drill-nm">${h(drill.name)}</span>
+    <span class="app-drill-tm">⏱ ${drill.duration}分</span>
+  </div>
+  <div class="app-drill-bd">
+    <div class="app-drill-cols">
+      <div>
+        <div class="app-sec"><div class="app-sec-lbl">目的</div><div class="app-sec-val">${h(drill.objective)}</div></div>
+        <div class="app-sec"><div class="app-sec-lbl">やり方</div><div class="app-sec-val">${h(drill.description)}</div></div>
+        <div class="app-sec"><div class="app-sec-lbl">オーガナイズ</div><div class="app-sec-val">${h(drill.organization)}</div></div>
+        <div class="app-focus">👁 ${h(drill.coachingFocus)}</div>
+        ${drill.connectionToNext?`<div class="app-conn">→ ${h(drill.connectionToNext)}</div>`:''}
+      </div>
+      ${svg?`<div class="app-diag"><div class="app-diag-lbl">フィールド図</div>${svg}</div>`:''}
+    </div>
+    ${voices?`<div class="app-voice"><div class="app-voice-ttl">🎙 声かけ例</div>${voices}</div>`:''}
+  </div>
+</div>
+${isLast&&cpHtml?`<div class="app-cp-card"><h3>🎙 コーチングポイント</h3>${cpHtml}</div>`:''}`;
+}
+
+// ── Tab control ───────────────────────────────────────────────────────────────
+function showDrill(i){
+  document.querySelectorAll('.sample-tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  const panel=document.getElementById('drill-panel');
+  if(panel)panel.innerHTML=buildDrillCard(SAMPLE.drills[i], i===SAMPLE.drills.length-1);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.sample-panel').forEach(p=>p.remove());
+  const tabs=document.querySelector('.sample-tabs');
+  if(tabs){
+    const panel=document.createElement('div');
+    panel.id='drill-panel';
+    panel.style.cssText='padding:12px 0';
+    tabs.insertAdjacentElement('afterend',panel);
+  }
+  showDrill(0);
+});
 </script>
 </body>
 </html>
