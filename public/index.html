@@ -159,6 +159,16 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);background:#1a1a6e;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ─── Usage banner ───────────────────────────── */
+.usage-banner{background:#fff;border-bottom:1px solid #e0e6f0;padding:6px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:12px}
+.usage-left{color:#555}
+.usage-bar-wrap{width:80px;height:5px;background:#eee;border-radius:3px;display:inline-block;vertical-align:middle;margin:0 7px}
+.usage-bar{height:5px;border-radius:3px;background:#1a1a6e;transition:width .3s}
+.usage-bar.warn{background:#e63329}
+.usage-pro-btn{background:#1a1a6e;color:#fff;border:none;border-radius:14px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.usage-pro-btn:hover{background:#0d0d4f}
+.usage-banner.hidden{display:none}
+
 /* ─── Suggestion buttons ─────────────────────── */
 .suggestions-row{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 6px 35px}
 .suggestion-btn{background:#f0f4ff;border:1px solid #c5cae9;border-radius:16px;padding:5px 12px;font-size:12px;font-weight:600;color:#1a1a6e;cursor:pointer;transition:all .2s;font-family:inherit}
@@ -244,6 +254,11 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
     <div id="teamBadge" class="team-badge" onclick="showProfile()" title="プロフィールを見る">チーム未設定</div>
   </div>
 </header>
+
+<div class="usage-banner hidden" id="usageBanner">
+  <span class="usage-left" id="usageText">今月の残り回数を確認中...</span>
+  <button class="usage-pro-btn" onclick="showUpgradeModal()">⭐ Pro 500円/月</button>
+</div>
 
 <div class="mobile-tabs">
   <button class="mobile-tab active" id="tab-chat" onclick="switchMobileTab('chat')">💬 コーチ</button>
@@ -370,6 +385,7 @@ const PHASE_LABEL = {
 // ─── Init ───────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   await loadProfile();
+  await loadUsage();
   loadMenuHistory();
   document.getElementById('msgInput').focus();
 });
@@ -405,6 +421,30 @@ function showGreeting(profile) {
 function updateTeamBadge(profile) {
   const badge = document.getElementById('teamBadge');
   badge.textContent = profile?.teamName ? '⚽ ' + profile.teamName : 'チーム未設定';
+}
+
+async function loadUsage() {
+  try {
+    const res  = await fetch('/api/me');
+    const json = await res.json();
+    if (!json.ok) return;
+    updateUsageBanner(json.used, json.limit, json.isPro);
+  } catch {}
+}
+
+function updateUsageBanner(used, limit, isPro) {
+  const banner   = document.getElementById('usageBanner');
+  const textEl   = document.getElementById('usageText');
+  const remaining = Math.max(0, limit - used);
+  const pct = Math.min(100, (used / limit) * 100);
+
+  const barColor = pct >= 80 ? 'warn' : '';
+  textEl.innerHTML = `今月 <span class="usage-bar-wrap"><span class="usage-bar ${barColor}" style="width:${pct}%"></span></span> <strong>${remaining}回</strong>残り${isPro ? '（Pro）' : '（無料）'}`;
+  banner.classList.remove('hidden');
+}
+
+function showUpgradeModal() {
+  showToast('Pro機能は近日公開予定です！まずは無料版をお楽しみください。');
 }
 
 // ─── Chat ───────────────────────────────────────────────────────────────────
@@ -468,7 +508,8 @@ async function doGenerate(params) {
     const json = await res.json();
     if (!json.ok) {
       if (json.limitReached) {
-        addMessage('coach', `🎯 ${json.error}\n\nご利用ありがとうございました！ぜひフィードバックをお聞かせください⚽`);
+        addMessage('coach', `⚠️ ${json.error}\n\n引き続きご利用いただくには「⭐ Pro 500円/月」をご検討ください。`);
+        showUpgradeModal();
         return;
       }
       throw new Error(json.error);
@@ -476,7 +517,10 @@ async function doGenerate(params) {
     lastMenuParams  = params;
     lastMenuSession = json.data.session;
     renderMenuResult(json.data.session);
-    addMessage('coach', `✅ 「${params.theme}」のメニューができました！右のパネルをご確認ください。\n\n調整したい点があれば何でも聞いてください。`);
+    const coachName = currentProfile?.coachName || 'コーチ';
+    const remainMsg = json.remaining !== undefined ? `（今月残り${json.remaining}回）` : '';
+    addMessage('coach', `✅ 「${params.theme}」のメニューができました！右のパネルをご確認ください。${remainMsg}\n\n調整したい点があれば何でも聞いてください。`);
+    if (json.used !== undefined) updateUsageBanner(json.used, json.limit, json.isPro);
     // 生成成功後にプロフィールを手元でも更新
     if (currentProfile) {
       currentProfile.lastTheme = params.theme;
