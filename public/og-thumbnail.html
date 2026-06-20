@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #0d0d3a;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* 背景グラデーション */
+  .bg-grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0d0d3a 0%, #1a1a6e 50%, #0d0d3a 100%);
+  }
+
+  /* 芝目ライン（装飾） */
+  .field-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 80px);
+  }
+
+  /* 右側の大きな丸（ボール風装飾） */
+  .circle-deco {
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #2a2aae, #0a0a30);
+    border: 2px solid rgba(255,255,255,0.06);
+  }
+  .circle-deco2 {
+    position: absolute;
+    right: 60px;
+    bottom: -180px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* メインコンテンツ */
+  .content {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: 60px 80px 60px 80px;
+  }
+
+  .left { }
+
+  .label {
+    display: inline-block;
+    background: #e63329;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 4px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  .product-name {
+    font-size: 92px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+
+  .tagline {
+    font-size: 22px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 36px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    font-size: 13px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+    font-weight: 500;
+  }
+
+  /* 右側: サッカーボールSVG */
+  .right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ball-wrap {
+    width: 220px;
+    height: 220px;
+    position: relative;
+  }
+
+  /* 価格バナー（下部） */
+  .price-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(255,255,255,0.06);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px;
+    z-index: 10;
+  }
+
+  .price-left {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+
+  .price-right {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .price-free {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+  }
+  .price-pro {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .price-sep {
+    font-size: 14px;
+    color: rgba(255,255,255,0.3);
+    margin: 0 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="bg-grad"></div>
+  <div class="field-lines"></div>
+  <div class="circle-deco"></div>
+  <div class="circle-deco2"></div>
+
+  <div class="content">
+    <div class="left">
+      <div class="label">AI サッカー練習メニュー生成</div>
+      <div class="product-name">ペップ君</div>
+      <div class="tagline">条件を入れるだけで<br>プロ品質の練習メニューが完成</div>
+      <div class="tags">
+        <span class="tag">U-8〜社会人対応</span>
+        <span class="tag">フィールド図解付き</span>
+        <span class="tag">PDF出力</span>
+        <span class="tag">無料で始められる</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <!-- サッカーボール SVG -->
+      <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="110" cy="110" r="100" fill="#1e1e7a" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+        <!-- ボールの模様 (五角形パターン) -->
+        <!-- 中央の五角形 -->
+        <polygon points="110,55 135,73 126,103 94,103 85,73" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <!-- 上 -->
+        <polygon points="110,20 142,43 135,73 110,55 85,73 78,43" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <!-- 右上 -->
+        <polygon points="165,55 190,82 175,110 148,108 135,73 160,60" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <!-- 左上 -->
+        <polygon points="55,55 85,73 72,108 45,110 30,82 60,60" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <!-- 右下 -->
+        <polygon points="175,110 190,138 165,165 135,155 126,127 148,108" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+        <!-- 左下 -->
+        <polygon points="45,110 72,108 94,127 85,155 55,165 30,138" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+        <!-- 下 -->
+        <polygon points="110,165 126,127 155,145 165,175 110,198 55,175 65,145 94,127" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <!-- 外円 -->
+        <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <!-- 光沢 -->
+        <ellipse cx="85" cy="75" rx="22" ry="14" fill="rgba(255,255,255,0.12)" transform="rotate(-30 85 75)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="price-bar">
+    <div class="price-left">pepkun-production.up.railway.app</div>
+    <div class="price-right">
+      <span class="price-free">無料プランあり</span>
+      <span class="price-sep">/</span>
+      <span class="price-pro">Pro 月500円</span>
+    </div>
+  </div>
+</body>
+</html>
