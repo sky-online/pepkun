@@ -405,6 +405,46 @@ if (window.visualViewport) {
   });
 }
 
+// ─── チャット履歴 localStorage ────────────────────────────────────────────────
+const CHAT_KEY = 'pepkun_chat_v1';
+
+function saveMsgToStorage(role, content) {
+  try {
+    const msgs = JSON.parse(localStorage.getItem(CHAT_KEY) || '[]');
+    msgs.push({ role, content });
+    if (msgs.length > 40) msgs.splice(0, msgs.length - 40);
+    localStorage.setItem(CHAT_KEY, JSON.stringify(msgs));
+  } catch {}
+}
+
+function clearChatStorage() {
+  try { localStorage.removeItem(CHAT_KEY); } catch {}
+}
+
+function restoreChatFromStorage() {
+  try {
+    const msgs = JSON.parse(localStorage.getItem(CHAT_KEY) || '[]');
+    if (!msgs.length) return false;
+    msgs.forEach(m => addMessage(m.role, m.content, null, false));
+    return true;
+  } catch { return false; }
+}
+
+async function loadLastSession() {
+  try {
+    const res = await fetch('/api/sessions');
+    const json = await res.json();
+    if (!json.ok || !json.sessions.length) return;
+    const res2 = await fetch('/api/sessions/' + json.sessions[0].id);
+    const data = await res2.json();
+    if (data.ok && data.data?.session) {
+      lastMenuSession = data.data.session;
+      lastMenuParams  = data.data.params;
+      renderMenuResult(data.data.session);
+    }
+  } catch {}
+}
+
 async function loadProfile() {
   try {
     const res = await fetch('/api/profile');
@@ -412,9 +452,12 @@ async function loadProfile() {
     currentProfile = json.profile;
     updateTeamBadge(currentProfile);
     if (!currentProfile || !currentProfile.setupDone) {
+      clearChatStorage();
       showOnboarding();
     } else {
-      showGreeting(currentProfile);
+      const restored = restoreChatFromStorage();
+      if (!restored) showGreeting(currentProfile);
+      loadLastSession();
     }
   } catch {
     showGreeting(null);
@@ -559,6 +602,7 @@ async function doGenerate(params) {
 async function resetConversation() {
   if (!confirm('新しいセッションを始めますか？（チーム情報は引き継がれます）')) return;
   try { await fetch('/api/coach/history', { method: 'DELETE' }); } catch {}
+  clearChatStorage();
   document.getElementById('messages').innerHTML = '';
   showGreeting(currentProfile);
   document.getElementById('msgInput').focus();
@@ -629,7 +673,7 @@ function coachInitial() {
   return (currentProfile?.coachName || 'P').slice(0, 1);
 }
 
-function addMessage(role, content, suggestions) {
+function addMessage(role, content, suggestions, save = true) {
   const container = document.getElementById('messages');
   // Remove any existing suggestion rows when user sends a new message
   if (role === 'user') {
@@ -655,6 +699,7 @@ function addMessage(role, content, suggestions) {
     container.appendChild(sr);
   }
   container.scrollTop = container.scrollHeight;
+  if (save) saveMsgToStorage(role, content);
 }
 
 let typingRow = null;
