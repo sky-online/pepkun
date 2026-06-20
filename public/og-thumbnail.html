@@ -4,224 +4,148 @@
 <meta charset="UTF-8">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     width: 1200px;
     height: 630px;
     overflow: hidden;
-    background: #0d0d3a;
+    background: #faf9f6;
     font-family: 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
   }
 
-  /* 背景グラデーション */
-  .bg-grad {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #0d0d3a 0%, #1a1a6e 50%, #0d0d3a 100%);
-  }
-
-  /* 芝目ライン（装飾） */
-  .field-lines {
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    background-image:
-      repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 80px);
-  }
-
-  /* 右側の大きな丸（ボール風装飾） */
-  .circle-deco {
-    position: absolute;
-    right: -120px;
-    top: -120px;
-    width: 520px;
-    height: 520px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 40%, #2a2aae, #0a0a30);
-    border: 2px solid rgba(255,255,255,0.06);
-  }
-  .circle-deco2 {
-    position: absolute;
-    right: 60px;
-    bottom: -180px;
-    width: 360px;
-    height: 360px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-
-  /* メインコンテンツ */
-  .content {
-    position: relative;
-    z-index: 10;
+  .wrap {
+    width: 1200px;
+    height: 630px;
     display: grid;
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 1fr 480px;
     align-items: center;
-    gap: 0;
-    width: 100%;
-    padding: 60px 80px 60px 80px;
+    padding: 64px 72px 64px 80px;
+    gap: 40px;
+    position: relative;
   }
 
-  .left { }
+  /* 左: テキスト */
+  .left {}
 
   .label {
-    display: inline-block;
-    background: #e63329;
-    color: #fff;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.12em;
-    padding: 4px 14px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    letter-spacing: 0.18em;
+    color: #4a7c59;
+    margin-bottom: 24px;
   }
 
-  .product-name {
-    font-size: 92px;
+  .headline {
+    font-size: 68px;
     font-weight: 900;
-    color: #fff;
-    line-height: 1;
+    color: #111;
+    line-height: 1.08;
     letter-spacing: -0.02em;
-    margin-bottom: 18px;
+    margin-bottom: 28px;
   }
 
-  .tagline {
-    font-size: 22px;
-    color: rgba(255,255,255,0.75);
-    font-weight: 400;
-    line-height: 1.5;
+  .sub {
+    font-size: 17px;
+    color: #555;
+    line-height: 1.7;
     margin-bottom: 36px;
+    max-width: 400px;
   }
 
-  .tags {
+  /* ロゴ/ブランド */
+  .brand {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: -0.01em;
+  }
+  .brand-price {
+    font-size: 14px;
+    color: #888;
+    border-left: 1px solid #ddd;
+    padding-left: 12px;
+    margin-left: 4px;
   }
 
-  .tag {
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.8);
-    font-size: 13px;
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.15);
-    font-weight: 500;
-  }
-
-  /* 右側: サッカーボールSVG */
+  /* 右: フィールドSVG */
   .right {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .ball-wrap {
-    width: 220px;
-    height: 220px;
-    position: relative;
-  }
-
-  /* 価格バナー（下部） */
-  .price-bar {
+  /* 下部の細い線 */
+  .bottom-bar {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 64px;
-    background: rgba(255,255,255,0.06);
-    border-top: 1px solid rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 80px;
-    z-index: 10;
-  }
-
-  .price-left {
-    font-size: 14px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 500;
-  }
-
-  .price-right {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .price-free {
-    font-size: 14px;
-    color: rgba(255,255,255,0.6);
-  }
-  .price-pro {
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
-  }
-  .price-sep {
-    font-size: 14px;
-    color: rgba(255,255,255,0.3);
-    margin: 0 8px;
+    height: 4px;
+    background: #4a7c59;
   }
 </style>
 </head>
 <body>
-  <div class="bg-grad"></div>
-  <div class="field-lines"></div>
-  <div class="circle-deco"></div>
-  <div class="circle-deco2"></div>
-
-  <div class="content">
-    <div class="left">
-      <div class="label">AI サッカー練習メニュー生成</div>
-      <div class="product-name">ペップ君</div>
-      <div class="tagline">条件を入れるだけで<br>プロ品質の練習メニューが完成</div>
-      <div class="tags">
-        <span class="tag">U-8〜社会人対応</span>
-        <span class="tag">フィールド図解付き</span>
-        <span class="tag">PDF出力</span>
-        <span class="tag">無料で始められる</span>
-      </div>
-    </div>
-
-    <div class="right">
-      <!-- サッカーボール SVG -->
-      <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="110" cy="110" r="100" fill="#1e1e7a" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-        <!-- ボールの模様 (五角形パターン) -->
-        <!-- 中央の五角形 -->
-        <polygon points="110,55 135,73 126,103 94,103 85,73" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <!-- 上 -->
-        <polygon points="110,20 142,43 135,73 110,55 85,73 78,43" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <!-- 右上 -->
-        <polygon points="165,55 190,82 175,110 148,108 135,73 160,60" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <!-- 左上 -->
-        <polygon points="55,55 85,73 72,108 45,110 30,82 60,60" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <!-- 右下 -->
-        <polygon points="175,110 190,138 165,165 135,155 126,127 148,108" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-        <!-- 左下 -->
-        <polygon points="45,110 72,108 94,127 85,155 55,165 30,138" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-        <!-- 下 -->
-        <polygon points="110,165 126,127 155,145 165,175 110,198 55,175 65,145 94,127" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <!-- 外円 -->
-        <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <!-- 光沢 -->
-        <ellipse cx="85" cy="75" rx="22" ry="14" fill="rgba(255,255,255,0.12)" transform="rotate(-30 85 75)"/>
-      </svg>
+<div class="wrap">
+  <div class="left">
+    <div class="label">AI SOCCER TRAINING</div>
+    <div class="headline">チームのことを<br>話すだけ。<br>練習メニューが<br>完成する。</div>
+    <div class="sub">今日のテーマを伝えるだけで、ウォームアップからゲームまで5つのドリルが揃う。すべてのコーチに、名将の知恵を。</div>
+    <div class="brand">
+      <div class="brand-name">ペップ君</div>
+      <div class="brand-price">無料で始められる / Pro 月500円</div>
     </div>
   </div>
 
-  <div class="price-bar">
-    <div class="price-left">pepkun-production.up.railway.app</div>
-    <div class="price-right">
-      <span class="price-free">無料プランあり</span>
-      <span class="price-sep">/</span>
-      <span class="price-pro">Pro 月500円</span>
-    </div>
+  <div class="right">
+    <!-- LP と同じフィールドSVG -->
+    <svg width="440" height="310" viewBox="0 0 440 310" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- フィールド背景 -->
+      <rect x="8" y="8" width="424" height="294" rx="6" fill="#f5f0e8" stroke="#b8c9b0" stroke-width="2"/>
+      <!-- センターライン -->
+      <line x1="220" y1="8" x2="220" y2="302" stroke="#b8c9b0" stroke-width="1.5"/>
+      <!-- センターサークル -->
+      <circle cx="220" cy="155" r="42" fill="none" stroke="#b8c9b0" stroke-width="1.5"/>
+      <circle cx="220" cy="155" r="3" fill="#b8c9b0"/>
+      <!-- 左ペナルティエリア -->
+      <rect x="8" y="97" width="68" height="116" fill="none" stroke="#b8c9b0" stroke-width="1.5"/>
+      <!-- 左ゴールエリア -->
+      <rect x="8" y="123" width="30" height="64" fill="none" stroke="#b8c9b0" stroke-width="1.5"/>
+      <!-- 右ペナルティエリア -->
+      <rect x="364" y="97" width="68" height="116" fill="none" stroke="#b8c9b0" stroke-width="1.5"/>
+      <!-- 右ゴールエリア -->
+      <rect x="402" y="123" width="30" height="64" fill="none" stroke="#b8c9b0" stroke-width="1.5"/>
+
+      <!-- チームA (ダーク・攻撃側) -->
+      <circle cx="160" cy="200" r="10" fill="#3d6b4f"/>
+      <circle cx="200" cy="155" r="10" fill="#3d6b4f"/>
+      <circle cx="170" cy="120" r="10" fill="#3d6b4f"/>
+      <circle cx="240" cy="175" r="10" fill="#3d6b4f"/>
+
+      <!-- チームB (ピンク・守備側) -->
+      <circle cx="310" cy="145" r="10" fill="#c07070" opacity="0.85"/>
+      <circle cx="340" cy="185" r="10" fill="#c07070" opacity="0.85"/>
+      <circle cx="290" cy="185" r="10" fill="#c07070" opacity="0.85"/>
+
+      <!-- パスライン（破線） -->
+      <line x1="160" y1="200" x2="200" y2="155" stroke="#3d6b4f" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+      <line x1="200" y1="155" x2="310" y2="145" stroke="#3d6b4f" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+
+      <!-- ランライン（実線・矢印） -->
+      <line x1="240" y1="175" x2="345" y2="140" stroke="#c07070" stroke-width="2.5" opacity="0.8"/>
+      <polygon points="345,140 333,136 337,148" fill="#c07070" opacity="0.8"/>
+
+      <!-- フォーカスゾーン -->
+      <circle cx="200" cy="155" r="28" fill="none" stroke="#3d6b4f" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+    </svg>
   </div>
+
+  <div class="bottom-bar"></div>
+</div>
 </body>
 </html>
