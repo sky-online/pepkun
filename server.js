@@ -4,8 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const { generateSession } = require('./src/ai/generate');
-const { chatMessage, clearConversation } = require('./src/ai/chat');
-const { sectionChat, getDoc, clearHistory } = require('./src/ai/section-chat');
+const { coachChat, getProfile, saveProfile, resetHistory } = require('./src/ai/coach');
 const { readUsage } = require('./src/ai/usage-logger');
 
 function getLocalIP() {
@@ -22,17 +21,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── 招待コード認証 ─────────────────────────────────────────────────
+// ── 招待コード認証 ──────────────────────────────────────────────────────────
 const RAW_CODES = process.env.INVITE_CODES || '';
 const INVITE_CODES = new Set(
   RAW_CODES.split(',').map(s => s.trim()).filter(Boolean)
 );
 
-// コードが未設定（開発中）なら認証スキップ
 const AUTH_ENABLED = INVITE_CODES.size > 0;
 const GENERATE_LIMIT = parseInt(process.env.GENERATE_LIMIT || '5', 10);
 
-// 招待コードごとの生成回数管理
 const USAGE_COUNT_FILE = path.join(__dirname, 'data', 'invite-counts.json');
 
 function loadCounts() {
@@ -51,25 +48,26 @@ function getInviteCode(req) {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
+// 開発モード（AUTH無効）の場合は'dev'をデフォルトコードとして使用
+function effectiveCode(req) {
+  return AUTH_ENABLED ? getInviteCode(req) : 'dev';
+}
+
 function requireInvite(req, res, next) {
   if (!AUTH_ENABLED) return next();
-  // /admin と /invite は認証不要
   if (req.path.startsWith('/admin') || req.path.startsWith('/invite')) return next();
-  // Cookieに有効コードがあればOK
   const cookie = req.headers.cookie || '';
   const match = cookie.match(/invite=([^;]+)/);
   const code = match ? decodeURIComponent(match[1]) : null;
   if (code && INVITE_CODES.has(code)) return next();
-  // APIリクエストは401
   if (req.path.startsWith('/api/')) return res.status(401).json({ ok: false, error: '招待コードが必要です' });
-  // HTMLは招待ページにリダイレクト
   res.redirect('/invite.html');
 }
 
 app.use(requireInvite);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 招待コード認証エンドポイント
+// 招待コード認証
 app.post('/invite/auth', (req, res) => {
   const { code } = req.body;
   if (!AUTH_ENABLED || INVITE_CODES.has(code)) {
@@ -82,61 +80,15 @@ app.post('/invite/auth', (req, res) => {
 const SESSIONS_DIR = path.join(__dirname, 'data', 'sessions');
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR, { recursive: true });
 
-// ── セクション対話 ────────────────────────────────────────────────
-// POST /api/section/:type/chat   type = concept | status | plan
-app.post('/api/section/:type/chat', async (req, res) => {
-  const { type } = req.params;
-  const { message } = req.body;
-
-  if (!['concept', 'status', 'plan'].includes(type)) {
-    return res.status(400).json({ ok: false, error: 'Invalid section type' });
-  }
-  if (!message) {
-    return res.status(400).json({ ok: false, error: 'message は必須です' });
-  }
-
-  try {
-    const result = await sectionChat(type, message);
-    res.json({ ok: true, ...result });
-  } catch (err) {
-    console.error(`[section/${type} error]`, err);
-    res.status(500).json({ ok: false, error: err.message });
-  }
-});
-
-// GET /api/section/:type/doc   現在のドキュメントを返す
-app.get('/api/section/:type/doc', (req, res) => {
-  const { type } = req.params;
-  if (!['concept', 'status', 'plan'].includes(type)) {
-    return res.status(400).json({ ok: false, error: 'Invalid section type' });
-  }
-  const doc = getDoc(type);
-  res.json({ ok: true, doc });
-});
-
-// DELETE /api/section/:type/history   会話履歴をリセット
-app.delete('/api/section/:type/history', (req, res) => {
-  const { type } = req.params;
-  if (['concept', 'status', 'plan'].includes(type)) {
-    clearHistory(type);
-  }
-  res.json({ ok: true });
-});
-
-// ── 練習メニュー対話 ──────────────────────────────────────────────
+// ── コーチチャット ──────────────────────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   try {
-    const { conversationId, message } = req.body;
-    if (!conversationId || !message) {
-      return res.status(400).json({ ok: false, error: 'conversationId と message は必須です' });
-    }
-    // チームコンテキストをリアルタイムで渡す
-    const teamContext = {
-      concept: getDoc('concept'),
-      status:  getDoc('status'),
-      plan:    getDoc('plan'),
-    };
-    const result = await chatMessage(conversationId, message, teamContext);
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ ok: false, error: 'message は必須です' });
+    const code = effectiveCode(req);
+    if (!code) return res.status(401).json({ ok: false, error: '招待コードが必要です' });
+
+    const result = await coachChat(code, message);
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[chat error]', err);
@@ -144,12 +96,27 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ── メニュー生成 ──────────────────────────────────────────────────
+// ── プロフィール取得 ────────────────────────────────────────────────────────
+app.get('/api/profile', (req, res) => {
+  const code = effectiveCode(req);
+  const profile = code ? getProfile(code) : null;
+  res.json({ ok: true, profile });
+});
+
+// ── 会話履歴リセット ────────────────────────────────────────────────────────
+app.delete('/api/coach/history', (req, res) => {
+  const code = effectiveCode(req);
+  if (code) resetHistory(code);
+  res.json({ ok: true });
+});
+
+// ── メニュー生成 ────────────────────────────────────────────────────────────
 app.post('/api/generate', async (req, res) => {
   try {
+    const code = effectiveCode(req);
+
     // 生成回数チェック
-    if (AUTH_ENABLED) {
-      const code = getInviteCode(req);
+    if (AUTH_ENABLED && code) {
       const counts = loadCounts();
       const used = counts[code] || 0;
       if (used >= GENERATE_LIMIT) {
@@ -160,6 +127,7 @@ app.post('/api/generate', async (req, res) => {
         });
       }
     }
+
     const params = {
       teamName: req.body.teamName || '未設定',
       ageGroup:  req.body.ageGroup  || 'U-12',
@@ -171,26 +139,40 @@ app.post('/api/generate', async (req, res) => {
       notes:     req.body.notes    || '',
     };
 
-    // チームコンテキストを注入（concept / status / plan 全て活用）
-    const context = {
-      concept: getDoc('concept'),
-      status:  getDoc('status'),
-      plan:    getDoc('plan'),
-    };
+    // プロフィールからコンテキストを注入
+    const profile = code ? getProfile(code) : null;
+    const context = profile ? {
+      concept: {
+        playingStyle: profile.concept || null,
+        keywords: Array.isArray(profile.keywords) ? profile.keywords : null,
+        values: Array.isArray(profile.values) ? profile.values : null,
+      },
+      status: {
+        strengths: profile.strengths || null,
+        weaknesses: profile.weaknesses || null,
+        currentFocus: profile.currentFocus || null,
+      },
+    } : {};
 
     console.log('[generate]', params);
     const result = await generateSession(params, context);
 
-    // 生成成功後にカウントアップ
-    if (AUTH_ENABLED) {
-      const code = getInviteCode(req);
+    // 生成成功後にカウントアップ＆プロフィール更新
+    if (AUTH_ENABLED && code) {
       const counts = loadCounts();
       counts[code] = (counts[code] || 0) + 1;
       saveCounts(counts);
     }
-
-    if (req.body.conversationId) {
-      clearConversation(req.body.conversationId);
+    if (code) {
+      saveProfile(code, {
+        teamName: profile?.teamName || params.teamName,
+        ageGroup: profile?.ageGroup || params.ageGroup,
+        players: profile?.players || params.players,
+        level: profile?.level || params.level,
+        lastTheme: params.theme,
+        lastSession: new Date().toISOString().split('T')[0],
+        sessionCount: (profile?.sessionCount || 0) + 1,
+      });
     }
 
     res.json({ ok: true, data: result });
@@ -200,7 +182,7 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
-// ── セッション保存 ────────────────────────────────────────────────
+// ── セッション保存 ──────────────────────────────────────────────────────────
 app.post('/api/sessions', (req, res) => {
   try {
     const { params, session } = req.body;
@@ -217,7 +199,7 @@ app.post('/api/sessions', (req, res) => {
   }
 });
 
-// ── セッション一覧 ────────────────────────────────────────────────
+// ── セッション一覧 ──────────────────────────────────────────────────────────
 app.get('/api/sessions', (req, res) => {
   try {
     const files = fs.readdirSync(SESSIONS_DIR)
@@ -245,7 +227,7 @@ app.get('/api/sessions', (req, res) => {
   }
 });
 
-// ── セッション詳細 ────────────────────────────────────────────────
+// ── セッション詳細 ──────────────────────────────────────────────────────────
 app.get('/api/sessions/:id', (req, res) => {
   try {
     const fp = path.join(SESSIONS_DIR, req.params.id);
@@ -257,7 +239,7 @@ app.get('/api/sessions/:id', (req, res) => {
   }
 });
 
-// ── Admin 管理画面 ─────────────────────────────────────────────────
+// ── Admin 管理画面 ──────────────────────────────────────────────────────────
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'pepkun-admin';
 
 app.get('/admin', (req, res) => {
@@ -279,7 +261,6 @@ button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 
     cost: a.cost + l.cost_usd, calls: a.calls + 1,
   }), { input:0, output:0, cache_read:0, cache_write:0, cost:0, calls:0 });
 
-  // タイプ別集計
   const byType = {};
   logs.forEach(l => {
     if (!byType[l.type]) byType[l.type] = { calls:0, cost:0 };
@@ -287,10 +268,7 @@ button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 
     byType[l.type].cost += l.cost_usd;
   });
 
-  // 直近20件
   const recent = [...logs].reverse().slice(0, 20);
-
-  // 招待コード別生成回数
   const counts = loadCounts();
   const codeRows = AUTH_ENABLED
     ? [...INVITE_CODES].map(c =>

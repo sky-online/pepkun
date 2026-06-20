@@ -12,39 +12,29 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .app-header{background:#1a1a6e;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:20}
 .logo{font-size:18px;font-weight:900;letter-spacing:1px}.logo span{color:#e63329}
 .logo-sub{font-size:10px;opacity:.65;margin-top:1px}
-.team-badge{font-size:12px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;cursor:pointer;border:1px solid rgba(255,255,255,.25)}
+.team-badge{font-size:12px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;border:1px solid rgba(255,255,255,.25)}
+.header-right{display:flex;align-items:center;gap:10px}
+.btn-reset{font-size:11px;background:none;border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:3px 10px;cursor:pointer;color:rgba(255,255,255,.75);font-family:inherit;transition:all .2s}
+.btn-reset:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* ─── Mobile tabs ────────────────────────────── */
+.mobile-tabs{display:none;background:#fff;border-bottom:2px solid #e0e6f0;flex-shrink:0}
+.mobile-tab{flex:1;padding:10px 4px;border:none;background:none;font-size:13px;font-weight:600;color:#999;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;transition:color .15s,border-color .15s}
+.mobile-tab.active{color:#1a1a6e;border-bottom-color:#1a1a6e;background:#f5f7ff}
 
 /* ─── Layout ─────────────────────────────────── */
 .app-body{display:flex;flex:1;overflow:hidden}
 
-/* ─── Section Nav ────────────────────────────── */
-.section-nav{width:160px;background:#fff;border-right:1px solid #e0e6f0;display:flex;flex-direction:column;padding:12px 8px;gap:4px;flex-shrink:0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:background .15s,color .15s;color:#555}
-.nav-item:hover{background:#f0f4f8}
-.nav-item.active{background:#eef0fb;color:#1a1a6e;font-weight:700}
-.nav-icon{font-size:18px;flex-shrink:0}
-.nav-label{font-size:12px;font-weight:600;line-height:1.3}
-.nav-sub{font-size:10px;opacity:.6;line-height:1.2;margin-top:1px}
-
-/* ─── Workspace ──────────────────────────────── */
-.workspace{flex:1;overflow:hidden;display:flex}
-.section-pane{display:none;flex:1;overflow:hidden}
-.section-pane.active{display:flex}
-
-/* ─── Split pane ─────────────────────────────── */
-.chat-col{width:380px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #e0e6f0;background:#fff}
-.doc-col{flex:1;overflow-y:auto;background:#f8fafc;padding:20px}
-
-/* ─── Chat area ──────────────────────────────── */
-.col-header{padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;font-weight:700;color:#1a1a6e;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+/* ─── Chat panel ──────────────────────────────── */
+.chat-panel{width:380px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #e0e6f0;background:#fff}
 .messages{flex:1;overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
 .bubble-row{display:flex;align-items:flex-end;gap:7px}
 .bubble-row.user{flex-direction:row-reverse}
 .avatar{width:28px;height:28px;border-radius:50%;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.avatar.pep{background:#1a1a6e;color:#fff}
+.avatar.coach{background:#1a1a6e;color:#fff}
 .avatar.user{background:#e63329;color:#fff}
 .bubble{max-width:78%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.65;word-break:break-word}
-.bubble.pep{background:#f5f7ff;color:#333;border-bottom-left-radius:3px;border:1px solid #e8ecf8}
+.bubble.coach{background:#f5f7ff;color:#333;border-bottom-left-radius:3px;border:1px solid #e8ecf8}
 .bubble.user{background:#1a1a6e;color:#fff;border-bottom-right-radius:3px}
 .typing-indicator{display:flex;gap:4px;padding:9px 12px;background:#f5f7ff;border-radius:14px;border-bottom-left-radius:3px;border:1px solid #e8ecf8}
 .dot{width:6px;height:6px;background:#aaa;border-radius:50%;animation:bounce .9s infinite}
@@ -58,85 +48,37 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .send-btn{width:34px;height:34px;background:#e63329;border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
 .send-btn:hover{background:#c0271f}
 .send-btn:disabled{background:#ccc;cursor:not-allowed}
-.btn-reset-chat{font-size:11px;background:none;border:1px solid #ddd;border-radius:4px;padding:3px 7px;cursor:pointer;color:#888;font-family:inherit}
-.btn-reset-chat:hover{background:#f5f5f5}
-
-/* ─── Confirm card ────────────────────────────── */
-.confirm-card{background:#fffbf0;border:1.5px solid #f5a623;border-radius:12px;padding:14px 16px;margin:2px 0;max-width:82%}
-.confirm-card-title{font-size:12px;font-weight:700;color:#b36200;margin-bottom:8px}
-.confirm-params{font-size:12px;color:#444;line-height:1.9}
-.confirm-params dt{font-weight:700;display:inline}
-.confirm-params dd{display:inline;margin:0}
-.btn-do-generate{width:100%;background:#e63329;color:#fff;border:none;border-radius:7px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;transition:background .2s}
-.btn-do-generate:hover{background:#c0271f}
-.btn-cancel-generate{width:100%;background:none;border:1px solid #ccc;color:#666;border-radius:7px;padding:7px;font-size:12px;cursor:pointer;margin-top:5px;font-family:inherit}
-.btn-cancel-generate:hover{background:#f5f5f5}
+.mic-btn{width:34px;height:34px;background:none;border:1.5px solid #ddd;border-radius:50%;color:#aaa;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;line-height:1}
+.mic-btn:hover{border-color:#1a1a6e;color:#1a1a6e;background:#f0f4ff}
+.mic-btn.active{background:#e63329;border-color:#e63329;color:#fff;animation:micpulse 1s ease-in-out infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(230,51,41,.4)}50%{box-shadow:0 0 0 7px rgba(230,51,41,0)}}
 
 /* ─── Generating bar ─────────────────────────── */
-.generating-bar{display:none;background:#e8f4fd;border:1px solid #90caf9;border-radius:9px;padding:12px 16px;text-align:center;font-size:12px;color:#1565c0;margin:6px 12px}
+.generating-bar{display:none;background:#e8f4fd;border:1px solid #90caf9;border-radius:9px;padding:10px 14px;text-align:center;font-size:12px;color:#1565c0;margin:6px 12px;flex-shrink:0}
 .generating-bar.show{display:block}
 .spinner-sm{display:inline-block;width:12px;height:12px;border:2px solid #90caf9;border-top-color:#1565c0;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ─── Doc views ──────────────────────────────── */
-.doc-empty{text-align:center;padding:60px 20px;color:#bbb}
-.doc-empty-icon{font-size:48px;margin-bottom:12px}
-.doc-empty-title{font-size:14px;font-weight:700;margin-bottom:6px;color:#aaa}
-.doc-empty-sub{font-size:12px;line-height:1.7}
+/* ─── Menu panel ─────────────────────────────── */
+.menu-panel{flex:1;display:flex;flex-direction:column;background:#f8fafc;overflow:hidden}
+.menu-panel-tabs{display:flex;background:#fff;border-bottom:2px solid #e0e6f0;padding:0 16px;flex-shrink:0}
+.menu-tab{padding:10px 16px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.menu-tab:hover{color:#555}
+.menu-tab.active{color:#1a1a6e;border-bottom-color:#1a1a6e}
+.tab-cnt{display:inline-flex;align-items:center;justify-content:center;background:#e63329;color:#fff;border-radius:9px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;margin-left:4px}
+.menu-content{flex:1;overflow-y:auto;padding:18px}
+.menu-content.hidden{display:none}
 
-/* concept doc */
-.concept-hero{background:linear-gradient(135deg,#1a1a6e,#2a2aae);color:#fff;border-radius:14px;padding:20px 22px;margin-bottom:14px}
-.concept-hero-label{font-size:10px;opacity:.65;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
-.concept-hero-text{font-size:15px;font-weight:700;line-height:1.65}
-.concept-section{background:#fff;border-radius:12px;padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.concept-section-title{font-size:11px;font-weight:700;color:#1a1a6e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;border-left:3px solid #e63329;padding-left:8px}
-.chip-list{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:#eef0fb;color:#1a1a6e;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px}
-.value-list{list-style:none;display:flex;flex-direction:column;gap:5px}
-.value-list li{font-size:13px;color:#444;padding:4px 0;border-bottom:1px solid #f5f5f5}
-.value-list li:last-child{border-bottom:none}
-.value-list li::before{content:'✦ ';color:#e63329;font-size:10px}
-.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.goal-card{border-radius:8px;padding:10px 12px}
-.goal-card.short{background:#fff3e0;border:1px solid #ffe0b2}
-.goal-card.long{background:#e8f5e9;border:1px solid #c8e6c9}
-.goal-card-label{font-size:10px;font-weight:700;color:#888;margin-bottom:4px}
-.goal-card-text{font-size:12px;color:#333;line-height:1.5}
+/* ─── Empty state ────────────────────────────── */
+.empty-state{text-align:center;padding:60px 20px;color:#bbb}
+.empty-icon{font-size:52px;margin-bottom:14px}
+.empty-title{font-size:14px;font-weight:700;margin-bottom:6px;color:#aaa}
+.empty-sub{font-size:12px;line-height:1.8}
+.quick-themes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.quick-theme{background:#eef0fb;color:#1a1a6e;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid #c5cae9;transition:all .2s}
+.quick-theme:hover{background:#1a1a6e;color:#fff}
 
-/* status doc */
-.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.stat-card{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.06)}
-.stat-value{font-size:18px;font-weight:900;color:#1a1a6e}
-.stat-label{font-size:10px;color:#888;margin-top:2px}
-.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.strength-card{background:#e8f5e9;border-radius:12px;padding:14px 16px}
-.weakness-card{background:#fff8e1;border-radius:12px;padding:14px 16px}
-.sw-title{font-size:11px;font-weight:700;margin-bottom:8px}
-.strength-card .sw-title{color:#2e7d32}
-.weakness-card .sw-title{color:#e65100}
-.sw-list{list-style:none;display:flex;flex-direction:column;gap:5px}
-.sw-list li{font-size:12px;color:#444;padding-left:14px;position:relative}
-.strength-card .sw-list li::before{content:'✓';position:absolute;left:0;color:#4caf50;font-weight:700}
-.weakness-card .sw-list li::before{content:'!';position:absolute;left:2px;color:#ff9800;font-weight:700}
-
-/* plan doc */
-.plan-goal{background:linear-gradient(135deg,#1a1a6e,#2a2aae);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:12px}
-.plan-goal-label{font-size:10px;opacity:.7;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
-.plan-goal-text{font-size:14px;font-weight:700;line-height:1.5}
-.phase-timeline{display:flex;flex-direction:column;gap:8px}
-.phase-card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 5px rgba(0,0,0,.06);position:relative;padding-left:20px}
-.phase-card::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:3px;border-radius:3px}
-.phase-card:nth-child(1)::before{background:#e63329}
-.phase-card:nth-child(2)::before{background:#f5a623}
-.phase-card:nth-child(3)::before{background:#4caf50}
-.phase-card:nth-child(4)::before{background:#1565c0}
-.phase-name{font-size:12px;font-weight:700;color:#1a1a6e;margin-bottom:2px}
-.phase-weeks{font-size:11px;color:#888;margin-bottom:6px}
-.phase-theme{font-size:13px;color:#333;font-weight:600;margin-bottom:6px}
-.phase-focus-list{display:flex;flex-wrap:wrap;gap:4px}
-.phase-focus-chip{background:#eef0fb;color:#1a1a6e;font-size:11px;padding:2px 8px;border-radius:10px}
-
-/* menu / drills */
+/* ─── Session / Drill styles ─────────────────── */
 .session-header{background:linear-gradient(135deg,#1a1a6e,#2a2aae);color:#fff;border-radius:12px;padding:16px 20px;margin-bottom:12px}
 .session-title{font-size:16px;font-weight:900;margin-bottom:7px}
 .session-meta{display:flex;flex-wrap:wrap;gap:7px;font-size:11px;opacity:.85}
@@ -153,7 +95,6 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .drill-time{font-size:11px;color:#888;white-space:nowrap}
 .drill-body{padding:11px 13px}
 .drill-cols{display:flex;flex-direction:column;gap:10px}
-.drill-info{}
 .drill-section{margin-bottom:7px}
 .section-label{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;margin-bottom:2px}
 .section-content{font-size:12px;color:#333;line-height:1.6}
@@ -192,14 +133,12 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .btn-save{flex:1;background:#4caf50;color:#fff;border:none;border-radius:7px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-save:hover{background:#388e3c}
 .btn-save:disabled{background:#aaa;cursor:not-allowed}
-.btn-new{flex:1;background:#1a1a6e;color:#fff;border:none;border-radius:7px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-new:hover{background:#0d0d4f}
 .btn-pdf{flex:1;background:#455a64;color:#fff;border:none;border-radius:7px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-pdf:hover{background:#263238}
-.btn-modal-pdf{background:#455a64;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-modal-pdf:hover{background:#263238}
+.btn-new{flex:1;background:#1a1a6e;color:#fff;border:none;border-radius:7px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-new:hover{background:#0d0d4f}
 
-/* history list */
+/* ─── History ────────────────────────────────── */
 .history-list{display:flex;flex-direction:column;gap:7px}
 .history-item{background:#fff;border-radius:10px;padding:12px 14px;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.06);transition:box-shadow .15s}
 .history-item:hover{box-shadow:0 2px 10px rgba(0,0,0,.1)}
@@ -207,110 +146,33 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .history-meta{font-size:11px;color:#888}
 .doc-section-title{font-size:12px;font-weight:700;color:#1a1a6e;border-left:3px solid #e63329;padding-left:8px;margin-bottom:12px}
 
-/* modal */
+/* ─── Modal ──────────────────────────────────── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
 .modal{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:88vh;overflow-y:auto;padding:22px}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .modal-title{font-weight:900;font-size:14px;color:#1a1a6e}
 .btn-modal-close{background:none;border:1px solid #ddd;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit}
-
-/* ─── Menu tabs ──────────────────────────────── */
-.doc-col-menu{padding:0;display:flex;flex-direction:column}
-.doc-tabs{display:flex;background:#fff;border-bottom:2px solid #e0e6f0;padding:0 16px;flex-shrink:0}
-.doc-tab{padding:10px 16px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
-.doc-tab:hover{color:#555}
-.doc-tab.active{color:#1a1a6e;border-bottom-color:#1a1a6e}
-.tab-cnt{display:inline-flex;align-items:center;justify-content:center;background:#e63329;color:#fff;border-radius:9px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;margin-left:4px}
-.menu-tab-pane{flex:1;overflow-y:auto;padding:18px}
-.menu-tab-pane.hidden{display:none}
-
-/* ─── Context badges ─────────────────────────── */
-.ctx-row{margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;min-height:18px}
-.ctx-badge{background:#e8f5e9;color:#2e7d32;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
-.ctx-badge.warn{background:#fff8e1;color:#e65100}
-
-/* ─── Mic button ────────────────────────────── */
-.mic-btn{width:34px;height:34px;background:none;border:1.5px solid #ddd;border-radius:50%;color:#aaa;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;line-height:1}
-.mic-btn:hover{border-color:#1a1a6e;color:#1a1a6e;background:#f0f4ff}
-.mic-btn.active{background:#e63329;border-color:#e63329;color:#fff;animation:micpulse 1s ease-in-out infinite}
-.mic-btn:disabled{opacity:.4;cursor:not-allowed}
-@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(230,51,41,.4)}50%{box-shadow:0 0 0 7px rgba(230,51,41,0)}}
+.btn-modal-pdf{background:#455a64;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 
 /* ─── Toast ──────────────────────────────────── */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);background:#1a1a6e;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ─── Gap visualization ──────────────────────── */
-.flow-bar{display:flex;align-items:center;gap:4px;padding:10px 16px 10px;background:#f8fafc;border-bottom:1px solid #eef0f5;flex-wrap:wrap;flex-shrink:0}
-.flow-step{font-size:10px;font-weight:600;color:#ccc;padding:3px 9px;border-radius:10px;white-space:nowrap}
-.flow-step.done{color:#4caf50;background:#e8f5e9}
-.flow-step.active{color:#1a1a6e;background:#eef0fb;font-weight:700}
-.flow-arrow{font-size:9px;color:#ddd}
-.gap-section{background:#fff5f5;border-radius:12px;padding:14px 16px;margin-bottom:12px;border-left:4px solid #e63329}
-.gap-section-title{font-size:11px;font-weight:700;color:#b71c1c;margin-bottom:4px;display:flex;align-items:center;gap:5px}
-.gap-subtitle{font-size:10px;color:#e53935;margin-bottom:10px}
-.gap-list{display:flex;flex-direction:column;gap:5px}
-.gap-item{background:rgba(255,255,255,.8);border-radius:8px;padding:8px 10px;display:flex;gap:7px;align-items:flex-start}
-.gap-num{font-size:9px;font-weight:700;background:#e63329;color:#fff;border-radius:3px;padding:1px 5px;white-space:nowrap;flex-shrink:0;margin-top:1px}
-.gap-text{font-size:12px;color:#333;line-height:1.5}
-.concept-ref-bar{background:linear-gradient(90deg,#1a1a6e,#2a2aae);border-radius:10px;padding:10px 14px;margin-bottom:12px;color:#fff;font-size:12px;line-height:1.6}
-.concept-ref-label{font-size:9px;opacity:.65;letter-spacing:.5px;margin-bottom:3px;text-transform:uppercase}
-.plan-gap-section{background:#fff8e1;border-radius:10px;padding:12px 14px;margin-bottom:12px;border-left:3px solid #f5a623}
-.plan-gap-title{font-size:11px;font-weight:700;color:#b36200;margin-bottom:7px;display:flex;align-items:center;gap:5px}
-.plan-gap-chip{background:#ffe0b2;color:#e65100;font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;margin-bottom:4px;display:inline-block}
-
-/* ─── Mobile view switcher ───────────────────── */
-.mobile-view-tabs{display:none;background:#fff;border-bottom:2px solid #e0e6f0;flex-shrink:0}
-.mobile-view-tab{flex:1;padding:9px 4px;border:none;background:none;font-size:12px;font-weight:600;color:#999;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;transition:color .15s,border-color .15s}
-.mobile-view-tab.active{color:#1a1a6e;border-bottom-color:#1a1a6e;background:#f5f7ff}
-
-/* ─── Next-step card ─────────────────────────── */
-.next-step-card{background:linear-gradient(135deg,#e8f5e9,#f0f4ff);border:1.5px solid #4caf50;border-radius:12px;padding:14px 16px;max-width:85%}
-.next-step-title{font-size:12px;font-weight:700;color:#2e7d32;margin-bottom:6px}
-.next-step-desc{font-size:12px;color:#444;line-height:1.65;margin-bottom:10px}
-.next-step-btns{display:flex;flex-direction:column;gap:7px;margin-top:10px}
-.next-step-btn{background:#1a1a6e;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:background .2s;text-align:center}
-.next-step-btn:hover{background:#0d0d4f}
-.next-step-btn-sub{background:none;border:1.5px solid #1a1a6e;color:#1a1a6e;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;transition:all .2s;text-align:center}
-.next-step-btn-sub:hover{background:#eef0fb}
-
 /* ─── Mobile ─────────────────────────────────── */
-/* On desktop always show both cols */
 @media(min-width:768px){
-  .chat-col,.doc-col,.doc-col-menu{display:flex !important}
+  .chat-panel,.menu-panel{display:flex !important}
 }
 @media(max-width:767px){
-  /* Flip app-body to column: workspace on top, nav on bottom (in-flow) */
-  .app-body{flex-direction:column;overflow:hidden}
-  .workspace{order:1;flex:1;overflow:hidden;flex-direction:column;min-height:0}
-  .section-nav{order:2;flex-direction:row;width:100%;height:60px;border-right:none;border-top:1px solid #e0e6f0;padding:2px 0 0;gap:0;box-shadow:0 -2px 10px rgba(0,0,0,.08);flex-shrink:0;overflow:visible}
-  .nav-item{flex:1;flex-direction:column;gap:1px;padding:4px 2px 2px;min-width:0;justify-content:center;align-items:center;border-radius:0}
-  .nav-item.active{background:#eef0fb}
-  .nav-icon{font-size:20px}
-  .nav-label{font-size:9px;line-height:1.1;text-align:center}
-  .nav-sub{display:none}
-
-  .section-pane{flex-direction:column;flex:1;min-height:0;overflow:hidden}
-  .section-pane.active{display:flex;flex:1;min-height:0}
-
-  /* mobile view tabs */
-  .mobile-view-tabs{display:flex;flex-shrink:0}
-
-  /* columns: one at a time */
-  .chat-col{width:100%;border-right:none;display:none !important;min-height:0}
-  .doc-col{width:100%;display:none !important;min-height:0}
-  .doc-col-menu{display:none !important;min-height:0}
-  .chat-col.mob-show{display:flex !important;flex:1;min-height:0}
-  .doc-col.mob-show{display:flex !important;flex:1;flex-direction:column;overflow-y:auto}
-  .doc-col-menu.mob-show{display:flex !important;flex:1;flex-direction:column;min-height:0}
-
-  .drill-cols{grid-template-columns:1fr}
-  .sw-grid{grid-template-columns:1fr}
-  .goal-grid{grid-template-columns:1fr}
+  .mobile-tabs{display:flex}
+  .app-body{flex-direction:column}
+  .chat-panel{width:100%;border-right:none;flex:1}
+  .menu-panel{flex:1}
+  .chat-panel.mob-hidden{display:none !important}
+  .menu-panel.mob-hidden{display:none !important}
   .modal-overlay{padding:8px}
   .modal{max-height:94vh}
-  .toast{bottom:68px}
+  .toast{bottom:20px}
 }
 </style>
 </head>
@@ -321,160 +183,69 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
     <div class="logo">⚽ペップ<span>君</span></div>
     <div class="logo-sub">AIサッカーチームサポート</div>
   </div>
-  <div id="teamBadge" class="team-badge">チーム未設定</div>
+  <div class="header-right">
+    <button class="btn-reset" onclick="resetConversation()">🔄 新しく作る</button>
+    <div id="teamBadge" class="team-badge">チーム未設定</div>
+  </div>
 </header>
+
+<div class="mobile-tabs">
+  <button class="mobile-tab active" id="tab-chat" onclick="switchMobileTab('chat')">💬 コーチ</button>
+  <button class="mobile-tab" id="tab-menu" onclick="switchMobileTab('menu')">⚽ メニュー</button>
+</div>
 
 <div class="app-body">
 
-  <!-- Section nav -->
-  <nav class="section-nav">
-    <button class="nav-item active" data-section="concept" onclick="switchSection('concept')">
-      <span class="nav-icon">🎯</span>
-      <span><div class="nav-label">コンセプト</div><div class="nav-sub">哲学・ビジョン</div></span>
-    </button>
-    <button class="nav-item" data-section="status" onclick="switchSection('status')">
-      <span class="nav-icon">📊</span>
-      <span><div class="nav-label">チーム状況</div><div class="nav-sub">強み・課題</div></span>
-    </button>
-    <button class="nav-item" data-section="plan" onclick="switchSection('plan')">
-      <span class="nav-icon">📅</span>
-      <span><div class="nav-label">トレーニング<br>プラン</div><div class="nav-sub">期間計画</div></span>
-    </button>
-    <button class="nav-item" data-section="menu" onclick="switchSection('menu')">
-      <span class="nav-icon">⚽</span>
-      <span><div class="nav-label">練習メニュー</div><div class="nav-sub">当日メニュー</div></span>
-    </button>
-  </nav>
-
-  <div class="workspace">
-
-    <!-- ─── CONCEPT ──────────────────────────── -->
-    <div class="section-pane active" id="pane-concept">
-      <div class="mobile-view-tabs">
-        <button class="mobile-view-tab active" onclick="switchMobileView('concept','chat',this)">💬 チャット</button>
-        <button class="mobile-view-tab" onclick="switchMobileView('concept','doc',this)">📄 コンセプト</button>
-      </div>
-      <div class="chat-col mob-show">
-        <div class="col-header">
-          <span>🎯 コンセプトを整理する</span>
-          <button class="btn-reset-chat" onclick="resetSection('concept')">リセット</button>
-        </div>
-        <div class="messages" id="msgs-concept"></div>
-        <div class="input-area">
-          <div class="input-row">
-            <textarea class="msg-input" id="inp-concept" rows="1" placeholder="チームのことを話してください…"
-              onkeydown="handleKey(event,'concept')" oninput="autoResize(this)"></textarea>
-            <button class="mic-btn" id="mic-concept" onclick="toggleMic('concept')" title="音声入力">🎤</button>
-            <button class="send-btn" id="btn-concept" onclick="sendSection('concept')">➤</button>
-          </div>
-        </div>
-      </div>
-      <div class="doc-col">
-        <div id="doc-concept"></div>
+  <!-- ─── Chat panel ─────────────────────────── -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="messages" id="messages"></div>
+    <div class="generating-bar" id="generatingBar">
+      <span class="spinner-sm"></span>ペップ君がメニューを設計しています（10〜20秒）...
+    </div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea class="msg-input" id="msgInput" rows="1" placeholder="今日の練習テーマを教えてください…"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="音声入力">🎤</button>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
       </div>
     </div>
+  </div>
 
-    <!-- ─── STATUS ───────────────────────────── -->
-    <div class="section-pane" id="pane-status">
-      <div class="mobile-view-tabs">
-        <button class="mobile-view-tab active" onclick="switchMobileView('status','chat',this)">💬 チャット</button>
-        <button class="mobile-view-tab" onclick="switchMobileView('status','doc',this)">📊 チーム状況</button>
-      </div>
-      <div class="chat-col mob-show">
-        <div class="col-header">
-          <span>📊 チームの状況を整理する</span>
-          <button class="btn-reset-chat" onclick="resetSection('status')">リセット</button>
+  <!-- ─── Menu panel ─────────────────────────── -->
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-panel-tabs">
+      <button class="menu-tab active" id="menuTabCurrent" onclick="switchMenuTab('current')">📝 今のメニュー</button>
+      <button class="menu-tab" id="menuTabHistory" onclick="switchMenuTab('history')">
+        💾 保存済み<span class="tab-cnt" id="historyCnt" style="display:none"></span>
+      </button>
+    </div>
+    <div id="menuCurrent" class="menu-content">
+      <div class="empty-state">
+        <div class="empty-icon">⚽</div>
+        <div class="empty-title">専属コーチに話しかけてみよう</div>
+        <div class="empty-sub">チームのことを教えると<br>練習メニューをすぐに作れます</div>
+        <div class="quick-themes">
+          <span class="quick-theme" onclick="quickSend('ビルドアップ')">ビルドアップ</span>
+          <span class="quick-theme" onclick="quickSend('ドリブル突破')">ドリブル突破</span>
+          <span class="quick-theme" onclick="quickSend('プレス・守備組織')">プレス・守備</span>
+          <span class="quick-theme" onclick="quickSend('パスワーク')">パスワーク</span>
+          <span class="quick-theme" onclick="quickSend('トランジション')">トランジション</span>
+          <span class="quick-theme" onclick="quickSend('フィニッシュ')">フィニッシュ</span>
         </div>
-        <div class="messages" id="msgs-status"></div>
-        <div class="input-area">
-          <div class="input-row">
-            <textarea class="msg-input" id="inp-status" rows="1" placeholder="チームの今を教えてください…"
-              onkeydown="handleKey(event,'status')" oninput="autoResize(this)"></textarea>
-            <button class="mic-btn" id="mic-status" onclick="toggleMic('status')" title="音声入力">🎤</button>
-            <button class="send-btn" id="btn-status" onclick="sendSection('status')">➤</button>
-          </div>
-        </div>
-      </div>
-      <div class="doc-col" id="doc-col-status">
-        <div id="doc-status"></div>
       </div>
     </div>
+    <div id="menuHistory" class="menu-content hidden"></div>
+  </div>
 
-    <!-- ─── PLAN ─────────────────────────────── -->
-    <div class="section-pane" id="pane-plan">
-      <div class="mobile-view-tabs">
-        <button class="mobile-view-tab active" onclick="switchMobileView('plan','chat',this)">💬 チャット</button>
-        <button class="mobile-view-tab" onclick="switchMobileView('plan','doc',this)">📅 プラン</button>
-      </div>
-      <div class="chat-col mob-show">
-        <div class="col-header">
-          <span>📅 トレーニングプランを設計する</span>
-          <button class="btn-reset-chat" onclick="resetSection('plan')">リセット</button>
-        </div>
-        <div class="messages" id="msgs-plan"></div>
-        <div class="input-area">
-          <div class="input-row">
-            <textarea class="msg-input" id="inp-plan" rows="1" placeholder="練習の期間や目標を教えてください…"
-              onkeydown="handleKey(event,'plan')" oninput="autoResize(this)"></textarea>
-            <button class="mic-btn" id="mic-plan" onclick="toggleMic('plan')" title="音声入力">🎤</button>
-            <button class="send-btn" id="btn-plan" onclick="sendSection('plan')">➤</button>
-          </div>
-        </div>
-      </div>
-      <div class="doc-col" id="doc-col-plan">
-        <div id="doc-plan"></div>
-      </div>
-    </div>
-
-    <!-- ─── MENU ─────────────────────────────── -->
-    <div class="section-pane" id="pane-menu">
-      <div class="mobile-view-tabs">
-        <button class="mobile-view-tab active" onclick="switchMobileView('menu','chat',this)">💬 チャット</button>
-        <button class="mobile-view-tab" onclick="switchMobileView('menu','doc',this)">⚽ メニュー</button>
-      </div>
-      <div class="chat-col mob-show">
-        <div class="col-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-bottom:9px">
-          <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-            <span>⚽ 練習メニューを作る</span>
-            <button class="btn-reset-chat" onclick="resetMenuChat()">新しく作る</button>
-          </div>
-          <div class="ctx-row" id="menuCtxBadges"></div>
-        </div>
-        <div class="messages" id="msgs-menu"></div>
-        <div class="generating-bar" id="generatingBar">
-          <span class="spinner-sm"></span>ペップ君がメニューを設計しています（10〜20秒）...
-        </div>
-        <div class="input-area">
-          <div class="input-row">
-            <textarea class="msg-input" id="inp-menu" rows="1" placeholder="チームのことを教えてください…"
-              onkeydown="handleMenuKey(event)" oninput="autoResize(this)"></textarea>
-            <button class="mic-btn" id="mic-menu" onclick="toggleMic('menu')" title="音声入力">🎤</button>
-            <button class="send-btn" id="btn-menu" onclick="sendMenuMessage()">➤</button>
-          </div>
-        </div>
-      </div><!-- .chat-col -->
-      <!-- doc-col: タブ付き（今のメニュー | 保存済み一覧） -->
-      <div class="doc-col doc-col-menu" id="doc-menu">
-        <div class="doc-tabs">
-          <button id="tab-btn-current" class="doc-tab active" onclick="switchMenuTab('current')">📝 今のメニュー</button>
-          <button id="tab-btn-history" class="doc-tab" onclick="switchMenuTab('history')">
-            💾 保存済み一覧<span class="tab-cnt" id="historyCnt" style="display:none"></span>
-          </button>
-        </div>
-        <div id="docmenu-current" class="menu-tab-pane"></div>
-        <div id="docmenu-history" class="menu-tab-pane hidden"></div>
-      </div>
-    </div>
-
-  </div><!-- .workspace -->
-</div><!-- .app-body -->
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Modal for past sessions -->
+<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modalContent">
+  <div class="modal">
     <div class="modal-head">
       <div class="modal-title" id="modalTitle"></div>
       <div style="display:flex;gap:8px;align-items:center">
@@ -487,15 +258,14 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 </div>
 
 <script>
-// ─── State ─────────────────────────────────────────────────────
-const menuConvId = 'menu_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-let pendingMenuParams = null;
-let lastMenuParams = null;
+// ─── State ─────────────────────────────────────────────────────────────────
+let isWaiting = false;
 let lastMenuSession = null;
+let lastMenuParams = null;
 let modalSession = null;
-let sectionWaiting = { concept: false, status: false, plan: false, menu: false };
-let sectionInited = { concept: false, status: false, plan: false, menu: false };
-const currentDocs = { concept: null, status: null, plan: null };
+let currentProfile = null;
+let recognition = null;
+let micActive = false;
 
 const PHASE_LABEL = {
   warmup:    { label: 'ウォームアップ', cls: 'phase-warmup' },
@@ -505,200 +275,169 @@ const PHASE_LABEL = {
   cooldown:  { label: 'クールダウン',   cls: 'phase-warmup' },
 };
 
-const GREETINGS = {
-  concept: 'こんにちは！ペップ君です。🎯\n\n今日は「チームのコンセプト」を一緒に言語化していきましょう。\n\nまず教えてください——あなたが目指すサッカーを一言で表すと？',
-  status:  'こんにちは！ペップ君です。📊\n\nチームの今の状態を整理して、練習に活かしましょう。\n\nまず基本情報から——チームの年代と人数を教えてください。',
-  plan:    'こんにちは！ペップ君です。📅\n\nトレーニングプランを設計しましょう！\n\nどのくらいの期間のプランを考えていますか？（例：1ヶ月・今シーズン全体 など）',
-  menu:    'こんにちは！ペップ君です。⚽\n\n今日の練習メニューを一緒に作りましょう！\nまずチームのことを教えてください（年代・人数・今日やりたいこと など）',
-};
-
-// ─── Init ───────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  ['concept', 'status', 'plan'].forEach(t => loadDoc(t));
-  initSection('concept');
+// ─── Init ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadProfile();
   loadMenuHistory();
+  document.getElementById('msgInput').focus();
 });
 
-// ─── Mobile view switching ──────────────────────────────────────
-function switchMobileView(section, view, btn) {
-  const pane = document.getElementById('pane-' + section);
-  pane.querySelectorAll('.mobile-view-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  const chatCol = pane.querySelector('.chat-col');
-  const docCol  = pane.querySelector('.doc-col');
-  if (view === 'chat') {
-    chatCol?.classList.add('mob-show');
-    docCol?.classList.remove('mob-show');
+async function loadProfile() {
+  try {
+    const res = await fetch('/api/profile');
+    const json = await res.json();
+    currentProfile = json.profile;
+    updateTeamBadge(currentProfile);
+    showGreeting(currentProfile);
+  } catch {
+    showGreeting(null);
+  }
+}
+
+function showGreeting(profile) {
+  if (profile?.teamName) {
+    const sessionInfo = profile.sessionCount > 0 ? `（${profile.sessionCount}回目）` : '';
+    const lastInfo = profile.lastTheme ? `前回は「${profile.lastTheme}」をやりました。` : '';
+    addMessage('coach', `${profile.teamName}${sessionInfo}、お疲れ様です！${lastInfo}\n\n今日のテーマは何にしますか？試合の状況や課題があれば教えてもらえると、より的確なメニューを作れます。`);
   } else {
-    chatCol?.classList.remove('mob-show');
-    docCol?.classList.add('mob-show');
+    addMessage('coach', 'こんにちは！⚽ 専属コーチとして担当させていただきます。\n\nチーム名と対象年代を教えてください。すぐに練習メニューを作れます！\n\n🎙️ マイクボタンで音声入力もできます。');
   }
 }
 
-// ─── Section switching ──────────────────────────────────────────
-function switchSection(type) {
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.section === type));
-  document.querySelectorAll('.section-pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + type));
-  if (!sectionInited[type]) initSection(type);
-  if (type === 'menu') checkMenuContext();
+function updateTeamBadge(profile) {
+  const badge = document.getElementById('teamBadge');
+  badge.textContent = profile?.teamName ? '⚽ ' + profile.teamName : 'チーム未設定';
 }
 
-function initSection(type) {
-  sectionInited[type] = true;
-  if (type === 'menu') {
-    // チームコンテキストがあれば専用の挨拶にする
-    const hasContext = Object.values(currentDocs).some(d => d && Object.values(d).some(v => v !== null));
-    if (hasContext) {
-      const s = currentDocs.status;
-      const c = currentDocs.concept;
-      const teamName = s?.teamName || c?.teamName || 'チーム';
-      const ageGroup = s?.ageGroup || '';
-      const gaps = (Array.isArray(s?.gaps) ? s.gaps : []).slice(0, 2).map(g => `・${g}`).join('\n');
-      let greeting = `こんにちは！ペップ君です。⚽\n\n${teamName}${ageGroup ? ` (${ageGroup})` : ''}の情報を把握しています！`;
-      if (gaps) greeting += `\n\n現在の重点課題：\n${gaps}`;
-      greeting += '\n\n今日の練習時間と、特にフォーカスしたいことを教えてください。すぐにメニューを設計します！';
-      appendBubble(type, 'pep', greeting);
-    } else {
-      appendBubble(type, 'pep', GREETINGS[type]);
-    }
-    renderMenuContextCard();
-    checkMenuContext();
-  } else {
-    appendBubble(type, 'pep', GREETINGS[type]);
-    const inp = document.getElementById('inp-' + type);
-    if (inp) inp.focus();
-  }
-}
+// ─── Chat ───────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const inp = document.getElementById('msgInput');
+  const text = inp.value.trim();
+  if (!text || isWaiting) return;
+  inp.value = '';
+  autoResize(inp);
 
-// メニューセクションの右パネルにコンテキストカードを表示
-function renderMenuContextCard() {
-  const el = document.getElementById('docmenu-current');
-  if (!el) return;
-  const s = currentDocs.status;
-  const c = currentDocs.concept;
-  const p = currentDocs.plan;
-  const hasDocs = s || c || p;
-  if (!hasDocs) { renderMenuCurrentEmpty(); return; }
+  addMessage('user', text);
+  setWaiting(true);
+  showTyping();
 
-  const teamName = s?.teamName || c?.teamName || '';
-  const ageGroup = s?.ageGroup || '';
-  const playerCount = s?.playerCount ? `${s.playerCount}名` : '';
-  const level = s?.level || '';
-  const gaps = Array.isArray(s?.gaps) ? s.gaps : [];
-  const strengths = Array.isArray(s?.strengths) ? s.strengths.slice(0, 3) : [];
-  const currentFocus = s?.currentFocus || '';
-  const philosophy = c?.philosophy || c?.playingStyle || '';
-  const planGoal = p?.overallGoal || '';
-  const focusedGaps = Array.isArray(p?.focusedGaps) ? p.focusedGaps : [];
-  const currentPhase = p?.phases?.[0] ? `${p.phases[0].name}（${p.phases[0].theme}）` : '';
-
-  let html = `<div style="padding:16px">
-    <div style="background:linear-gradient(135deg,#1a1a6e,#2a2aae);border-radius:12px;padding:14px 16px;color:#fff;margin-bottom:12px">
-      <div style="font-size:10px;opacity:.65;margin-bottom:4px;letter-spacing:.5px">チームコンテキスト認識済み</div>
-      <div style="font-weight:700;font-size:14px">${h(teamName || 'チーム情報')}${ageGroup ? ` <span style="font-weight:400;opacity:.75;font-size:11px">${h(ageGroup)} ${playerCount} ${level}</span>` : ''}</div>
-    </div>`;
-
-  if (philosophy) {
-    html += `<div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 5px rgba(0,0,0,.05)">
-      <div style="font-size:10px;font-weight:700;color:#1a1a6e;margin-bottom:4px">🎯 コンセプト</div>
-      <div style="font-size:12px;color:#333;line-height:1.6">${h(philosophy)}</div>
-    </div>`;
-  }
-
-  if (gaps.length) {
-    html += `<div style="background:#fff5f5;border-radius:10px;padding:10px 12px;margin-bottom:8px;border-left:3px solid #e63329">
-      <div style="font-size:10px;font-weight:700;color:#b71c1c;margin-bottom:6px">🔴 取り組むべきギャップ</div>`;
-    gaps.forEach((g, i) => {
-      html += `<div style="font-size:11px;color:#333;padding:3px 0;border-bottom:1px solid #fdd;display:flex;gap:6px"><span style="color:#e63329;font-weight:700;flex-shrink:0">課題${i+1}</span>${h(g)}</div>`;
+  let generateParams = null;
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }),
     });
-    html += `</div>`;
-  } else if (currentFocus) {
-    html += `<div style="background:#f0f4ff;border-radius:10px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-size:10px;font-weight:700;color:#1a1a6e;margin-bottom:4px">🎯 今一番取り組むべきこと</div>
-      <div style="font-size:12px;color:#333">${h(currentFocus)}</div>
-    </div>`;
+    const json = await res.json();
+    hideTyping();
+    if (!json.ok) throw new Error(json.error);
+
+    addMessage('coach', json.message);
+
+    if (json.profile) {
+      currentProfile = json.profile;
+      updateTeamBadge(json.profile);
+    }
+    generateParams = json.generateParams;
+  } catch (e) {
+    hideTyping();
+    addMessage('coach', 'エラーが発生しました: ' + e.message);
+    setWaiting(false);
+    return;
   }
 
-  if (strengths.length) {
-    html += `<div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-size:10px;font-weight:700;color:#2e7d32;margin-bottom:4px">💪 チームの強み</div>
-      <div style="font-size:11px;color:#333">${strengths.map(s => `✓ ${h(s)}`).join('<br>')}</div>
-    </div>`;
+  if (generateParams) {
+    await doGenerate(generateParams);
+  } else {
+    setWaiting(false);
   }
-
-  if (currentPhase || planGoal) {
-    html += `<div style="background:#fff8e1;border-radius:10px;padding:10px 12px;margin-bottom:8px;border-left:3px solid #f5a623">
-      <div style="font-size:10px;font-weight:700;color:#b36200;margin-bottom:4px">📅 現在のプラン</div>`;
-    if (currentPhase) html += `<div style="font-size:11px;color:#333;margin-bottom:3px">フェーズ: ${h(currentPhase)}</div>`;
-    if (planGoal) html += `<div style="font-size:11px;color:#666">目標: ${h(planGoal)}</div>`;
-    html += `</div>`;
-  }
-
-  html += `<div style="text-align:center;padding:14px 0;color:#bbb;font-size:11px">⬅️ 左のチャットで練習メニューを作成</div></div>`;
-  el.innerHTML = html;
 }
 
-// ─── Menu tab switching ─────────────────────────────────────────
+function quickSend(theme) {
+  const inp = document.getElementById('msgInput');
+  inp.value = theme + 'のメニューを作ってください';
+  sendMessage();
+}
+
+async function doGenerate(params) {
+  document.getElementById('generatingBar').classList.add('show');
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    const json = await res.json();
+    if (!json.ok) {
+      if (json.limitReached) {
+        addMessage('coach', `🎯 ${json.error}\n\nご利用ありがとうございました！ぜひフィードバックをお聞かせください⚽`);
+        return;
+      }
+      throw new Error(json.error);
+    }
+    lastMenuParams  = params;
+    lastMenuSession = json.data.session;
+    renderMenuResult(json.data.session);
+    addMessage('coach', `✅ 「${params.theme}」のメニューができました！右のパネルをご確認ください。\n\n調整したい点があれば何でも聞いてください。`);
+    // 生成成功後にプロフィールを手元でも更新
+    if (currentProfile) {
+      currentProfile.lastTheme = params.theme;
+      currentProfile.sessionCount = (currentProfile.sessionCount || 0) + 1;
+    }
+    // モバイル: メニューパネルへ切り替え
+    if (window.innerWidth < 768) switchMobileTab('menu');
+  } catch (e) {
+    addMessage('coach', 'メニュー生成でエラーが発生しました: ' + e.message);
+  } finally {
+    document.getElementById('generatingBar').classList.remove('show');
+    setWaiting(false);
+  }
+}
+
+async function resetConversation() {
+  if (!confirm('新しいセッションを始めますか？（チーム情報は引き継がれます）')) return;
+  try { await fetch('/api/coach/history', { method: 'DELETE' }); } catch {}
+  document.getElementById('messages').innerHTML = '';
+  showGreeting(currentProfile);
+  document.getElementById('msgInput').focus();
+}
+
+// ─── Mobile tabs ────────────────────────────────────────────────────────────
+function switchMobileTab(tab) {
+  const isChat = tab === 'chat';
+  document.getElementById('chatPanel').classList.toggle('mob-hidden', !isChat);
+  document.getElementById('menuPanel').classList.toggle('mob-hidden', isChat);
+  document.getElementById('tab-chat').classList.toggle('active', isChat);
+  document.getElementById('tab-menu').classList.toggle('active', !isChat);
+}
+
+// ─── Menu tabs ───────────────────────────────────────────────────────────────
 function switchMenuTab(tab) {
   const isCurrent = tab === 'current';
-  document.getElementById('tab-btn-current').classList.toggle('active', isCurrent);
-  document.getElementById('tab-btn-history').classList.toggle('active', !isCurrent);
-  document.getElementById('docmenu-current').classList.toggle('hidden', !isCurrent);
-  document.getElementById('docmenu-history').classList.toggle('hidden', isCurrent);
+  document.getElementById('menuTabCurrent').classList.toggle('active', isCurrent);
+  document.getElementById('menuTabHistory').classList.toggle('active', !isCurrent);
+  document.getElementById('menuCurrent').classList.toggle('hidden', !isCurrent);
+  document.getElementById('menuHistory').classList.toggle('hidden', isCurrent);
   if (!isCurrent) loadMenuHistory();
 }
 
-// ─── Context badge check ────────────────────────────────────────
-async function checkMenuContext() {
-  const el = document.getElementById('menuCtxBadges');
-  if (!el) return;
-  try {
-    const [c, s] = await Promise.all([
-      fetch('/api/section/concept/doc').then(r => r.json()),
-      fetch('/api/section/status/doc').then(r => r.json()),
-    ]);
-    const parts = [];
-    if (c.ok && c.doc && Object.values(c.doc).some(v => v !== null))
-      parts.push(`<span class="ctx-badge">🎯 コンセプト反映済み</span>`);
-    else
-      parts.push(`<span class="ctx-badge warn">🎯 コンセプト未設定</span>`);
-    if (s.ok && s.doc && Object.values(s.doc).some(v => v !== null))
-      parts.push(`<span class="ctx-badge">📊 チーム状況反映済み</span>`);
-    else
-      parts.push(`<span class="ctx-badge warn">📊 チーム状況未設定</span>`);
-    el.innerHTML = parts.join('');
-  } catch { el.innerHTML = ''; }
-}
-
-// ─── Voice Input ────────────────────────────────────────────────
-let currentRecognition = null;
-let activeMicSection = null;
-
-function toggleMic(section) {
-  if (activeMicSection === section && currentRecognition) {
-    stopMic();
-  } else {
-    if (currentRecognition) stopMic();
-    startMic(section);
-  }
-}
-
-function startMic(section) {
+// ─── Voice input ─────────────────────────────────────────────────────────────
+function toggleMic() {
+  if (micActive) { stopMic(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { showToast('このブラウザは音声入力に対応していません（Chrome推奨）'); return; }
-  const recognition = new SR();
-  recognition.lang = 'ja-JP';
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  const inp = document.getElementById('inp-' + section);
+  const rec = new SR();
+  rec.lang = 'ja-JP';
+  rec.continuous = true;
+  rec.interimResults = true;
+  const inp = document.getElementById('msgInput');
   let finalText = inp.value;
-  recognition.onstart = () => {
-    activeMicSection = section;
-    currentRecognition = recognition;
-    const btn = document.getElementById('mic-' + section);
-    if (btn) btn.classList.add('active');
+  rec.onstart = () => {
+    micActive = true;
+    recognition = rec;
+    document.getElementById('micBtn').classList.add('active');
   };
-  recognition.onresult = (e) => {
+  rec.onresult = e => {
     let interim = '', final = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) final += e.results[i][0].transcript;
@@ -708,473 +447,50 @@ function startMic(section) {
     inp.value = finalText + interim;
     autoResize(inp);
   };
-  recognition.onend = () => { inp.value = finalText; autoResize(inp); stopMic(); };
-  recognition.onerror = (e) => { if (e.error !== 'no-speech') showToast('音声認識エラー: ' + e.error); stopMic(); };
-  try { recognition.start(); } catch { showToast('マイクの起動に失敗しました'); }
+  rec.onend = () => { inp.value = finalText; autoResize(inp); stopMic(); };
+  rec.onerror = e => { if (e.error !== 'no-speech') showToast('音声認識エラー: ' + e.error); stopMic(); };
+  try { rec.start(); } catch { showToast('マイクの起動に失敗しました'); }
 }
-
 function stopMic() {
-  if (currentRecognition) { try { currentRecognition.stop(); } catch {} currentRecognition = null; }
-  if (activeMicSection) {
-    const btn = document.getElementById('mic-' + activeMicSection);
-    if (btn) btn.classList.remove('active');
-    activeMicSection = null;
-  }
+  if (recognition) { try { recognition.stop(); } catch {} recognition = null; }
+  micActive = false;
+  document.getElementById('micBtn').classList.remove('active');
 }
 
-// ─── Array normalizer (AI sometimes returns string instead of array) ──
-function toArr(v) {
-  if (!v) return null;
-  if (Array.isArray(v)) return v.filter(x => x && String(x).trim());
-  if (typeof v === 'string') return v.split(/[,、・\n]+/).map(s => s.trim()).filter(Boolean);
-  return null;
-}
-
-// ─── Next-step suggestion ────────────────────────────────────────
-const NEXT_STEP = {
-  concept: {
-    section: 'status',
-    check: d => d.philosophy || d.playingStyle,
-    title: '🎯 コンセプトが固まりました！',
-    desc: 'コンセプトをベースに、今のチームの現状と課題を整理しましょう。コンセプトとのギャップが見えてくると、練習の方向性が明確になります。',
-    btn: '📊 チーム状況を整理する →',
-  },
-  status: {
-    section: 'plan',
-    check: d => (toArr(d.strengths)?.length || toArr(d.weaknesses)?.length || d.overview),
-    title: '📊 チーム状況が整理されました！',
-    desc: 'ギャップが明確になりました。次はこのギャップを埋めるためのトレーニングプランを設計しましょう。期間・目標・フェーズが決まると練習がもっと効果的になります。',
-    btn: '📅 トレーニングプランを設計する →',
-  },
-  plan: {
-    section: 'menu',
-    check: d => d.phases?.length || d.overallGoal,
-    title: '📅 トレーニングプランが完成しました！',
-    desc: 'このプランに基づいた今日の練習メニューをペップ君が設計します。コンセプト・チーム状況・プランが全て反映された高精度なメニューが作れます。',
-    btn: '⚽ 今日の練習メニューを作る →',
-  },
-};
-
-function suggestNextStep(type, doc) {
-  const cfg = NEXT_STEP[type];
-  if (!cfg || !cfg.check(doc)) return;
-  const msgs = document.getElementById('msgs-' + type);
-  if (!msgs || msgs.querySelector('.next-step-card')) return;
+// ─── Chat helpers ────────────────────────────────────────────────────────────
+function addMessage(role, content) {
+  const container = document.getElementById('messages');
   const row = document.createElement('div');
-  row.className = 'bubble-row pep';
-  row.innerHTML = `<div class="avatar pep">P</div>
-    <div class="next-step-card">
-      <div class="next-step-title">${cfg.title}</div>
-      <div class="next-step-desc">${cfg.desc}</div>
-      <div class="next-step-btns">
-        <button class="next-step-btn" onclick="switchSection('${cfg.section}')">${cfg.btn}</button>
-        <button class="next-step-btn-sub" onclick="this.closest('.next-step-card').querySelector('.next-step-deepen').style.display='block';this.style.display='none'">💬 もっと深く話す</button>
-        <div class="next-step-deepen" style="display:none;font-size:12px;color:#555;padding:6px 2px;line-height:1.6">
-          続けて話しかけてください。準備ができたら上の「${cfg.btn.replace('→','')}」ボタンで次に進めます。
-        </div>
-      </div>
-    </div>`;
-  msgs.appendChild(row);
-  scrollBottom(type);
+  row.className = 'bubble-row ' + role;
+  const avatar = role === 'coach' ? 'P' : 'C';
+  row.innerHTML = `<div class="avatar ${role}">${avatar}</div>
+    <div class="bubble ${role}">${h(content).replace(/\n/g, '<br>')}</div>`;
+  container.appendChild(row);
+  container.scrollTop = container.scrollHeight;
 }
 
-// ─── Toast ──────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+let typingRow = null;
+function showTyping() {
+  const container = document.getElementById('messages');
+  typingRow = document.createElement('div');
+  typingRow.className = 'bubble-row coach';
+  typingRow.innerHTML = `<div class="avatar coach">P</div><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  container.appendChild(typingRow);
+  container.scrollTop = container.scrollHeight;
+}
+function hideTyping() {
+  if (typingRow) { typingRow.remove(); typingRow = null; }
 }
 
-// ─── Section chat (concept/status/plan) ────────────────────────
-async function sendSection(type) {
-  const inp = document.getElementById('inp-' + type);
-  const text = inp.value.trim();
-  if (!text || sectionWaiting[type]) return;
-  inp.value = '';
-  autoResize(inp);
-  appendBubble(type, 'user', text);
-  setWaiting(type, true);
-  showTyping(type);
-  try {
-    const res = await fetch(`/api/section/${type}/chat`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ message: text }),
-    });
-    const json = await res.json();
-    hideTyping(type);
-    if (!json.ok) throw new Error(json.error);
-    appendBubble(type, 'pep', json.message);
-    if (json.doc) {
-      renderDoc(type, json.doc);
-      suggestNextStep(type, json.doc);
-    }
-  } catch (e) {
-    hideTyping(type);
-    appendBubble(type, 'pep', 'エラー: ' + e.message);
-  } finally {
-    setWaiting(type, false);
-  }
+function setWaiting(v) {
+  isWaiting = v;
+  document.getElementById('sendBtn').disabled = v;
+  document.getElementById('msgInput').disabled = v;
 }
 
-async function loadDoc(type) {
-  try {
-    const res = await fetch(`/api/section/${type}/doc`);
-    const json = await res.json();
-    if (json.ok && json.doc) {
-      currentDocs[type] = json.doc;
-      renderDoc(type, json.doc);
-    }
-  } catch {}
-}
-
-async function resetSection(type) {
-  if (!confirm('このセクションの会話をリセットしますか？（保存済みドキュメントは消えません）')) return;
-  await fetch(`/api/section/${type}/history`, { method: 'DELETE' });
-  const msgs = document.getElementById('msgs-' + type);
-  msgs.innerHTML = '';
-  sectionInited[type] = false;
-  initSection(type);
-}
-
-// ─── Menu chat ──────────────────────────────────────────────────
-async function sendMenuMessage() {
-  const inp = document.getElementById('inp-menu');
-  const text = inp.value.trim();
-  if (!text || sectionWaiting.menu) return;
-  inp.value = '';
-  autoResize(inp);
-  appendBubble('menu', 'user', text);
-  setWaiting('menu', true);
-  showTyping('menu');
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ conversationId: menuConvId, message: text }),
-    });
-    const json = await res.json();
-    hideTyping('menu');
-    if (!json.ok) throw new Error(json.error);
-    appendBubble('menu', 'pep', json.message);
-    if (json.readyToGenerate && json.generateParams) {
-      pendingMenuParams = json.generateParams;
-      showConfirmCard(json.generateParams);
-    }
-  } catch (e) {
-    hideTyping('menu');
-    appendBubble('menu', 'pep', 'エラー: ' + e.message);
-  } finally {
-    setWaiting('menu', false);
-  }
-}
-
-function resetMenuChat() {
-  if (!confirm('新しいメニューを作成しますか？（現在のチャットをリセットします）')) return;
-  document.getElementById('msgs-menu').innerHTML = '';
-  pendingMenuParams = null;
-  sectionInited.menu = false;
-  initSection('menu');
-}
-
-function showConfirmCard(params) {
-  const row = document.createElement('div');
-  row.className = 'bubble-row pep';
-  row.innerHTML = `
-    <div class="avatar pep">P</div>
-    <div class="confirm-card">
-      <div class="confirm-card-title">✅ この内容でメニューを生成しますか？</div>
-      <div class="confirm-params">
-        <dl>
-          <dt>チーム：</dt><dd>${h(params.teamName||'未設定')}</dd><br>
-          <dt>年代：</dt><dd>${h(params.ageGroup)}</dd>
-          　<dt>人数：</dt><dd>${params.players}名</dd><br>
-          <dt>時間：</dt><dd>${params.duration}分</dd>
-          　<dt>レベル：</dt><dd>${h(params.level)}</dd><br>
-          <dt>テーマ：</dt><dd>${h(params.theme)}</dd>
-          ${params.concept?`<br><dt>コンセプト：</dt><dd>${h(params.concept)}</dd>`:''}
-          ${params.notes?`<br><dt>特記：</dt><dd>${h(params.notes)}</dd>`:''}
-        </dl>
-      </div>
-      <button class="btn-do-generate" onclick="doGenerate()">⚡ メニューを生成する</button>
-      <button class="btn-cancel-generate" onclick="cancelConfirm(this)">修正する（続けて話す）</button>
-    </div>`;
-  document.getElementById('msgs-menu').appendChild(row);
-  scrollBottom('menu');
-}
-
-function cancelConfirm(btn) {
-  pendingMenuParams = null;
-  btn.closest('.bubble-row').remove();
-  appendBubble('menu', 'pep', '了解です！どの部分を変えたいですか？');
-  document.getElementById('inp-menu').focus();
-}
-
-async function doGenerate() {
-  if (!pendingMenuParams) return;
-  const params = pendingMenuParams;
-  pendingMenuParams = null;
-  document.getElementById('generatingBar').classList.add('show');
-  setWaiting('menu', true);
-  document.getElementById('docmenu-current').innerHTML = '';
-  switchMenuTab('current');
-  try {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ ...params, conversationId: menuConvId }),
-    });
-    const json = await res.json();
-    if (!json.ok) {
-      if (json.limitReached) {
-        appendBubble('menu', 'pep', `🎯 ${json.error}\n\nご利用ありがとうございました！感想を山村コーチにお伝えください⚽`);
-        renderMenuCurrentEmpty();
-        document.getElementById('generatingBar').classList.remove('show');
-        setWaiting('menu', false);
-        return;
-      }
-      throw new Error(json.error);
-    }
-    lastMenuParams  = params;
-    lastMenuSession = json.data.session;
-    renderMenuResult(json.data.session);
-    // モバイルで生成完了後、自動的にドキュメントパネルへ切り替え
-    if (window.innerWidth < 768) {
-      const pane = document.getElementById('pane-menu');
-      const chatCol = pane?.querySelector('.chat-col');
-      const docCol  = pane?.querySelector('.doc-col-menu');
-      if (chatCol && docCol) {
-        chatCol.classList.remove('mob-show');
-        docCol.classList.add('mob-show');
-        pane.querySelectorAll('.mobile-view-tab').forEach((t, i) => t.classList.toggle('active', i === 1));
-      }
-    }
-  } catch (e) {
-    appendBubble('menu', 'pep', 'メニュー生成でエラーが発生しました：' + e.message);
-    renderMenuCurrentEmpty();
-  } finally {
-    document.getElementById('generatingBar').classList.remove('show');
-    setWaiting('menu', false);
-  }
-}
-
-// ─── Doc renderers ──────────────────────────────────────────────
-function renderDoc(type, doc) {
-  currentDocs[type] = doc;
-  const el = document.getElementById('doc-' + type);
-  if (!doc || Object.values(doc).every(v => v === null)) { el.innerHTML = docEmpty(type); return; }
-  if (type === 'concept') el.innerHTML = renderConceptDoc(doc);
-  if (type === 'status')  el.innerHTML = renderStatusDoc(doc, currentDocs.concept);
-  if (type === 'plan')    el.innerHTML = renderPlanDoc(doc, currentDocs.concept, currentDocs.status);
-  if (doc.teamName) document.getElementById('teamBadge').textContent = '⚽ ' + doc.teamName;
-  if (type === 'concept' || type === 'status') checkMenuContext();
-  // ステータス更新時はプラン表示も再レンダリング（ギャップ反映）
-  if (type === 'status' && currentDocs.plan) renderDoc('plan', currentDocs.plan);
-  if (type === 'concept' && currentDocs.status) renderDoc('status', currentDocs.status);
-}
-
-function docEmpty(type) {
-  const labels = {
-    concept: ['🎯', 'コンセプトを話してみよう', 'ペップ君との対話で、\nチームの哲学が可視化されていきます'],
-    status:  ['📊', '現状を整理しよう', '強みと課題が整理されると\n次の練習が明確になります'],
-    plan:    ['📅', 'プランを立てよう', '期間と目標が決まれば\nペップ君が設計をサポートします'],
-  };
-  const [icon, title, sub] = labels[type] || ['📄', '---', ''];
-  return `<div class="doc-empty"><div class="doc-empty-icon">${icon}</div><div class="doc-empty-title">${title}</div><div class="doc-empty-sub">${sub.replace(/\n/g,'<br>')}</div></div>`;
-}
-
-function renderConceptDoc(d) {
-  let html = '';
-  if (d.philosophy || d.playingStyle) {
-    html += `<div class="concept-hero">
-      <div class="concept-hero-label">チームの哲学</div>
-      <div class="concept-hero-text">${h(d.philosophy || d.playingStyle)}</div>
-    </div>`;
-  }
-  if (d.playingStyle && d.philosophy) {
-    html += `<div class="concept-section"><div class="concept-section-title">目指すサッカー</div><div style="font-size:13px;color:#333;line-height:1.7">${h(d.playingStyle)}</div></div>`;
-  }
-  if (d.keywords?.length) {
-    html += `<div class="concept-section"><div class="concept-section-title">キーワード</div><div class="chip-list">${d.keywords.map(k=>`<span class="chip">${h(k)}</span>`).join('')}</div></div>`;
-  }
-  if (d.values?.length) {
-    html += `<div class="concept-section"><div class="concept-section-title">大切にしていること</div><ul class="value-list">${d.values.map(v=>`<li>${h(v)}</li>`).join('')}</ul></div>`;
-  }
-  if (d.shortTermGoal || d.longTermGoal) {
-    html += `<div class="concept-section"><div class="concept-section-title">目標</div><div class="goal-grid">`;
-    if (d.shortTermGoal) html += `<div class="goal-card short"><div class="goal-card-label">📌 短期目標</div><div class="goal-card-text">${h(d.shortTermGoal)}</div></div>`;
-    if (d.longTermGoal)  html += `<div class="goal-card long"><div class="goal-card-label">🌱 長期ビジョン</div><div class="goal-card-text">${h(d.longTermGoal)}</div></div>`;
-    html += `</div></div>`;
-  }
-  if (d.coachMessage) {
-    html += `<div class="concept-section"><div class="concept-section-title">選手へのメッセージ</div><div style="font-size:13px;color:#333;line-height:1.7;font-style:italic">"${h(d.coachMessage)}"</div></div>`;
-  }
-  return html || docEmpty('concept');
-}
-
-function renderStatusDoc(d, conceptDoc) {
-  let html = '';
-
-  // Flow bar
-  const hasConcept = conceptDoc && Object.values(conceptDoc).some(v => v !== null);
-  html += `<div class="flow-bar">
-    <span class="flow-step ${hasConcept ? 'done' : ''}">🎯 コンセプト</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step active">📊 チーム状況</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step">📅 プラン</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step">⚽ メニュー</span>
-  </div>`;
-
-  const inner = document.createElement('div');
-  inner.style.cssText = 'padding:16px';
-
-  // Concept goal reference
-  if (hasConcept) {
-    const goal = conceptDoc.philosophy || conceptDoc.playingStyle || conceptDoc.shortTermGoal || '';
-    if (goal) {
-      inner.innerHTML += `<div class="concept-ref-bar">
-        <div class="concept-ref-label">目指すゴール（コンセプト）</div>
-        <div>${h(goal)}</div>
-      </div>`;
-    }
-  }
-
-  // Stats
-  const hasStats = d.ageGroup || d.playerCount || d.level;
-  if (hasStats) {
-    let statsHtml = `<div class="status-grid">`;
-    if (d.ageGroup)    statsHtml += `<div class="stat-card"><div class="stat-value">${h(d.ageGroup)}</div><div class="stat-label">年代</div></div>`;
-    if (d.playerCount) statsHtml += `<div class="stat-card"><div class="stat-value">${d.playerCount}</div><div class="stat-label">人数</div></div>`;
-    if (d.level)       statsHtml += `<div class="stat-card"><div class="stat-value">${h(d.level)}</div><div class="stat-label">レベル</div></div>`;
-    statsHtml += `</div>`;
-    inner.innerHTML += statsHtml;
-  }
-
-  // Normalize arrays (AI sometimes returns strings)
-  const gaps      = toArr(d.gaps);
-  const strengths = toArr(d.strengths);
-  const weaknesses= toArr(d.weaknesses);
-
-  // Gap visualization (priority display)
-  if (gaps?.length) {
-    let gapHtml = `<div class="gap-section">
-      <div class="gap-section-title">🔴 コンセプトとのギャップ</div>
-      <div class="gap-subtitle">埋めるべき課題 — トレーニングプランで対応します</div>
-      <div class="gap-list">`;
-    gaps.forEach((g, i) => {
-      gapHtml += `<div class="gap-item"><span class="gap-num">課題${i+1}</span><span class="gap-text">${h(g)}</span></div>`;
-    });
-    gapHtml += `</div></div>`;
-    inner.innerHTML += gapHtml;
-  }
-
-  // Strengths / Weaknesses
-  if (strengths?.length || weaknesses?.length) {
-    let swHtml = `<div class="sw-grid">`;
-    if (strengths?.length)  swHtml += `<div class="strength-card"><div class="sw-title">💪 強み</div><ul class="sw-list">${strengths.map(s=>`<li>${h(s)}</li>`).join('')}</ul></div>`;
-    if (weaknesses?.length) swHtml += `<div class="weakness-card"><div class="sw-title">⚡ 現状課題</div><ul class="sw-list">${weaknesses.map(s=>`<li>${h(s)}</li>`).join('')}</ul></div>`;
-    swHtml += `</div>`;
-    inner.innerHTML += swHtml;
-  }
-
-  if (d.overview) {
-    inner.innerHTML += `<div class="concept-section"><div class="concept-section-title">現状概要</div><div style="font-size:13px;color:#333;line-height:1.7">${h(d.overview)}</div></div>`;
-  }
-  if (d.currentFocus) {
-    inner.innerHTML += `<div class="concept-section" style="background:#f0f4ff;border:1px solid #c5cae9"><div class="concept-section-title" style="color:#1a1a6e">🎯 今一番取り組むべきこと</div><div style="font-size:13px;color:#1a1a6e;font-weight:700">${h(d.currentFocus)}</div></div>`;
-  }
-  if (d.recentSituation) {
-    inner.innerHTML += `<div class="concept-section"><div class="concept-section-title">直近の状況</div><div style="font-size:12px;color:#555;line-height:1.7">${h(d.recentSituation)}</div></div>`;
-  }
-  if (d.nextChallenge) {
-    inner.innerHTML += `<div class="concept-section" style="background:#fff8e1"><div class="concept-section-title">📅 次の目標</div><div style="font-size:13px;color:#333">${h(d.nextChallenge)}</div></div>`;
-  }
-
-  html += inner.outerHTML;
-  return html || docEmpty('status');
-}
-
-function renderPlanDoc(d, conceptDoc, statusDoc) {
-  let html = '';
-
-  // Flow bar
-  const hasConcept = conceptDoc && Object.values(conceptDoc).some(v => v !== null);
-  const hasStatus  = statusDoc  && Object.values(statusDoc).some(v => v !== null);
-  html += `<div class="flow-bar">
-    <span class="flow-step ${hasConcept ? 'done' : ''}">🎯 コンセプト</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step ${hasStatus ? 'done' : ''}">📊 チーム状況</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step active">📅 プラン</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-step">⚽ メニュー</span>
-  </div>`;
-
-  const inner = document.createElement('div');
-  inner.style.cssText = 'padding:16px';
-
-  if (d.overallGoal) {
-    inner.innerHTML += `<div class="plan-goal"><div class="plan-goal-label">全体目標${d.period ? ' | ' + d.period : ''}${d.sessionsPerWeek ? ' | 週' + d.sessionsPerWeek + '回' : ''}</div><div class="plan-goal-text">${h(d.overallGoal)}</div></div>`;
-  }
-
-  // Focused gaps (which gaps this plan addresses)
-  if (d.focusedGaps?.length) {
-    let fgHtml = `<div class="plan-gap-section">
-      <div class="plan-gap-title">🔧 このプランが埋めるギャップ</div>`;
-    d.focusedGaps.forEach(g => {
-      fgHtml += `<div class="plan-gap-chip">${h(g)}</div><br>`;
-    });
-    fgHtml += `</div>`;
-    inner.innerHTML += fgHtml;
-  }
-
-  if (d.phases?.length) {
-    let phHtml = `<div class="doc-section-title">フェーズ計画</div><div class="phase-timeline">`;
-    d.phases.forEach(p => {
-      phHtml += `<div class="phase-card">
-        <div class="phase-name">${h(p.name)}</div>
-        <div class="phase-weeks">${h(p.weeks)}</div>
-        <div class="phase-theme">${h(p.theme)}</div>
-        ${p.focus?.length ? `<div class="phase-focus-list">${p.focus.map(f=>`<span class="phase-focus-chip">${h(f)}</span>`).join('')}</div>` : ''}
-        ${p.keyDrill ? `<div style="margin-top:6px;font-size:11px;color:#888">代表メニュー: ${h(p.keyDrill)}</div>` : ''}
-      </div>`;
-    });
-    phHtml += `</div>`;
-    inner.innerHTML += phHtml;
-  }
-
-  if (d.milestones?.length) {
-    inner.innerHTML += `<div class="concept-section" style="margin-top:12px"><div class="concept-section-title">マイルストーン</div><ul class="value-list">${d.milestones.map(m=>`<li>${h(m)}</li>`).join('')}</ul></div>`;
-  }
-  if (d.notes) {
-    inner.innerHTML += `<div class="concept-section"><div class="concept-section-title">留意事項</div><div style="font-size:12px;color:#555">${h(d.notes)}</div></div>`;
-  }
-
-  html += inner.outerHTML;
-  return html || docEmpty('plan');
-}
-
-// ─── Menu result ────────────────────────────────────────────────
-function renderMenuCurrentEmpty() {
-  // コンテキストがあればコンテキストカードを表示、なければ空状態
-  const hasDocs = Object.values(currentDocs).some(d => d && Object.values(d).some(v => v !== null));
-  if (hasDocs) {
-    renderMenuContextCard();
-  } else {
-    document.getElementById('docmenu-current').innerHTML = `
-      <div class="doc-empty">
-        <div class="doc-empty-icon">⚽</div>
-        <div class="doc-empty-title">メニューがまだありません</div>
-        <div class="doc-empty-sub">左のチャットでペップ君に話しかけて<br>練習メニューを作りましょう！</div>
-      </div>`;
-  }
-}
-
+// ─── Menu result ─────────────────────────────────────────────────────────────
 function renderMenuResult(s) {
-  const docCol = document.getElementById('docmenu-current');
+  const el = document.getElementById('menuCurrent');
   const meta = s.meta;
   let html = `
     <div class="session-header">
@@ -1200,7 +516,7 @@ function renderMenuResult(s) {
         </div>
         <div class="drill-body">
           <div class="drill-cols">
-            <div class="drill-info">
+            <div>
               <div class="drill-section"><div class="section-label">目的</div><div class="section-content">${h(drill.objective)}</div></div>
               <div class="drill-section"><div class="section-label">やり方</div><div class="section-content">${h(drill.description)}</div></div>
               <div class="drill-section"><div class="section-label">オーガナイズ</div><div class="section-content">${h(drill.organization)}</div></div>
@@ -1229,41 +545,34 @@ function renderMenuResult(s) {
   });
 
   html += `<div class="coaching-points-card"><h3>🎙 コーチングポイント</h3>`;
-  s.coachingPoints.forEach(cp => {
+  (s.coachingPoints || []).forEach(cp => {
     html += `<div class="cp-item"><div class="cp-point">▶ ${h(cp.point)}</div><div class="cp-phrase">${h(cp.examplePhrase)}</div></div>`;
   });
   html += `</div>`;
-
   html += `<div class="result-actions">
     <button class="btn-save" id="saveMenuBtn" onclick="saveMenu()">💾 保存する</button>
     <button class="btn-pdf" onclick="downloadPDF(lastMenuSession)">📄 PDF</button>
-    <button class="btn-new" onclick="resetMenuChat()">🔄 新しく作る</button>
+    <button class="btn-new" onclick="resetConversation()">🔄 新しく作る</button>
   </div>`;
 
-  docCol.innerHTML = html;
-  docCol.scrollTop = 0;
+  el.innerHTML = html;
+  el.scrollTop = 0;
   switchMenuTab('current');
 }
 
+// ─── History ─────────────────────────────────────────────────────────────────
 async function loadMenuHistory() {
-  const el = document.getElementById('docmenu-history');
+  const el = document.getElementById('menuHistory');
   if (!el) return;
   el.innerHTML = '<div style="padding:20px;color:#bbb;text-align:center;font-size:13px">読み込み中...</div>';
   try {
     const res  = await fetch('/api/sessions');
     const json = await res.json();
     const cnt  = json.sessions?.length || 0;
-
-    // タブのカウントバッジ更新
     const cntEl = document.getElementById('historyCnt');
     if (cntEl) { cntEl.style.display = cnt > 0 ? 'inline-flex' : 'none'; cntEl.textContent = cnt; }
-
     if (!json.ok || !cnt) {
-      el.innerHTML = `<div class="doc-empty">
-        <div class="doc-empty-icon">💾</div>
-        <div class="doc-empty-title">保存済みメニューはありません</div>
-        <div class="doc-empty-sub">メニューを作成後「💾 保存する」ボタンで<br>ここに蓄積されていきます</div>
-      </div>`;
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">💾</div><div class="empty-title">保存済みメニューはありません</div><div class="empty-sub">メニュー生成後「💾 保存する」ボタンで蓄積されます</div></div>`;
       return;
     }
     el.innerHTML = `<div class="doc-section-title">保存済みメニュー（${cnt}件）</div>
@@ -1275,7 +584,7 @@ async function loadMenuHistory() {
         </div>`).join('') +
       `</div>`;
   } catch {
-    el.innerHTML = '<div class="doc-empty"><div class="doc-empty-sub">読み込みに失敗しました</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="empty-sub">読み込みに失敗しました</div></div>';
   }
 }
 
@@ -1288,14 +597,14 @@ async function saveMenu() {
   try {
     const res = await fetch('/api/sessions', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ params: lastMenuParams, session: lastMenuSession }),
     });
     const json = await res.json();
     if (json.ok) {
       btn.textContent = '✅ 保存済み';
-      showToast('💾 保存しました！「保存済み一覧」タブで確認できます');
-      loadMenuHistory(); // バッジのカウントを即時更新
+      showToast('💾 保存しました！');
+      loadMenuHistory();
     }
   } catch {
     btn.disabled = false;
@@ -1339,24 +648,22 @@ function renderMenuResultInto(s, container) {
         <span class="drill-name">${h(drill.name)}</span>
         <span class="drill-time">⏱ ${drill.duration}分</span>
       </div>
-      <div class="drill-body">
-        <div class="drill-cols">
-          <div class="drill-info">
-            <div class="drill-section"><div class="section-label">目的</div><div class="section-content">${h(drill.objective)}</div></div>
-            <div class="drill-section"><div class="section-label">やり方</div><div class="section-content">${h(drill.description)}</div></div>
-            <div class="drill-section"><div class="section-label">オーガナイズ</div><div class="section-content">${h(drill.organization)}</div></div>
-            <div class="coaching-focus">👁 ${h(drill.coachingFocus)}</div>
-          </div>
-          ${diagSvg ? `<div class="drill-diagram"><div class="diagram-label">フィールド図</div>${diagSvg}</div>` : ''}
-          ${Array.isArray(drill.voiceCues) && drill.voiceCues.length ? `<div class="voice-cues"><div class="voice-cues-title">🎙 声かけ例</div>${drill.voiceCues.map(c=>`<div class="voice-cue-item">${h(c)}</div>`).join('')}</div>` : ''}
-          ${Array.isArray(drill.troubleshooting) && drill.troubleshooting.length ? `<div class="troubleshoot"><div class="troubleshoot-title">🔧 うまくいかないときは</div>${drill.troubleshooting.map(t=>`<div class="trouble-item"><div class="trouble-problem">${h(t.problem)}</div><div class="trouble-solution">${h(t.solution)}</div></div>`).join('')}</div>` : ''}
-          ${Array.isArray(drill.freezeMoments) && drill.freezeMoments.length ? `<div class="freeze-section"><div class="freeze-title">⏸ フリーズのタイミング</div>${drill.freezeMoments.map(f=>`<div class="freeze-item"><div class="freeze-trigger">${h(f.trigger)}</div><div class="freeze-coaching">${h(f.coaching)}</div></div>`).join('')}</div>` : ''}
+      <div class="drill-body"><div class="drill-cols">
+        <div>
+          <div class="drill-section"><div class="section-label">目的</div><div class="section-content">${h(drill.objective)}</div></div>
+          <div class="drill-section"><div class="section-label">やり方</div><div class="section-content">${h(drill.description)}</div></div>
+          <div class="drill-section"><div class="section-label">オーガナイズ</div><div class="section-content">${h(drill.organization)}</div></div>
+          <div class="coaching-focus">👁 ${h(drill.coachingFocus)}</div>
         </div>
-      </div>
+        ${diagSvg ? `<div class="drill-diagram"><div class="diagram-label">フィールド図</div>${diagSvg}</div>` : ''}
+        ${Array.isArray(drill.voiceCues) && drill.voiceCues.length ? `<div class="voice-cues"><div class="voice-cues-title">🎙 声かけ例</div>${drill.voiceCues.map(c=>`<div class="voice-cue-item">${h(c)}</div>`).join('')}</div>` : ''}
+        ${Array.isArray(drill.troubleshooting) && drill.troubleshooting.length ? `<div class="troubleshoot"><div class="troubleshoot-title">🔧 うまくいかないときは</div>${drill.troubleshooting.map(t=>`<div class="trouble-item"><div class="trouble-problem">${h(t.problem)}</div><div class="trouble-solution">${h(t.solution)}</div></div>`).join('')}</div>` : ''}
+        ${Array.isArray(drill.freezeMoments) && drill.freezeMoments.length ? `<div class="freeze-section"><div class="freeze-title">⏸ フリーズのタイミング</div>${drill.freezeMoments.map(f=>`<div class="freeze-item"><div class="freeze-trigger">${h(f.trigger)}</div><div class="freeze-coaching">${h(f.coaching)}</div></div>`).join('')}</div>` : ''}
+      </div></div>
     </div>`;
   });
   html += `<div class="coaching-points-card"><h3>🎙 コーチングポイント</h3>`;
-  s.coachingPoints.forEach(cp => {
+  (s.coachingPoints||[]).forEach(cp => {
     html += `<div class="cp-item"><div class="cp-point">▶ ${h(cp.point)}</div><div class="cp-phrase">${h(cp.examplePhrase)}</div></div>`;
   });
   html += `</div>`;
@@ -1366,7 +673,7 @@ function renderMenuResultInto(s, container) {
 function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
 function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('show'); }
 
-// ─── PDF Download ──────────────────────────────────────────────
+// ─── PDF Download ─────────────────────────────────────────────────────────────
 function downloadPDF(s) {
   if (!s) return;
   const PHASE_MAP = { warmup:'ウォームアップ', technical:'テクニカル', tactical:'グループ戦術', game:'ゲーム' };
@@ -1375,7 +682,6 @@ function downloadPDF(s) {
   const drillsHtml = s.drills.map(d => {
     const phaseName = PHASE_MAP[d.phase] || d.phase;
     const svgRaw = renderDiagramSVG(d.diagram) || '';
-    // SVGのサイズをPDF向けに調整（viewBox付きに置換）
     const svgForPdf = svgRaw.replace(/<svg([^>]*)width="(\d+)"([^>]*)height="(\d+)"/, (m, b, w, c, hh) =>
       `<svg${b}width="100%"${c}height="${hh}" viewBox="0 0 ${w} ${hh}" style="max-width:${w}px"`);
     return `
@@ -1398,33 +704,23 @@ function downloadPDF(s) {
     </div>`;
   }).join('');
 
-  const cpHtml = (s.coachingPoints || []).map(cp => `
-    <div class="cp">
-      <div class="cp-point">▶ ${e(cp.point)}</div>
-      <div class="cp-phrase">💬 ${e(cp.examplePhrase)}</div>
-    </div>`).join('');
+  const cpHtml = (s.coachingPoints||[]).map(cp => `
+    <div class="cp"><div class="cp-point">▶ ${e(cp.point)}</div><div class="cp-phrase">💬 ${e(cp.examplePhrase)}</div></div>`).join('');
 
   const meta = s.meta || {};
   const today = new Date().toLocaleDateString('ja-JP');
 
-  const html = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>${e(s.title)}</title>
+  const html = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${e(s.title)}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;font-size:10.5pt;color:#222;background:#fff;padding:0}
 @page{size:A4 portrait;margin:14mm 14mm 14mm 14mm}
 @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-
 .page-header{background:#1a1a6e;color:#fff;border-radius:8px;padding:13px 17px;margin-bottom:10px}
 .page-header h1{font-size:14pt;font-weight:900;margin-bottom:7px;line-height:1.4}
 .meta-chips{display:flex;flex-wrap:wrap;gap:5px;font-size:9pt}
 .meta-chip{background:rgba(255,255,255,.2);border-radius:12px;padding:2px 9px}
-
 .narrative{background:#fffbf0;border-left:4px solid #f5a623;padding:8px 12px;font-size:9.5pt;color:#555;line-height:1.7;margin-bottom:10px;border-radius:0 6px 6px 0}
-
 .drill{border:1px solid #dde3f0;border-radius:7px;margin-bottom:9px;page-break-inside:avoid;overflow:hidden}
 .drill-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#f8fafc;border-bottom:1px solid #e8edf5}
 .drill-head strong{flex:1;font-size:10.5pt}
@@ -1434,28 +730,21 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;font-size:10.5pt
 .phase-technical{background:#e8f5e9;color:#2e7d32}
 .phase-tactical{background:#e3f2fd;color:#1565c0}
 .phase-game{background:#fce4ec;color:#c62828}
-
 .drill-body{display:flex;gap:12px;padding:9px 12px;align-items:flex-start}
 .drill-info{flex:1;min-width:0}
 .row{font-size:9.5pt;color:#333;line-height:1.6;margin-bottom:6px}
 .lbl{font-size:8pt;font-weight:700;color:#aaa;text-transform:uppercase;display:block;margin-bottom:1px;letter-spacing:.3px}
 .focus-box{background:#f0f4ff;border-radius:5px;padding:5px 9px;font-size:9pt;color:#1a1a6e;margin-top:3px}
 .conn{border-left:3px solid #4caf50;padding:4px 8px;font-size:9pt;color:#555;margin-top:5px;background:#f9f9f9;border-radius:0 4px 4px 0}
-
 .diagram{width:100%;max-width:380px;margin:8px auto 0}
 .diagram svg{width:100%;height:auto;display:block;border-radius:6px}
-
 .cp-section{background:#1a1a6e;color:#fff;border-radius:8px;padding:12px 16px;margin-top:10px;page-break-inside:avoid}
 .cp-section h2{font-size:9.5pt;opacity:.75;margin-bottom:8px}
-.cp{margin-bottom:8px}
-.cp:last-child{margin-bottom:0}
+.cp{margin-bottom:8px}.cp:last-child{margin-bottom:0}
 .cp-point{font-weight:700;font-size:10.5pt;margin-bottom:2px}
 .cp-phrase{font-size:9pt;opacity:.82}
-
 .footer{text-align:right;font-size:8pt;color:#bbb;margin-top:8px}
-</style>
-</head>
-<body>
+</style></head><body>
 <div class="page-header">
   <h1>${e(s.title)}</h1>
   <div class="meta-chips">
@@ -1467,13 +756,9 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;font-size:10.5pt
 </div>
 ${s.sessionNarrative ? `<div class="narrative">${e(s.sessionNarrative)}</div>` : ''}
 ${drillsHtml}
-<div class="cp-section">
-  <h2>🎙 コーチングポイント</h2>
-  ${cpHtml}
-</div>
+<div class="cp-section"><h2>🎙 コーチングポイント</h2>${cpHtml}</div>
 <div class="footer">⚽ ペップ君 generated ${today}</div>
-</body>
-</html>`;
+</body></html>`;
 
   const win = window.open('', '_blank');
   if (!win) { alert('ポップアップがブロックされています。ブラウザの設定でポップアップを許可してください。'); return; }
@@ -1483,14 +768,13 @@ ${drillsHtml}
   setTimeout(() => win.print(), 600);
 }
 
-// ─── SVG Field Diagram ─────────────────────────────────────────
+// ─── SVG Field Diagram ────────────────────────────────────────────────────────
 function renderDiagramSVG(diagram) {
   if (!diagram) return '';
   const isHalf = (diagram.fieldType || 'half') !== 'full';
   const W = 220, H = isHalf ? 150 : 280;
   const parts = [];
 
-  // Field background
   parts.push(`<rect width="${W}" height="${H}" rx="4" fill="#3d8b37"/>`);
 
   if (isHalf) {
@@ -1513,19 +797,16 @@ function renderDiagramSVG(diagram) {
   const fx = x => Math.round(x / 100 * W);
   const fy = y => Math.round(y / 100 * H);
 
-  // Zones
   (diagram.zones || []).forEach(z => {
     parts.push(`<rect x="${fx(z.x)}" y="${fy(z.y)}" width="${fx(z.w)}" height="${fy(z.h)}" fill="rgba(255,255,100,.12)" stroke="rgba(255,255,100,.5)" stroke-width="1" stroke-dasharray="4,3"/>`);
     if (z.label) parts.push(`<text x="${fx(z.x)+fx(z.w)/2}" y="${fy(z.y)+fy(z.h)/2}" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="rgba(255,255,150,.9)">${h(z.label)}</text>`);
   });
 
-  // Cones
   (diagram.cones || []).forEach(c => {
     const cx = fx(c.x), cy = fy(c.y);
     parts.push(`<polygon points="${cx},${cy-7} ${cx-4},${cy+4} ${cx+4},${cy+4}" fill="#FFC107" stroke="#E65100" stroke-width=".5"/>`);
   });
 
-  // Arrows
   (diagram.arrows || []).forEach(a => {
     const x1 = fx(a.x1), y1 = fy(a.y1), x2 = fx(a.x2), y2 = fy(a.y2);
     const color = a.type === 'pass' ? '#90CAF9' : '#FFB74D';
@@ -1538,7 +819,6 @@ function renderDiagramSVG(diagram) {
     parts.push(`<polygon points="${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}" fill="${color}" opacity=".9"/>`);
   });
 
-  // Players (シンプル塗りつぶし円)
   const COLORS = { teamA: '#1a1a6e', teamB: '#c62828', neutral: '#e65100' };
   const drawC = (players, key) => (players || []).forEach(p => {
     const cx = fx(p.x), cy = fy(p.y), c = COLORS[key];
@@ -1555,69 +835,33 @@ function renderDiagramSVG(diagram) {
   drawC(diagram.teamB,    'teamB');
   drawC(diagram.neutrals, 'neutral');
 
-  // Notes label at bottom
   if (diagram.notes) {
     parts.push(`<rect x="0" y="${H-15}" width="${W}" height="15" fill="rgba(0,0,0,.45)" rx="0 0 4 4"/>`);
     parts.push(`<text x="${W/2}" y="${H-6}" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.85)">${h(diagram.notes)}</text>`);
   }
 
-  // Legend (C-shape style)
   const legY = diagram.notes ? H-28 : H-18;
-  const drawLegC = (lx, ly, c) => {
-    parts.push(`<circle cx="${lx}" cy="${ly}" r="5" fill="${c}" opacity=".9"/>`);
-  };
-  drawLegC(10, legY, '#1a1a6e');
+  const drawLeg = (lx, ly, c) => parts.push(`<circle cx="${lx}" cy="${ly}" r="5" fill="${c}" opacity=".9"/>`);
+  drawLeg(10, legY, '#1a1a6e');
   parts.push(`<text x="20" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">攻</text>`);
-  drawLegC(40, legY, '#c62828');
+  drawLeg(40, legY, '#c62828');
   parts.push(`<text x="50" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">守</text>`);
-  drawLegC(70, legY, '#e65100');
+  drawLeg(70, legY, '#e65100');
   parts.push(`<text x="80" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">中</text>`);
 
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;border-radius:8px;display:block">${parts.join('')}</svg>`;
 }
 
-// ─── Shared chat helpers ────────────────────────────────────────
-function appendBubble(section, role, text) {
-  const msgs = document.getElementById('msgs-' + section);
-  const row = document.createElement('div');
-  row.className = `bubble-row ${role}`;
-  row.innerHTML = `<div class="avatar ${role}">${role==='pep'?'P':'C'}</div><div class="bubble ${role}">${h(text).replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(row);
-  scrollBottom(section);
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-let typingRows = {};
-function showTyping(section) {
-  const msgs = document.getElementById('msgs-' + section);
-  const row = document.createElement('div');
-  row.className = 'bubble-row pep';
-  row.innerHTML = `<div class="avatar pep">P</div><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  msgs.appendChild(row);
-  typingRows[section] = row;
-  scrollBottom(section);
-}
-function hideTyping(section) {
-  if (typingRows[section]) { typingRows[section].remove(); delete typingRows[section]; }
-}
-
-function setWaiting(section, v) {
-  sectionWaiting[section] = v;
-  const btn = document.getElementById('btn-' + section);
-  const inp = document.getElementById('inp-' + section);
-  if (btn) btn.disabled = v;
-  if (inp) inp.disabled = v;
-}
-
-function scrollBottom(section) {
-  const msgs = document.getElementById('msgs-' + section);
-  if (msgs) msgs.scrollTop = msgs.scrollHeight;
-}
-
-function handleKey(e, section) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSection(section); }
-}
-function handleMenuKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMenuMessage(); }
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
 function autoResize(el) {
@@ -1625,7 +869,6 @@ function autoResize(el) {
   el.style.height = Math.min(el.scrollHeight, 100) + 'px';
 }
 
-// ─── Util ───────────────────────────────────────────────────────
 function h(s) {
   if (s == null) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
