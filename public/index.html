@@ -371,6 +371,7 @@ let lastMenuSession = null;
 let lastMenuParams = null;
 let modalSession = null;
 let currentProfile = null;
+let currentUid = null;
 let recognition = null;
 let micActive = false;
 
@@ -428,23 +429,28 @@ async function loadUsage() {
     const res  = await fetch('/api/me');
     const json = await res.json();
     if (!json.ok) return;
+    currentUid = json.uid;
     updateUsageBanner(json.used, json.limit, json.isPro);
   } catch {}
 }
 
 function updateUsageBanner(used, limit, isPro) {
-  const banner   = document.getElementById('usageBanner');
-  const textEl   = document.getElementById('usageText');
+  const banner    = document.getElementById('usageBanner');
+  const textEl    = document.getElementById('usageText');
+  const proBtn    = document.querySelector('.usage-pro-btn');
   const remaining = Math.max(0, limit - used);
   const pct = Math.min(100, (used / limit) * 100);
 
   const barColor = pct >= 80 ? 'warn' : '';
   textEl.innerHTML = `今月 <span class="usage-bar-wrap"><span class="usage-bar ${barColor}" style="width:${pct}%"></span></span> <strong>${remaining}回</strong>残り${isPro ? '（Pro）' : '（無料）'}`;
   banner.classList.remove('hidden');
+  if (proBtn) proBtn.style.display = (!isPro && remaining === 0) ? '' : 'none';
 }
 
 function showUpgradeModal() {
-  showToast('Pro機能は近日公開予定です！まずは無料版をお楽しみください。');
+  const uid = currentUid || '';
+  const base = 'https://buy.stripe.com/test_9B614mcxl5teg03gk0gUM00';
+  window.open(uid ? `${base}?client_reference_id=${uid}` : base, '_blank');
 }
 
 // ─── Chat ───────────────────────────────────────────────────────────────────

@@ -7,6 +7,8 @@ const crypto   = require('crypto');
 const { generateSession }                        = require('./src/ai/generate');
 const { coachChat, getProfile, saveProfile, resetHistory } = require('./src/ai/coach');
 const { readUsage }                              = require('./src/ai/usage-logger');
+const Stripe = require('stripe');
+const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 function getLocalIP() {
   const nets = os.networkInterfaces();
@@ -19,6 +21,37 @@ function getLocalIP() {
 }
 
 const app = express();
+
+// Stripe webhook needs raw body — must be registered before express.json()
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig    = req.headers['stripe-signature'];
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!stripe || !secret) return res.status(500).json({ error: 'Stripe not configured' });
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, secret);
+  } catch (err) {
+    console.error('[webhook] signature error:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const uid     = session.client_reference_id;
+    if (uid) {
+      if (!fs.existsSync(SUBS_DIR)) fs.mkdirSync(SUBS_DIR, { recursive: true });
+      const validUntil = new Date();
+      validUntil.setMonth(validUntil.getMonth() + 1);
+      fs.writeFileSync(
+        path.join(SUBS_DIR, `${uid}.json`),
+        JSON.stringify({ isPro: true, validUntil: validUntil.toISOString(), stripeSessionId: session.id, createdAt: new Date().toISOString() }, null, 2),
+        'utf8'
+      );
+      console.log('[webhook] Pro activated:', uid);
+    }
+  }
+  res.json({ received: true });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
