@@ -94,24 +94,45 @@ nav {
 .sample-label { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: #e63329; text-transform: uppercase; margin-bottom: 12px; }
 .sample-card {
   background: #fff; border-radius: 6px; overflow: hidden;
-  max-width: 820px; box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+  max-width: 900px; box-shadow: 0 2px 20px rgba(0,0,0,0.07);
   border: 1px solid #e8e8e8;
 }
 .sample-head { background: #111; color: #fff; padding: 24px 32px; }
 .sample-session-title { font-size: 19px; font-weight: 900; margin-bottom: 10px; }
 .sample-meta { display: flex; gap: 20px; flex-wrap: wrap; }
 .sample-meta span { font-size: 12px; color: rgba(255,255,255,0.55); }
-.drill { padding: 20px 32px; border-bottom: 1px solid #f0f0f0; display: grid; grid-template-columns: 72px 1fr; gap: 20px; align-items: start; }
-.drill:last-child { border-bottom: none; }
-.drill-n { font-size: 28px; font-weight: 900; color: #d8d8d8; line-height: 1; font-family: 'Arial', sans-serif; }
-.drill-phase { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.sample-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid #e8e8e8; }
+.sample-tab {
+  flex: none; padding: 14px 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  color: #bbb; cursor: pointer; white-space: nowrap;
+  border: none; border-bottom: 2px solid transparent;
+  background: none; font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sample-tab:hover { color: #555; }
+.sample-tab.active { color: #111; border-bottom-color: #111; }
+.sample-panel { display: none; }
+.sample-panel.active { display: grid; grid-template-columns: 1fr 1fr; min-height: 320px; }
+.sp-info { padding: 32px; border-right: 1px solid #f0f0f0; }
+.sp-phase { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
 .ph-warmup   { color: #c0821a; }
 .ph-technical { color: #1a6ab0; }
 .ph-tactical  { color: #7b3fb0; }
 .ph-game      { color: #1a7a3c; }
-.drill-name { font-size: 16px; font-weight: 900; margin-bottom: 5px; }
-.drill-desc { font-size: 13px; color: #666; line-height: 1.8; }
-.drill-info { font-size: 12px; color: #aaa; margin-top: 6px; }
+.sp-name { font-size: 19px; font-weight: 900; line-height: 1.3; margin-bottom: 4px; }
+.sp-time { font-size: 12px; color: #aaa; margin-bottom: 20px; }
+.sp-obj { font-size: 14px; color: #444; line-height: 1.9; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; margin-bottom: 16px; }
+.sp-cue-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; margin-bottom: 8px; }
+.sp-cue { font-size: 13px; color: #555; line-height: 1.8; background: #f7f6f3; padding: 12px 16px; border-left: 3px solid #111; }
+.sp-field { padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f7f6f3; }
+.sp-field svg { width: 100%; max-width: 320px; border-radius: 6px; box-shadow: 0 2px 16px rgba(0,0,0,0.12); }
+.sp-org { font-size: 11px; color: #aaa; text-align: center; margin-top: 12px; line-height: 1.6; }
+@media (max-width: 840px) {
+  .sample-panel.active { grid-template-columns: 1fr; }
+  .sp-info { border-right: none; border-bottom: 1px solid #f0f0f0; padding: 24px 20px; }
+  .sp-field { padding: 24px 20px; }
+}
 
 /* Features */
 .features { background: #fff; border-top: 1px solid #e0e0e0; }
@@ -220,7 +241,7 @@ footer {
   <hr class="divider">
   <div class="about-body">
     <p>毎週の練習計画に頭を悩ませているコーチは多い。「このテーマに合う練習は？」「ドリルの順番は？」——そんな準備の時間を、ペップ君が大幅に削る。</p>
-    <p>ペップ君はチームの状況を記憶し、ペップ・グアルディオラや風間八宏の指導哲学をもとに、今日に最適な練習メニューを設計する。</p>
+    <p>ペップ君はチームの状況を記憶し、世界トップレベルの指導哲学と最新のサッカー理論をもとに、今日に最適な練習メニューを設計する。</p>
     <p>チーム名と今日のテーマを伝えるだけで、ウォームアップからゲームまで5ドリルと配置図が揃う。</p>
   </div>
 </section>
@@ -261,59 +282,229 @@ footer {
         <span>シュート・得点力</span>
       </div>
     </div>
-    <div class="drill">
-      <div>
-        <div class="drill-n">01</div>
-        <div class="drill-phase ph-warmup">Warmup</div>
+    <div class="sample-tabs">
+      <button class="sample-tab active" onclick="showDrill(0)">01 Warmup</button>
+      <button class="sample-tab" onclick="showDrill(1)">02 Technical</button>
+      <button class="sample-tab" onclick="showDrill(2)">03 Technical</button>
+      <button class="sample-tab" onclick="showDrill(3)">04 Tactical</button>
+      <button class="sample-tab" onclick="showDrill(4)">05 Game</button>
+    </div>
+
+    <!-- Drill 01 -->
+    <div class="sample-panel active" id="drill-0">
+      <div class="sp-info">
+        <div class="sp-phase ph-warmup">Warmup</div>
+        <div class="sp-name">ゴールハンター・ボールマスタリー＋シュートゲート</div>
+        <div class="sp-time">10分</div>
+        <div class="sp-obj">足元の感覚を温めながら、ゴールを狙う意識をウォームアップから引き出す。コーンゲートへのシュートで首振り習慣と正確性を同時に身につける。</div>
+        <div class="sp-cue-label">コーチングポイント</div>
+        <div class="sp-cue">ゲートを狙う前に顔を上げてゲートの位置を確認しているか（首振り習慣）</div>
       </div>
-      <div>
-        <div class="drill-name">ゴールハンター・ボールマスタリー＋シュートゲート</div>
-        <div class="drill-desc">ペナルティエリア付近でコーン8個のゲートを散在配置。合図でボールを最寄りのゲートに転がして通過させる。インサイド・アウトサイド切り替えを意識しながらゴールを狙う感覚をウォームアップから作る。</div>
-        <div class="drill-info">10分 / 20m×20mグリッド / コーン16本・ボール12個</div>
+      <div class="sp-field">
+        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="220" fill="#2d7a44" rx="4"/>
+          <rect x="10" y="10" width="300" height="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" rx="2"/>
+          <defs>
+            <marker id="wa" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="rgba(255,255,255,0.75)"/></marker>
+          </defs>
+          <!-- コーンゲート ×4 -->
+          <polygon points="55,48 50,63 60,63" fill="#f97316"/><polygon points="78,48 73,63 83,63" fill="#f97316"/>
+          <polygon points="180,35 175,50 185,50" fill="#f97316"/><polygon points="203,35 198,50 208,50" fill="#f97316"/>
+          <polygon points="250,95 245,110 255,110" fill="#f97316"/><polygon points="273,95 268,110 278,110" fill="#f97316"/>
+          <polygon points="55,140 50,155 60,155" fill="#f97316"/><polygon points="78,140 73,155 83,155" fill="#f97316"/>
+          <!-- 選手 -->
+          <circle cx="125" cy="110" r="9" fill="#4a90d9"/><text x="125" y="114" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">P1</text>
+          <circle cx="195" cy="145" r="9" fill="#4a90d9"/><text x="195" y="149" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">P2</text>
+          <circle cx="155" cy="170" r="9" fill="#4a90d9"/><text x="155" y="174" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">P3</text>
+          <circle cx="95" cy="90" r="9" fill="#4a90d9"/><text x="95" y="94" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">P4</text>
+          <!-- シュート矢印 -->
+          <path d="M125 101 L75 60" stroke="rgba(255,255,255,0.75)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#wa)"/>
+          <path d="M195 136 L255 103" stroke="rgba(255,255,255,0.75)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#wa)"/>
+          <!-- 凡例 -->
+          <circle cx="18" cy="207" r="5" fill="#4a90d9"/><text x="28" y="210" fill="rgba(255,255,255,0.65)" font-size="8">攻</text>
+          <polygon points="65,205 62,212 68,212" fill="#f97316"/><text x="73" y="210" fill="rgba(255,255,255,0.65)" font-size="8">コーン</text>
+        </svg>
+        <div class="sp-org">20m×20m / コーン16本（ゲート8個）/ ボール12個</div>
       </div>
     </div>
-    <div class="drill">
-      <div>
-        <div class="drill-n">02</div>
-        <div class="drill-phase ph-technical">Technical</div>
+
+    <!-- Drill 02 -->
+    <div class="sample-panel" id="drill-1">
+      <div class="sp-info">
+        <div class="sp-phase ph-technical">Technical</div>
+        <div class="sp-name">3ポイント・インサイドシュート精度ドリル</div>
+        <div class="sp-time">12分</div>
+        <div class="sp-obj">軸足の置き方・足の振り方を正しく身につけ、インサイドで枠内に正確に蹴る技術を習得する。3カ所のシュートポイントからローテーション。3分×3セット。</div>
+        <div class="sp-cue-label">コーチングポイント</div>
+        <div class="sp-cue">軸足がボールの真横（約15cm横）に踏み込めているか</div>
       </div>
-      <div>
-        <div class="drill-name">3ポイント・インサイドシュート精度ドリル</div>
-        <div class="drill-desc">ゴール正面5m・斜め左7m・斜め右7mの3カ所にシュートポイントを設置。「止める→軸足をボールの横に置く→インサイドで振り抜く」の3ステップを声に出しながら繰り返す。ポイントをローテーション。</div>
-        <div class="drill-info">12分 / 3列4名 / ゴール1個・コーン6本</div>
+      <div class="sp-field">
+        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="220" fill="#2d7a44" rx="4"/>
+          <rect x="110" y="12" width="100" height="24" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none"/>
+          <rect x="90" y="36" width="140" height="46" stroke="rgba(255,255,255,0.22)" stroke-width="1" fill="none"/>
+          <defs>
+            <marker id="ta" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#facc15"/></marker>
+          </defs>
+          <circle cx="160" cy="30" r="8" fill="#e05050"/><text x="160" y="34" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">GK</text>
+          <!-- 正面列 -->
+          <circle cx="160" cy="125" r="9" fill="#4a90d9"/><text x="160" y="129" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P1</text>
+          <circle cx="160" cy="148" r="8" fill="#4a90d9" opacity="0.55"/><circle cx="160" cy="168" r="8" fill="#4a90d9" opacity="0.3"/>
+          <!-- 左列 -->
+          <circle cx="72" cy="118" r="9" fill="#4a90d9"/><text x="72" y="122" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P4</text>
+          <circle cx="68" cy="142" r="8" fill="#4a90d9" opacity="0.55"/>
+          <!-- 右列 -->
+          <circle cx="248" cy="118" r="9" fill="#4a90d9"/><text x="248" y="122" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P7</text>
+          <circle cx="252" cy="142" r="8" fill="#4a90d9" opacity="0.55"/>
+          <!-- シュート矢印 -->
+          <path d="M160 116 L160 56" stroke="#facc15" stroke-width="1.8" marker-end="url(#ta)"/>
+          <path d="M72 109 L148 42" stroke="#facc15" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#ta)"/>
+          <path d="M248 109 L172 42" stroke="#facc15" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#ta)"/>
+          <!-- ボール -->
+          <circle cx="160" cy="117" r="4" fill="#fff" opacity="0.85"/><circle cx="72" cy="110" r="4" fill="#fff" opacity="0.7"/><circle cx="248" cy="110" r="4" fill="#fff" opacity="0.7"/>
+          <!-- 凡例 -->
+          <circle cx="18" cy="207" r="5" fill="#4a90d9"/><text x="28" y="210" fill="rgba(255,255,255,0.65)" font-size="8">攻</text>
+          <circle cx="58" cy="207" r="5" fill="#e05050"/><text x="68" y="210" fill="rgba(255,255,255,0.65)" font-size="8">GK</text>
+        </svg>
+        <div class="sp-org">3列4名 / ゴール1個 / コーン6本</div>
       </div>
     </div>
-    <div class="drill">
-      <div>
-        <div class="drill-n">03</div>
-        <div class="drill-phase ph-technical">Technical</div>
+
+    <!-- Drill 03 -->
+    <div class="sample-panel" id="drill-2">
+      <div class="sp-info">
+        <div class="sp-phase ph-technical">Technical</div>
+        <div class="sp-name">ファーストタッチ→前向きシュートコンビネーション</div>
+        <div class="sp-time">13分</div>
+        <div class="sp-obj">パスを受けてから素早く前を向き、シュートまでの一連動きをスムーズにつなげる。2タッチ以内でシュートを打つルールを設定。6分×2セット。</div>
+        <div class="sp-cue-label">コーチングポイント</div>
+        <div class="sp-cue">ファーストタッチの方向がゴール向きになっているか（横か後ろに向いていないか）</div>
       </div>
-      <div>
-        <div class="drill-name">ファーストタッチ→前向きシュートコンビネーション</div>
-        <div class="drill-desc">2列（各6名）でサイドからパスを受け、ファーストタッチで前を向いてシュートを打つ。「ボールを迎えに行く→体を横向きにして受ける→ゴールに向かってタッチ→シュート」の流れを2タッチ以内で完結させる。</div>
-        <div class="drill-info">13分 / 2列6名 / ゴール1個・ボール4個</div>
+      <div class="sp-field">
+        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="220" fill="#2d7a44" rx="4"/>
+          <rect x="110" y="12" width="100" height="24" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none"/>
+          <rect x="85" y="36" width="150" height="52" stroke="rgba(255,255,255,0.22)" stroke-width="1" fill="none"/>
+          <defs>
+            <marker id="pa" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="rgba(255,255,255,0.8)"/></marker>
+            <marker id="sh2" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#facc15"/></marker>
+          </defs>
+          <circle cx="160" cy="30" r="8" fill="#e05050"/><text x="160" y="34" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">GK</text>
+          <!-- パス出し -->
+          <circle cx="20" cy="128" r="8" fill="#888"/><text x="20" y="132" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P</text>
+          <circle cx="300" cy="128" r="8" fill="#888"/><text x="300" y="132" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P</text>
+          <!-- 受け手 -->
+          <circle cx="128" cy="122" r="9" fill="#4a90d9"/><text x="128" y="126" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P2</text>
+          <circle cx="192" cy="122" r="9" fill="#4a90d9"/><text x="192" y="126" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">P5</text>
+          <!-- 列の残り -->
+          <circle cx="128" cy="148" r="7" fill="#4a90d9" opacity="0.5"/><circle cx="128" cy="166" r="7" fill="#4a90d9" opacity="0.3"/>
+          <circle cx="192" cy="148" r="7" fill="#4a90d9" opacity="0.5"/><circle cx="192" cy="166" r="7" fill="#4a90d9" opacity="0.3"/>
+          <!-- パス矢印 -->
+          <path d="M30 126 L118 122" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#pa)"/>
+          <path d="M290 126 L202 122" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#pa)"/>
+          <!-- シュート矢印 -->
+          <path d="M128 113 L148 50" stroke="#facc15" stroke-width="1.8" marker-end="url(#sh2)"/>
+          <path d="M192 113 L172 50" stroke="#facc15" stroke-width="1.8" marker-end="url(#sh2)"/>
+          <!-- ボール -->
+          <circle cx="120" cy="122" r="4" fill="#fff" opacity="0.85"/>
+          <!-- 凡例 -->
+          <circle cx="18" cy="207" r="5" fill="#4a90d9"/><text x="28" y="210" fill="rgba(255,255,255,0.65)" font-size="8">攻</text>
+          <circle cx="58" cy="207" r="5" fill="#888"/><text x="68" y="210" fill="rgba(255,255,255,0.65)" font-size="8">パス出し</text>
+        </svg>
+        <div class="sp-org">2列6名 / ゴール1個 / ボール4個</div>
       </div>
     </div>
-    <div class="drill">
-      <div>
-        <div class="drill-n">04</div>
-        <div class="drill-phase ph-tactical">Tactical</div>
+
+    <!-- Drill 04 -->
+    <div class="sample-panel" id="drill-3">
+      <div class="sp-info">
+        <div class="sp-phase ph-tactical">Tactical</div>
+        <div class="sp-name">3人連動フィニッシュ・ポジショナルパターン</div>
+        <div class="sp-time">15分</div>
+        <div class="sp-obj">CB→MF→FWの3人でチャンスを作り、シュートを打つ「型」を体に覚えさせる。役割ローテーションで4分×3セット。慣れたらバリエーションを追加。</div>
+        <div class="sp-cue-label">コーチングポイント</div>
+        <div class="sp-cue">FWが縦パスの前に斜めに動いて「受ける準備」ができているか（動き出しのタイミング）</div>
       </div>
-      <div>
-        <div class="drill-name">3人連動フィニッシュ・ポジショナルパターン</div>
-        <div class="drill-desc">CB→MF（ターン）→FW（斜め抜け出し）→シュートの3人連動パターンを繰り返す。慣れたら「MFがシュート」「FWが落としてMFがシュート」のバリエーションも追加し、動き出しのタイミングと判断を磨く。</div>
-        <div class="drill-info">15分 / 3人組×4組 / ハーフコート・ボール4個</div>
+      <div class="sp-field">
+        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="220" fill="#2d7a44" rx="4"/>
+          <rect x="110" y="12" width="100" height="24" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none"/>
+          <rect x="90" y="36" width="140" height="48" stroke="rgba(255,255,255,0.22)" stroke-width="1" fill="none"/>
+          <line x1="10" y1="110" x2="310" y2="110" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <defs>
+            <marker id="cp" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="rgba(255,255,255,0.8)"/></marker>
+            <marker id="cr" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#facc15"/></marker>
+          </defs>
+          <circle cx="160" cy="30" r="8" fill="#e05050"/><text x="160" y="34" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">GK</text>
+          <!-- FW -->
+          <circle cx="178" cy="72" r="11" fill="#4a90d9"/><text x="178" y="76" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">FW</text>
+          <!-- MF -->
+          <circle cx="155" cy="128" r="11" fill="#4a90d9"/><text x="155" y="132" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">MF</text>
+          <!-- CB -->
+          <circle cx="145" cy="180" r="11" fill="#4a90d9"/><text x="145" y="184" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">CB</text>
+          <!-- パス: CB→MF -->
+          <path d="M148 169 L152 141" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#cp)"/>
+          <!-- パス: MF→FW -->
+          <path d="M160 118 L172 85" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#cp)"/>
+          <!-- FW動き出し -->
+          <path d="M152 133 L174 76" stroke="#facc15" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#cr)"/>
+          <!-- シュート FW→ゴール -->
+          <path d="M178 61 L165 42" stroke="#facc15" stroke-width="1.8" marker-end="url(#cr)"/>
+          <!-- ボール -->
+          <circle cx="146" cy="171" r="4" fill="#fff" opacity="0.85"/>
+          <!-- 凡例 -->
+          <circle cx="18" cy="207" r="5" fill="#4a90d9"/>
+          <text x="28" y="210" fill="rgba(255,255,255,0.65)" font-size="8">攻</text>
+          <line x1="58" y1="207" x2="78" y2="207" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text x="83" y="210" fill="rgba(255,255,255,0.65)" font-size="8">パス</text>
+          <line x1="118" y1="207" x2="138" y2="207" stroke="#facc15" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text x="143" y="210" fill="rgba(255,255,255,0.65)" font-size="8">動き出し</text>
+        </svg>
+        <div class="sp-org">3人組×4組 / ハーフコート / ボール4個</div>
       </div>
     </div>
-    <div class="drill">
-      <div>
-        <div class="drill-n">05</div>
-        <div class="drill-phase ph-game">Game</div>
+
+    <!-- Drill 05 -->
+    <div class="sample-panel" id="drill-4">
+      <div class="sp-info">
+        <div class="sp-phase ph-game">Game</div>
+        <div class="sp-name">シュートゾーン侵入ゲーム 4v4+GK</div>
+        <div class="sp-time">10分</div>
+        <div class="sp-obj">ペナルティエリア前を「シュートゾーン」として設定。ゾーン内からシュートして決めたゴールは2点、ゾーン外は0点。練習で磨いたスキルをゲームで自然に発揮させる。</div>
+        <div class="sp-cue-label">コーチングポイント</div>
+        <div class="sp-cue">シュートゾーン内でボールを受けた瞬間にゴールを向けているか（前向きの姿勢）</div>
       </div>
-      <div>
-        <div class="drill-name">シュートゾーン侵入ゲーム 4v4+GK</div>
-        <div class="drill-desc">ペナルティエリア前を「シュートゾーン」として設定。ゾーン内からシュートして決めたゴールは2点・ゾーン外は0点。練習してきたシュートフォーム・ファーストタッチ・連動パターンをゲームの中で自然に発揮させる。</div>
-        <div class="drill-info">10分 / 4v4+GK×2組 / ハーフコート・コーン4本</div>
+      <div class="sp-field">
+        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="220" fill="#2d7a44" rx="4"/>
+          <rect x="10" y="10" width="300" height="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" rx="2"/>
+          <rect x="110" y="12" width="100" height="24" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none"/>
+          <defs>
+            <marker id="ga" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#facc15"/></marker>
+          </defs>
+          <!-- シュートゾーンライン -->
+          <line x1="10" y1="108" x2="310" y2="108" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" stroke-dasharray="8,4"/>
+          <text x="14" y="104" fill="rgba(255,255,255,0.6)" font-size="8">シュートゾーン 2点</text>
+          <circle cx="160" cy="30" r="8" fill="#e05050"/><text x="160" y="34" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">GK</text>
+          <!-- 攻撃側（ゾーン内2名） -->
+          <circle cx="128" cy="80" r="9" fill="#4a90d9"/><text x="128" y="84" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">A1</text>
+          <circle cx="200" cy="86" r="9" fill="#4a90d9"/><text x="200" y="90" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">A2</text>
+          <!-- 攻撃側（ゾーン外2名） -->
+          <circle cx="98" cy="138" r="9" fill="#4a90d9"/><text x="98" y="142" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">A3</text>
+          <circle cx="180" cy="148" r="9" fill="#4a90d9"/><text x="180" y="152" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">A4</text>
+          <!-- 守備側 -->
+          <circle cx="158" cy="75" r="9" fill="#e05050"/><text x="158" y="79" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">B1</text>
+          <circle cx="238" cy="90" r="9" fill="#e05050"/><text x="238" y="94" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">B2</text>
+          <circle cx="138" cy="138" r="9" fill="#e05050"/><text x="138" y="142" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">B3</text>
+          <circle cx="228" cy="150" r="9" fill="#e05050"/><text x="228" y="154" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">B4</text>
+          <!-- シュート -->
+          <path d="M128 71 L148 42" stroke="#facc15" stroke-width="1.8" marker-end="url(#ga)"/>
+          <circle cx="128" cy="72" r="4" fill="#fff" opacity="0.85"/>
+          <!-- 凡例 -->
+          <circle cx="18" cy="207" r="5" fill="#4a90d9"/><text x="28" y="210" fill="rgba(255,255,255,0.65)" font-size="8">攻</text>
+          <circle cx="55" cy="207" r="5" fill="#e05050"/><text x="65" y="210" fill="rgba(255,255,255,0.65)" font-size="8">守</text>
+        </svg>
+        <div class="sp-org">4v4+GK / ハーフコート / コーン4本（ゾーンライン）</div>
       </div>
     </div>
   </div>
@@ -337,7 +528,7 @@ footer {
     </div>
     <div class="feat-item">
       <div class="feat-title">名将の知識をベースに設計</div>
-      <div class="feat-desc">ペップ・グアルディオラ、風間八宏、クロップ、オシム——名将たちの指導哲学をAIが学習し、理論的な裏付けのあるメニューを生成する。</div>
+      <div class="feat-desc">世界中の名将たちが実践してきた指導哲学と戦術理論をAIが学習し、理論的な裏付けのある練習メニューを生成する。</div>
     </div>
     <div class="feat-item">
       <div class="feat-title">年代・レベルに合わせて変わる</div>
@@ -363,5 +554,11 @@ footer {
   <div class="foot-copy">2026 FunForward Group</div>
 </footer>
 
+<script>
+function showDrill(i) {
+  document.querySelectorAll('.sample-tab').forEach((t,j) => t.classList.toggle('active', i===j));
+  document.querySelectorAll('.sample-panel').forEach((p,j) => p.classList.toggle('active', i===j));
+}
+</script>
 </body>
 </html>
