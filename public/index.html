@@ -202,9 +202,9 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .pp-empty{font-size:12px;color:#bbb;text-align:center;padding:20px;line-height:1.8}
 
 /* ─── Onboarding overlay ─────────────────────── */
-.ob-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,110,.88);z-index:300;align-items:center;justify-content:center;padding:20px}
+.ob-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,110,.88);z-index:300;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .ob-overlay.show{display:flex}
-.ob-card{background:#fff;border-radius:20px;max-width:400px;width:100%;padding:28px 28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:obIn .3s ease}
+.ob-card{background:#fff;border-radius:20px;max-width:400px;width:100%;padding:28px 28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:obIn .3s ease;margin:auto}
 @keyframes obIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .ob-progress{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:22px}
 .ob-step{width:28px;height:28px;border-radius:50%;border:2px solid #ddd;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .25s}
@@ -389,6 +389,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   await loadUsage();
   loadMenuHistory();
   document.getElementById('msgInput').focus();
+});
+
+// モバイルキーボードが出たとき、フォーカス中の入力欄をスクロールして見えるようにする
+document.addEventListener('focusin', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350);
+  }
 });
 
 async function loadProfile() {
