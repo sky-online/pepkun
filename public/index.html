@@ -391,19 +391,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('msgInput').focus();
 });
 
-// モバイルキーボードが出たとき、フォーカス中の入力欄をスクロールして見えるようにする
+// オーバーレイ内の入力欄にフォーカスしたとき、キーボードで隠れないようにスクロール
 document.addEventListener('focusin', function(e) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-    setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350);
-  }
+  if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') return;
+  const inOverlay = e.target.closest('.ob-overlay, .modal-overlay, .profile-overlay');
+  if (!inOverlay) return;
+  setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350);
 });
-
-// dvh未対応ブラウザ向け: キーボード表示時にbodyの高さをvisualViewportに合わせる
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    document.body.style.height = window.visualViewport.height + 'px';
-  });
-}
 
 // ─── チャット履歴 localStorage ────────────────────────────────────────────────
 const CHAT_KEY = 'pepkun_chat_v1';
@@ -426,6 +420,8 @@ function restoreChatFromStorage() {
     const msgs = JSON.parse(localStorage.getItem(CHAT_KEY) || '[]');
     if (!msgs.length) return false;
     msgs.forEach(m => addMessage(m.role, m.content, null, false));
+    const container = document.getElementById('messages');
+    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
     return true;
   } catch { return false; }
 }
@@ -698,7 +694,7 @@ function addMessage(role, content, suggestions, save = true) {
     });
     container.appendChild(sr);
   }
-  container.scrollTop = container.scrollHeight;
+  requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
   if (save) saveMsgToStorage(role, content);
 }
 
