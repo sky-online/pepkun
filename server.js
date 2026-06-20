@@ -103,6 +103,17 @@ app.get('/api/profile', (req, res) => {
   res.json({ ok: true, profile });
 });
 
+// ── 初期セットアップ保存 ────────────────────────────────────────────────────
+app.post('/api/profile/setup', (req, res) => {
+  const code = effectiveCode(req);
+  if (!code) return res.status(401).json({ ok: false, error: '招待コードが必要です' });
+  const allowed = ['coachName', 'userCoachName', 'soccerStyle', 'coachingStyle'];
+  const updates = { setupDone: true };
+  allowed.forEach(k => { if (req.body[k]) updates[k] = req.body[k]; });
+  const profile = saveProfile(code, updates);
+  res.json({ ok: true, profile });
+});
+
 // ── 会話履歴リセット ────────────────────────────────────────────────────────
 app.delete('/api/coach/history', (req, res) => {
   const code = effectiveCode(req);
@@ -143,7 +154,7 @@ app.post('/api/generate', async (req, res) => {
     const profile = code ? getProfile(code) : null;
     const context = profile ? {
       concept: {
-        playingStyle: profile.concept || null,
+        playingStyle: profile.concept || profile.soccerStyle || null,
         keywords: Array.isArray(profile.keywords) ? profile.keywords : null,
         values: Array.isArray(profile.values) ? profile.values : null,
       },
@@ -153,6 +164,15 @@ app.post('/api/generate', async (req, res) => {
         currentFocus: profile.currentFocus || null,
       },
     } : {};
+
+    // soccerStyle/coachingStyle をnotesに自動注入
+    if (profile) {
+      const styleNotes = [
+        profile.soccerStyle   ? `目指すスタイル: ${profile.soccerStyle}`   : null,
+        profile.coachingStyle ? `指導方針: ${profile.coachingStyle}` : null,
+      ].filter(Boolean).join(' / ');
+      if (styleNotes) params.notes = [styleNotes, params.notes].filter(Boolean).join('。');
+    }
 
     console.log('[generate]', params);
     const result = await generateSession(params, context);

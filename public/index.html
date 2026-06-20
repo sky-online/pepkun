@@ -159,6 +159,62 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);background:#1a1a6e;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ─── Suggestion buttons ─────────────────────── */
+.suggestions-row{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 6px 35px}
+.suggestion-btn{background:#f0f4ff;border:1px solid #c5cae9;border-radius:16px;padding:5px 12px;font-size:12px;font-weight:600;color:#1a1a6e;cursor:pointer;transition:all .2s;font-family:inherit}
+.suggestion-btn:hover{background:#1a1a6e;color:#fff;border-color:#1a1a6e}
+
+/* ─── Team badge clickable ───────────────────── */
+.team-badge{cursor:pointer;transition:background .2s}
+.team-badge:hover{background:rgba(255,255,255,.25)}
+.team-badge::after{content:' ›';opacity:.55;font-weight:300;font-size:13px}
+
+/* ─── Profile panel ──────────────────────────── */
+.profile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150;justify-content:flex-end}
+.profile-overlay.show{display:flex}
+.profile-panel{background:#fff;width:300px;max-width:92vw;height:100%;overflow-y:auto;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.15);animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.pp-head{background:#1a1a6e;color:#fff;padding:18px 18px 14px;flex-shrink:0}
+.pp-close{float:right;background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;line-height:26px;text-align:center;font-family:inherit}
+.pp-coach-row{display:flex;align-items:center;gap:12px;margin-top:12px}
+.pp-coach-avatar{width:44px;height:44px;border-radius:50%;background:#e63329;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pp-coach-name{font-size:15px;font-weight:900}
+.pp-coach-role{font-size:11px;opacity:.72;margin-top:2px}
+.pp-body{padding:16px;flex:1}
+.pp-section{margin-bottom:14px}
+.pp-section-title{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;border-bottom:1px solid #f0f0f0;padding-bottom:5px}
+.pp-item{margin-bottom:7px}
+.pp-label{font-size:10px;color:#999;margin-bottom:2px}
+.pp-value{font-size:12px;color:#333;font-weight:600;line-height:1.5}
+.pp-chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;margin:2px 2px 0 0}
+.pp-chip-green{background:#e8f5e9;color:#2e7d32}
+.pp-chip-yellow{background:#fff8e1;color:#e65100}
+.pp-empty{font-size:12px;color:#bbb;text-align:center;padding:20px;line-height:1.8}
+
+/* ─── Onboarding overlay ─────────────────────── */
+.ob-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,110,.88);z-index:300;align-items:center;justify-content:center;padding:20px}
+.ob-overlay.show{display:flex}
+.ob-card{background:#fff;border-radius:20px;max-width:400px;width:100%;padding:28px 28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:obIn .3s ease}
+@keyframes obIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ob-progress{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:22px}
+.ob-step{width:28px;height:28px;border-radius:50%;border:2px solid #ddd;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .25s}
+.ob-step.active{border-color:#1a1a6e;background:#1a1a6e;color:#fff}
+.ob-step.done{border-color:#4caf50;background:#4caf50;color:#fff}
+.ob-line{width:28px;height:2px;background:#eee}
+.ob-icon{font-size:40px;text-align:center;margin-bottom:8px}
+.ob-title{font-size:16px;font-weight:900;color:#1a1a6e;text-align:center;margin-bottom:4px}
+.ob-subtitle{font-size:12px;color:#888;text-align:center;margin-bottom:16px;line-height:1.6}
+.ob-choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.ob-choice{background:#f5f7ff;border:1.5px solid #e0e6f0;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;color:#333;cursor:pointer;text-align:left;font-family:inherit;transition:all .18s}
+.ob-choice:hover{border-color:#1a1a6e;color:#1a1a6e;background:#eef0fb}
+.ob-choice.selected{border-color:#1a1a6e;background:#1a1a6e;color:#fff}
+.ob-or{font-size:11px;color:#ccc;text-align:center;margin:6px 0}
+.ob-input{width:100%;border:1.5px solid #e0e6f0;border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;transition:border .18s;box-sizing:border-box}
+.ob-input:focus{border-color:#1a1a6e}
+.ob-next{width:100%;margin-top:16px;background:#e63329;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;transition:background .2s}
+.ob-next:hover:not(:disabled){background:#c0271f}
+.ob-next:disabled{background:#ccc;cursor:not-allowed}
+
 /* ─── Mobile ─────────────────────────────────── */
 @media(min-width:768px){
   .chat-panel,.menu-panel{display:flex !important}
@@ -185,7 +241,7 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
   </div>
   <div class="header-right">
     <button class="btn-reset" onclick="resetConversation()">🔄 新しく作る</button>
-    <div id="teamBadge" class="team-badge">チーム未設定</div>
+    <div id="teamBadge" class="team-badge" onclick="showProfile()" title="プロフィールを見る">チーム未設定</div>
   </div>
 </header>
 
@@ -243,6 +299,42 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Onboarding overlay -->
+<div class="ob-overlay" id="obOverlay">
+  <div class="ob-card">
+    <div class="ob-progress">
+      <div class="ob-step" id="ob-s1">1</div>
+      <div class="ob-line"></div>
+      <div class="ob-step" id="ob-s2">2</div>
+      <div class="ob-line"></div>
+      <div class="ob-step" id="ob-s3">3</div>
+      <div class="ob-line"></div>
+      <div class="ob-step" id="ob-s4">4</div>
+    </div>
+    <div class="ob-icon" id="ob-icon">👤</div>
+    <div class="ob-title" id="ob-title"></div>
+    <div class="ob-subtitle" id="ob-subtitle"></div>
+    <div class="ob-choices" id="ob-choices"></div>
+    <div class="ob-or">または自由に入力</div>
+    <input class="ob-input" id="ob-input" placeholder="" oninput="updateNextBtn()">
+    <button class="ob-next" id="ob-next" onclick="nextObStep()" disabled>次へ →</button>
+  </div>
+</div>
+
+<!-- Profile panel -->
+<div class="profile-overlay" id="profileOverlay" onclick="closeProfileOverlay(event)">
+  <div class="profile-panel">
+    <div class="pp-head">
+      <button class="pp-close" onclick="closeProfileDirect()">✕</button>
+      <div style="font-size:11px;opacity:.7;font-weight:700">専属コーチ プロフィール</div>
+      <div class="pp-coach-row" id="ppCoachRow"></div>
+    </div>
+    <div class="pp-body" id="ppBody">
+      <div class="pp-empty">プロフィールを読み込み中...</div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
@@ -288,19 +380,25 @@ async function loadProfile() {
     const json = await res.json();
     currentProfile = json.profile;
     updateTeamBadge(currentProfile);
-    showGreeting(currentProfile);
+    if (!currentProfile || !currentProfile.setupDone) {
+      showOnboarding();
+    } else {
+      showGreeting(currentProfile);
+    }
   } catch {
     showGreeting(null);
   }
 }
 
 function showGreeting(profile) {
+  const coachName     = profile?.coachName     || 'ペップコーチ';
+  const userCoachName = profile?.userCoachName || 'コーチ';
   if (profile?.teamName) {
     const sessionInfo = profile.sessionCount > 0 ? `（${profile.sessionCount}回目）` : '';
     const lastInfo = profile.lastTheme ? `前回は「${profile.lastTheme}」をやりました。` : '';
-    addMessage('coach', `${profile.teamName}${sessionInfo}、お疲れ様です！${lastInfo}\n\n今日のテーマは何にしますか？試合の状況や課題があれば教えてもらえると、より的確なメニューを作れます。`);
+    addMessage('coach', `${userCoachName}、${coachName}です！${profile.teamName}${sessionInfo}、お疲れ様です！${lastInfo}\n\n今日のテーマは何にしますか？`, null);
   } else {
-    addMessage('coach', 'こんにちは！⚽ 専属コーチとして担当させていただきます。\n\nチーム名と対象年代を教えてください。すぐに練習メニューを作れます！\n\n🎙️ マイクボタンで音声入力もできます。');
+    addMessage('coach', `${userCoachName}、${coachName}です！⚽\n\nチーム名と対象年代を教えてください。すぐに練習メニューを作れます！\n\n🎙️ マイクボタンで音声入力もできます。`, null);
   }
 }
 
@@ -332,7 +430,7 @@ async function sendMessage() {
     hideTyping();
     if (!json.ok) throw new Error(json.error);
 
-    addMessage('coach', json.message);
+    addMessage('coach', json.message, json.suggestions);
 
     if (json.profile) {
       currentProfile = json.profile;
@@ -458,14 +556,35 @@ function stopMic() {
 }
 
 // ─── Chat helpers ────────────────────────────────────────────────────────────
-function addMessage(role, content) {
+function coachInitial() {
+  return (currentProfile?.coachName || 'P').slice(0, 1);
+}
+
+function addMessage(role, content, suggestions) {
   const container = document.getElementById('messages');
+  // Remove any existing suggestion rows when user sends a new message
+  if (role === 'user') {
+    container.querySelectorAll('.suggestions-row').forEach(el => el.remove());
+  }
   const row = document.createElement('div');
   row.className = 'bubble-row ' + role;
-  const avatar = role === 'coach' ? 'P' : 'C';
+  const avatar = role === 'coach' ? coachInitial() : 'C';
   row.innerHTML = `<div class="avatar ${role}">${avatar}</div>
     <div class="bubble ${role}">${h(content).replace(/\n/g, '<br>')}</div>`;
   container.appendChild(row);
+
+  if (role === 'coach' && Array.isArray(suggestions) && suggestions.length) {
+    const sr = document.createElement('div');
+    sr.className = 'suggestions-row';
+    suggestions.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'suggestion-btn';
+      btn.textContent = s;
+      btn.onclick = () => { sr.remove(); quickSend(s); };
+      sr.appendChild(btn);
+    });
+    container.appendChild(sr);
+  }
   container.scrollTop = container.scrollHeight;
 }
 
@@ -474,7 +593,7 @@ function showTyping() {
   const container = document.getElementById('messages');
   typingRow = document.createElement('div');
   typingRow.className = 'bubble-row coach';
-  typingRow.innerHTML = `<div class="avatar coach">P</div><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  typingRow.innerHTML = `<div class="avatar coach">${coachInitial()}</div><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
   container.appendChild(typingRow);
   container.scrollTop = container.scrollHeight;
 }
@@ -836,11 +955,31 @@ function renderDiagramSVG(diagram) {
   drawC(diagram.neutrals, 'neutral');
 
   if (diagram.notes) {
-    parts.push(`<rect x="0" y="${H-15}" width="${W}" height="15" fill="rgba(0,0,0,.45)" rx="0 0 4 4"/>`);
-    parts.push(`<text x="${W/2}" y="${H-6}" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.85)">${h(diagram.notes)}</text>`);
+    const noteStr = String(diagram.notes);
+    // Wrap to max 2 lines of ~28 chars each to prevent overflow
+    const MAX = 28;
+    const lines = [];
+    let rem = noteStr;
+    while (rem.length > 0 && lines.length < 2) {
+      if (rem.length <= MAX) { lines.push(rem); rem = ''; }
+      else {
+        let cut = MAX;
+        while (cut > 18 && rem[cut] !== ' ' && rem[cut] !== '、' && rem[cut] !== '。') cut--;
+        if (cut <= 18) cut = MAX;
+        lines.push(rem.slice(0, cut));
+        rem = rem.slice(cut).trim();
+      }
+    }
+    const noteH = lines.length === 1 ? 15 : 26;
+    parts.push(`<rect x="0" y="${H-noteH}" width="${W}" height="${noteH}" fill="rgba(0,0,0,.45)"/>`);
+    lines.forEach((line, i) => {
+      const ty = H - noteH + 10 + i * 12;
+      parts.push(`<text x="${W/2}" y="${ty}" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.85)">${h(line)}</text>`);
+    });
   }
 
-  const legY = diagram.notes ? H-28 : H-18;
+  const usedNoteH = diagram.notes ? (String(diagram.notes).length > 28 ? 26 : 15) : 0;
+  const legY = H - usedNoteH - 14;
   const drawLeg = (lx, ly, c) => parts.push(`<circle cx="${lx}" cy="${ly}" r="5" fill="${c}" opacity=".9"/>`);
   drawLeg(10, legY, '#1a1a6e');
   parts.push(`<text x="20" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">攻</text>`);
@@ -850,6 +989,169 @@ function renderDiagramSVG(diagram) {
   parts.push(`<text x="80" y="${legY+3}" font-size="7" fill="rgba(255,255,255,.75)">中</text>`);
 
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;border-radius:8px;display:block">${parts.join('')}</svg>`;
+}
+
+// ─── Onboarding ───────────────────────────────────────────────────────────────
+const OB_STEPS = [
+  { id:'userCoachName', icon:'👤', title:'あなたのコーチ名は？', subtitle:'チャット内でのあなたの呼び名です', options:['田中コーチ','鈴木コーチ','山田コーチ'], placeholder:'例: 田中コーチ' },
+  { id:'coachName',     icon:'🤖', title:'専属コーチの名前を決めよう！', subtitle:'あなたをサポートするAIコーチの名前です', options:['タクト','リベル','カンテラ'], placeholder:'好きな名前を入力（例: クロップ）' },
+  { id:'soccerStyle',   icon:'⚽', title:'好きなサッカースタイルは？', subtitle:'チームの目指す方向性に合わせてメニューを提案します', options:['🇪🇸 パスサッカー（スペイン流）','🇧🇷 ドリブルサッカー（ブラジル流）','⚖️ バランス重視'], placeholder:'または自由に入力' },
+  { id:'coachingStyle', icon:'🎯', title:'指導スタイルは？', subtitle:'コーチングポイントや練習の方向性に反映します', options:['📐 戦術を落とし込む（型を作る）','🕊️ 選手の自由を引き出す','📚 原理原則をたたき込む'], placeholder:'または自由に入力' },
+];
+let obStep = 0;
+const obAnswers = {};
+
+function showOnboarding() {
+  document.getElementById('obOverlay').classList.add('show');
+  renderObStep(0);
+}
+
+function renderObStep(idx) {
+  obStep = idx;
+  const step = OB_STEPS[idx];
+  document.getElementById('ob-icon').textContent = step.icon;
+  document.getElementById('ob-title').textContent = step.title;
+  document.getElementById('ob-subtitle').textContent = step.subtitle;
+  const inp = document.getElementById('ob-input');
+  inp.value = '';
+  inp.placeholder = step.placeholder;
+
+  const choicesEl = document.getElementById('ob-choices');
+  choicesEl.innerHTML = step.options.map((opt, i) =>
+    `<button class="ob-choice" onclick="selectObChoice(this,'${opt.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${opt}</button>`
+  ).join('');
+
+  // progress indicators
+  OB_STEPS.forEach((_, i) => {
+    const el = document.getElementById(`ob-s${i+1}`);
+    el.className = 'ob-step' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+  const btn = document.getElementById('ob-next');
+  btn.textContent = idx < OB_STEPS.length - 1 ? '次へ →' : '始める！';
+  btn.disabled = true;
+}
+
+function selectObChoice(btn, val) {
+  document.querySelectorAll('.ob-choice').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // Strip emoji prefix for storage (keep emoji in button but store clean text)
+  const clean = val.replace(/^[^\w぀-鿿＀-￯]+\s*/, '');
+  document.getElementById('ob-input').value = clean;
+  document.getElementById('ob-next').disabled = false;
+}
+
+function updateNextBtn() {
+  const val = document.getElementById('ob-input').value.trim();
+  document.getElementById('ob-next').disabled = !val;
+}
+
+async function nextObStep() {
+  const val = document.getElementById('ob-input').value.trim();
+  if (!val) return;
+  obAnswers[OB_STEPS[obStep].id] = val;
+
+  if (obStep < OB_STEPS.length - 1) {
+    renderObStep(obStep + 1);
+  } else {
+    await completeOnboarding();
+  }
+}
+
+async function completeOnboarding() {
+  const btn = document.getElementById('ob-next');
+  btn.disabled = true;
+  btn.textContent = '設定中...';
+  try {
+    const res = await fetch('/api/profile/setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obAnswers),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    currentProfile = json.profile;
+    updateTeamBadge(json.profile);
+    document.getElementById('obOverlay').classList.remove('show');
+
+    const { coachName, userCoachName, soccerStyle, coachingStyle } = obAnswers;
+    const greeting = `${userCoachName}、${coachName}です！🔥\n\n${soccerStyle}で「${coachingStyle}」スタイルの指導をサポートします。一緒に最高のセッションを作りましょう！\n\nまずはチーム名と対象年代を教えてください。`;
+    addMessage('coach', greeting, null);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '始める！';
+    alert('設定の保存に失敗しました: ' + e.message);
+  }
+}
+
+// ─── Profile panel ────────────────────────────────────────────────────────────
+function showProfile() {
+  if (!currentProfile) {
+    document.getElementById('ppCoachRow').innerHTML = '<div style="opacity:.7;font-size:12px">プロフィール未設定</div>';
+    document.getElementById('ppBody').innerHTML = '<div class="pp-empty">まずはオンボーディングを完了してください</div>';
+    document.getElementById('profileOverlay').classList.add('show');
+    return;
+  }
+  const p = currentProfile;
+  const coachName     = p.coachName     || 'ペップコーチ';
+  const userCoachName = p.userCoachName || 'コーチ';
+
+  document.getElementById('ppCoachRow').innerHTML = `
+    <div class="pp-coach-avatar">${h(coachName.slice(0,1))}</div>
+    <div>
+      <div class="pp-coach-name">${h(coachName)}</div>
+      <div class="pp-coach-role">${h(userCoachName)}の専属AIコーチ</div>
+    </div>`;
+
+  let body = '';
+
+  if (p.soccerStyle || p.coachingStyle) {
+    body += `<div class="pp-section"><div class="pp-section-title">スタイル</div>`;
+    if (p.soccerStyle)   body += `<div class="pp-item"><div class="pp-label">好きなスタイル</div><div class="pp-value">${h(p.soccerStyle)}</div></div>`;
+    if (p.coachingStyle) body += `<div class="pp-item"><div class="pp-label">指導スタイル</div><div class="pp-value">${h(p.coachingStyle)}</div></div>`;
+    body += `</div>`;
+  }
+
+  if (p.teamName) {
+    body += `<div class="pp-section"><div class="pp-section-title">チーム情報</div>`;
+    body += `<div class="pp-item"><div class="pp-label">チーム名</div><div class="pp-value">${h(p.teamName)}</div></div>`;
+    if (p.ageGroup) body += `<div class="pp-item"><div class="pp-label">年代</div><div class="pp-value">${h(p.ageGroup)}${p.players ? ' / ' + p.players + '名' : ''}</div></div>`;
+    if (p.level)    body += `<div class="pp-item"><div class="pp-label">レベル</div><div class="pp-value">${h(p.level)}</div></div>`;
+    if (p.concept)  body += `<div class="pp-item"><div class="pp-label">コンセプト</div><div class="pp-value">${h(p.concept)}</div></div>`;
+    body += `</div>`;
+  }
+
+  if ((p.strengths?.length) || (p.weaknesses?.length)) {
+    body += `<div class="pp-section"><div class="pp-section-title">チーム状況</div>`;
+    if (p.strengths?.length) {
+      const arr = Array.isArray(p.strengths) ? p.strengths : [p.strengths];
+      body += `<div class="pp-item"><div class="pp-label">強み</div><div class="pp-value">${arr.map(s=>`<span class="pp-chip pp-chip-green">${h(s)}</span>`).join('')}</div></div>`;
+    }
+    if (p.weaknesses?.length) {
+      const arr = Array.isArray(p.weaknesses) ? p.weaknesses : [p.weaknesses];
+      body += `<div class="pp-item"><div class="pp-label">課題</div><div class="pp-value">${arr.map(s=>`<span class="pp-chip pp-chip-yellow">${h(s)}</span>`).join('')}</div></div>`;
+    }
+    body += `</div>`;
+  }
+
+  if (p.sessionCount || p.lastTheme) {
+    body += `<div class="pp-section"><div class="pp-section-title">セッション記録</div>`;
+    if (p.sessionCount) body += `<div class="pp-item"><div class="pp-label">累計</div><div class="pp-value">${p.sessionCount}回</div></div>`;
+    if (p.lastTheme)    body += `<div class="pp-item"><div class="pp-label">前回テーマ</div><div class="pp-value">${h(p.lastTheme)}</div></div>`;
+    if (p.lastSession)  body += `<div class="pp-item"><div class="pp-label">最終日</div><div class="pp-value">${h(p.lastSession)}</div></div>`;
+    body += `</div>`;
+  }
+
+  if (!body) body = '<div class="pp-empty">まだ情報がありません。コーチと話すと自動的に蓄積されます。</div>';
+
+  document.getElementById('ppBody').innerHTML = body;
+  document.getElementById('profileOverlay').classList.add('show');
+}
+
+function closeProfileOverlay(e) {
+  if (e.target === document.getElementById('profileOverlay')) closeProfileDirect();
+}
+function closeProfileDirect() {
+  document.getElementById('profileOverlay').classList.remove('show');
 }
 
 // ─── Utilities ────────────────────────────────────────────────────────────────

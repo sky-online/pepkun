@@ -51,7 +51,18 @@ function saveHistory(code, history) {
 // ── System prompt ───────────────────────────────────────────────────────────
 
 function buildSystemPrompt(profile) {
-  const hasTeam = profile?.teamName;
+  const coachName     = profile?.coachName     || 'ペップ';
+  const userCoachName = profile?.userCoachName || 'コーチ';
+  const soccerStyle   = profile?.soccerStyle   || null;
+  const coachingStyle = profile?.coachingStyle || null;
+  const hasTeam       = profile?.teamName;
+
+  const characterSection = `【あなたのキャラクター】
+名前: ${coachName}（${userCoachName}専属AIサッカーコーチ）
+口調: 情熱的・熱く・具体的。サッカーへの愛情を持って返答する。
+返答スタイル: 「${userCoachName}、${coachName}です！」のように自分の名前を自然に使う。感嘆詞的な前置き（「素晴らしい！」）は禁止だが、熱い一言（「最高のセッションにしましょう！」等）はOK。
+${soccerStyle   ? `担当コーチの好きなスタイル: ${soccerStyle} → テーマ提案・メニュー設計に活かす` : ''}
+${coachingStyle ? `指導方針: ${coachingStyle} → コーチングポイントや声かけに反映` : ''}`;
 
   const teamCtx = hasTeam ? `
 【あなたが担当するチーム】
@@ -66,12 +77,14 @@ function buildSystemPrompt(profile) {
 前回日: ${profile.lastSession || 'なし'}
 累計セッション: ${profile.sessionCount || 0}回
 
-今日のテーマを聞けばすぐ生成できる。課題や前回テーマを踏まえたテーマ提案も積極的にする。` :
+今日のテーマを聞けばすぐ生成できる。課題・前回テーマを踏まえたテーマ提案を積極的にする。` :
 `このユーザーはまだチームを登録していない。
 チーム名・年代・今日のテーマを1〜2回のやり取りで確認してすぐ生成する。`;
 
   return `あなたはサッカーコーチ専属AIアシスタントです。
 「ペップ君（総監督AI）」の戦術知識とユーザーのチームをつなぐ専属コーチです。
+
+${characterSection}
 ${teamCtx}
 
 【最重要ミッション】
@@ -80,7 +93,6 @@ ${teamCtx}
 
 【会話ルール】
 ・1ターン1質問のみ（複数同時厳禁）
-・感嘆詞・前置き禁止（「素晴らしい！」「なるほど！」禁止）
 ・簡潔・具体的に
 ・情報が揃ったら即座にGENERATE_PARAMSを出す
 
@@ -98,6 +110,11 @@ ${teamCtx}
 【PROFILE_UPDATE】
 新情報を得たら返答末尾に付ける（変更項目のみ）：
 [PROFILE_UPDATE]{"teamName":"...","ageGroup":"...","players":16,"level":"...","concept":"...","strengths":["..."],"weaknesses":["..."]}[/PROFILE_UPDATE]
+
+【SUGGESTIONS（任意）】
+ユーザーが答えやすいよう選択肢を返答末尾に付けてよい（質問時のみ・3個以内）：
+[SUGGESTIONS]["選択肢1","選択肢2","選択肢3"][/SUGGESTIONS]
+テーマを聞くとき・課題確認時等に活用する。
 
 【ペップ君の知識ベース（積極活用）】
 - 風間八宏：止める・蹴るの技術的定義、ボールと体の正対
@@ -119,10 +136,17 @@ function extractTag(text, tag) {
   } catch { return null; }
 }
 
+function extractSuggestions(text) {
+  const m = text.match(/\[SUGGESTIONS\]([\s\S]*?)\[\/SUGGESTIONS\]/);
+  if (!m) return null;
+  try { return JSON.parse(m[1].trim()); } catch { return null; }
+}
+
 function stripTags(text) {
   return text
     .replace(/\[GENERATE_PARAMS\][\s\S]*?\[\/GENERATE_PARAMS\]/g, '')
     .replace(/\[PROFILE_UPDATE\][\s\S]*?\[\/PROFILE_UPDATE\]/g, '')
+    .replace(/\[SUGGESTIONS\][\s\S]*?\[\/SUGGESTIONS\]/g, '')
     .trim();
 }
 
@@ -146,6 +170,7 @@ async function coachChat(inviteCode, userMessage) {
 
   const generateParams = extractTag(raw, 'GENERATE_PARAMS');
   const profileUpdate  = extractTag(raw, 'PROFILE_UPDATE');
+  const suggestions    = extractSuggestions(raw);
 
   let updatedProfile = profile;
   if (profileUpdate) {
@@ -161,6 +186,7 @@ async function coachChat(inviteCode, userMessage) {
   return {
     message: stripTags(raw),
     generateParams,
+    suggestions,
     profile: updatedProfile,
   };
 }
