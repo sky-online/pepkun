@@ -571,6 +571,11 @@ function switchMobileTab(tab) {
   document.getElementById('menuPanel').classList.toggle('mob-hidden', isChat);
   document.getElementById('tab-chat').classList.toggle('active', isChat);
   document.getElementById('tab-menu').classList.toggle('active', !isChat);
+  if (isChat && !isWaiting) {
+    const inp = document.getElementById('msgInput');
+    inp.disabled = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
 }
 
 // ─── Menu tabs ───────────────────────────────────────────────────────────────
