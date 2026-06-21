@@ -483,6 +483,11 @@ async function loadProfile() {
       const restored = restoreChatFromStorage();
       if (!restored) showGreeting(currentProfile);
       loadLastSession();
+      if (!currentProfile.email) {
+        setTimeout(() => {
+          document.getElementById('emailOverlay').style.display = 'flex';
+        }, 1500);
+      }
     }
   } catch {
     showGreeting(null);

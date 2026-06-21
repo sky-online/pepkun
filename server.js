@@ -63,6 +63,15 @@ const SUBS_DIR      = path.join(__dirname, 'data', 'subscriptions');
 const EMAILS_DIR    = path.join(__dirname, 'data', 'emails');
 const USERS_DIR_ROOT = path.join(__dirname, 'data', 'users');
 
+// 起動時にデータディレクトリを作成し、永続化されているか確認
+[MONTHLY_DIR, SUBS_DIR, EMAILS_DIR, USERS_DIR_ROOT].forEach(d => {
+  if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
+});
+const DATA_ROOT = path.join(__dirname, 'data');
+const testFile = path.join(DATA_ROOT, '.startup');
+fs.writeFileSync(testFile, new Date().toISOString(), 'utf8');
+console.log('[startup] data dir:', DATA_ROOT, '/ volume:', fs.existsSync(testFile) ? 'OK' : 'WARN - ephemeral');
+
 function getUserId(req) {
   const cookie = req.headers.cookie || '';
   const m = cookie.match(/pepkun_uid=([a-f0-9-]{36})/);
