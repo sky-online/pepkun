@@ -1282,13 +1282,15 @@ async function completeOnboarding() {
 }
 
 // ─── Profile panel ────────────────────────────────────────────────────────────
-function showProfile() {
+async function showProfile() {
   if (!currentProfile) {
     document.getElementById('ppCoachRow').innerHTML = '<div style="opacity:.7;font-size:12px">プロフィール未設定</div>';
     document.getElementById('ppBody').innerHTML = '<div class="pp-empty">まずはオンボーディングを完了してください</div>';
     document.getElementById('profileOverlay').classList.add('show');
     return;
   }
+  document.getElementById('profileOverlay').classList.add('show');
+
   const p = currentProfile;
   const coachName     = p.coachName     || 'ペップコーチ';
   const userCoachName = p.userCoachName || 'コーチ';
@@ -1300,7 +1302,39 @@ function showProfile() {
       <div class="pp-coach-role">${h(userCoachName)}の専属AIコーチ</div>
     </div>`;
 
-  let body = '';
+  // アカウント情報（/api/me から取得）
+  let meData = null;
+  try { const r = await fetch('/api/me'); meData = await r.json(); } catch {}
+  const isPro     = meData?.isPro || false;
+  const used      = meData?.used  ?? '?';
+  const limit     = meData?.limit ?? '?';
+  const planLabel = isPro ? 'Pro（月' + limit + '回）' : 'Free（月' + limit + '回）';
+  const planColor = isPro ? '#4a7c59' : '#888';
+  const emailVal  = p.email || null;
+
+  let accountSection = `<div class="pp-section">
+    <div class="pp-section-title">アカウント</div>
+    <div class="pp-item">
+      <div class="pp-label">メール</div>
+      <div class="pp-value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        ${emailVal
+          ? `<span>${h(emailVal)}</span>`
+          : `<span style="color:#aaa">未登録</span>
+             <button onclick="closeProfileDirect();setTimeout(()=>document.getElementById('emailOverlay').style.display='flex',200)" style="font-size:11px;padding:2px 10px;border-radius:20px;border:1px solid #4a7c59;background:#fff;color:#4a7c59;cursor:pointer">登録する</button>`
+        }
+      </div>
+    </div>
+    <div class="pp-item">
+      <div class="pp-label">プラン</div>
+      <div class="pp-value"><span style="color:${planColor};font-weight:700">${planLabel}</span>${!isPro ? ` <a href="/invite.html#pro" target="_blank" style="font-size:11px;margin-left:8px;color:#c07070;text-decoration:none">→ Pro にアップグレード</a>` : ''}</div>
+    </div>
+    <div class="pp-item">
+      <div class="pp-label">今月の使用</div>
+      <div class="pp-value">${used} / ${limit} 回</div>
+    </div>
+  </div>`;
+
+  let body = accountSection;
 
   if (p.soccerStyle || p.coachingStyle) {
     body += `<div class="pp-section"><div class="pp-section-title">スタイル</div>`;
