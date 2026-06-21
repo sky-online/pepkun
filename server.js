@@ -58,8 +58,10 @@ app.use(express.urlencoded({ extended: true }));
 // ── ユーザー識別（UUID Cookie）────────────────────────────────────────────────
 const FREE_LIMIT  = parseInt(process.env.FREE_LIMIT  || '5',  10);
 const PRO_LIMIT   = parseInt(process.env.PRO_LIMIT   || '20', 10);
-const MONTHLY_DIR = path.join(__dirname, 'data', 'monthly');
-const SUBS_DIR    = path.join(__dirname, 'data', 'subscriptions');
+const MONTHLY_DIR   = path.join(__dirname, 'data', 'monthly');
+const SUBS_DIR      = path.join(__dirname, 'data', 'subscriptions');
+const EMAILS_DIR    = path.join(__dirname, 'data', 'emails');
+const USERS_DIR_ROOT = path.join(__dirname, 'data', 'users');
 
 function getUserId(req) {
   const cookie = req.headers.cookie || '';
@@ -290,6 +292,38 @@ app.get('/api/sessions/:id', (req, res) => {
   }
 });
 
+// ── /api/account/email ────────────────────────────────────────────────────────
+app.post('/api/account/email', (req, res) => {
+  let uid = getUserId(req);
+  if (!uid) return res.status(401).json({ ok: false, error: '未認証' });
+  const { email } = req.body;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ ok: false, error: '有効なメールアドレスを入力してください' });
+  }
+  const key = Buffer.from(email.toLowerCase()).toString('base64url');
+  if (!fs.existsSync(EMAILS_DIR)) fs.mkdirSync(EMAILS_DIR, { recursive: true });
+  const emailFile = path.join(EMAILS_DIR, `${key}.json`);
+  if (fs.existsSync(emailFile)) {
+    const ex = JSON.parse(fs.readFileSync(emailFile, 'utf8'));
+    if (ex.uid !== uid) return res.status(409).json({ ok: false, error: 'このメールアドレスはすでに登録済みです' });
+  }
+  fs.writeFileSync(emailFile, JSON.stringify({ uid, registeredAt: new Date().toISOString() }, null, 2), 'utf8');
+  saveProfile(uid, { email });
+  res.json({ ok: true });
+});
+
+// ── /api/account/restore ──────────────────────────────────────────────────────
+app.post('/api/account/restore', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ ok: false, error: 'メールアドレスが必要です' });
+  const key = Buffer.from(email.toLowerCase()).toString('base64url');
+  const emailFile = path.join(EMAILS_DIR, `${key}.json`);
+  if (!fs.existsSync(emailFile)) return res.status(404).json({ ok: false, error: 'このメールアドレスは登録されていません' });
+  const { uid } = JSON.parse(fs.readFileSync(emailFile, 'utf8'));
+  res.setHeader('Set-Cookie', `pepkun_uid=${uid}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Lax`);
+  res.json({ ok: true, uid });
+});
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 const ADMIN_PASS    = process.env.ADMIN_PASSWORD || 'pepkun-admin';
 const LOCK_LIMIT    = 10;
@@ -351,66 +385,87 @@ button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 
     cache_read: a.cache_read + l.cache_read, cost: a.cost + l.cost_usd, calls: a.calls + 1,
   }), { input:0, output:0, cache_read:0, cost:0, calls:0 });
 
-  const byType = {};
-  logs.forEach(l => {
-    if (!byType[l.type]) byType[l.type] = { calls:0, cost:0 };
-    byType[l.type].calls++;
-    byType[l.type].cost += l.cost_usd;
-  });
-
-  // 今月のユーザー数
   const monthFp = path.join(MONTHLY_DIR, `${getMonthKey()}.json`);
   let monthData = {};
   try { monthData = JSON.parse(fs.readFileSync(monthFp, 'utf8')); } catch {}
-  const totalUsers   = Object.keys(monthData).length;
   const totalMonthly = Object.values(monthData).reduce((a, v) => a + v, 0);
 
-  const userRows = Object.entries(monthData)
-    .sort(([,a],[,b]) => b - a).slice(0, 20)
-    .map(([uid, cnt]) => {
-      const isPro = isProUser(uid);
-      return `<tr><td style="font-size:10px;color:#888">${uid.slice(0,8)}...</td>
-        <td>${cnt}</td><td>${isPro ? '⭐ Pro' : '無料'}</td></tr>`;
-    }).join('');
+  // 全ユーザーの詳細（プロフィール結合）
+  const allUids = new Set([
+    ...Object.keys(monthData),
+    ...(fs.existsSync(USERS_DIR_ROOT) ? fs.readdirSync(USERS_DIR_ROOT).filter(d => /^[a-f0-9-]{36}$/.test(d)) : []),
+  ]);
 
-  const typeRows   = Object.entries(byType).map(([t,v]) =>
-    `<tr><td>${t}</td><td>${v.calls}</td><td>$${v.cost.toFixed(4)}</td></tr>`).join('');
-  const recentRows = [...logs].reverse().slice(0,20).map(l =>
-    `<tr><td>${l.ts.replace('T',' ').slice(0,19)}</td><td>${l.type}</td><td>${l.model.replace('claude-','')}</td>
-     <td>${l.input}</td><td>${l.output}</td><td>$${l.cost_usd.toFixed(5)}</td></tr>`).join('');
+  const userDetails = [...allUids].map(uid => {
+    try {
+      const profileFile = path.join(USERS_DIR_ROOT, uid, 'profile.json');
+      const profile = fs.existsSync(profileFile) ? JSON.parse(fs.readFileSync(profileFile, 'utf8')) : {};
+      const used      = monthData[uid] || 0;
+      const isPro     = isProUser(uid);
+      const limit     = isPro ? PRO_LIMIT : FREE_LIMIT;
+      const remaining = Math.max(0, limit - used);
+      const returning = (profile.sessionCount || 0) > 1;
+      return { uid, email: profile.email || '—', team: profile.teamName || '—',
+               used, remaining, total: profile.sessionCount || 0,
+               last: profile.lastSession || '—', isPro, returning };
+    } catch { return null; }
+  }).filter(Boolean).sort((a, b) => b.used - a.used || b.total - a.total);
+
+  const totalUsers   = userDetails.length;
+  const proUsers     = userDetails.filter(u => u.isPro).length;
+  const returningUsers = userDetails.filter(u => u.returning).length;
+
+  const userRows = userDetails.slice(0, 30).map(u => `
+    <tr>
+      <td>${u.email !== '—' ? `<a href="mailto:${u.email}" style="color:#1a1a6e">${u.email}</a>` : '<span style="color:#ccc">未登録</span>'}</td>
+      <td>${u.team}</td>
+      <td style="text-align:center"><strong>${u.used}</strong></td>
+      <td style="text-align:center;color:${u.remaining===0?'#e63329':'#333'}">${u.remaining}</td>
+      <td style="text-align:center">${u.total}</td>
+      <td style="text-align:center">${u.last}</td>
+      <td style="text-align:center">${u.returning ? '<span style="color:#4caf50;font-weight:700">継続</span>' : '初回'}</td>
+      <td style="text-align:center">${u.isPro ? '<span style="background:#1a1a6e;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">Pro</span>' : '<span style="color:#aaa">無料</span>'}</td>
+    </tr>`).join('');
+
+  const recentRows = [...logs].reverse().slice(0,15).map(l =>
+    `<tr><td>${l.ts.replace('T',' ').slice(0,16)}</td><td>${l.type}</td><td>${l.model.replace('claude-','')}</td>
+     <td style="text-align:right">$${l.cost_usd.toFixed(5)}</td></tr>`).join('');
 
   res.send(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="refresh" content="30"><title>ペップ君 Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4f8;padding:24px}
-h1{color:#1a1a6e;margin-bottom:20px;font-size:20px}
-.cards{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
-.card{background:#fff;border-radius:10px;padding:16px 22px;box-shadow:0 1px 6px rgba(0,0,0,.08);min-width:140px}
-.card-label{font-size:11px;color:#888;margin-bottom:4px}
-.card-value{font-size:24px;font-weight:900;color:#1a1a6e}
-.card-value.cost{color:#e63329}
-h2{font-size:14px;color:#1a1a6e;margin:20px 0 10px;border-left:3px solid #e63329;padding-left:8px}
-table{width:100%;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08);border-collapse:collapse;margin-bottom:20px}
-th{background:#1a1a6e;color:#fff;padding:8px 12px;font-size:12px;text-align:left}
-td{padding:7px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;color:#333}
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4f8;padding:20px;font-size:13px}
+h1{color:#1a1a6e;margin-bottom:16px;font-size:18px;font-weight:900}
+.cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.card{background:#fff;border-radius:10px;padding:14px 20px;box-shadow:0 1px 6px rgba(0,0,0,.08);min-width:120px}
+.card-label{font-size:10px;color:#888;margin-bottom:4px;font-weight:600;letter-spacing:.05em}
+.card-value{font-size:26px;font-weight:900;color:#1a1a6e}
+.card-value.red{color:#e63329}.card-value.green{color:#4caf50}
+h2{font-size:13px;font-weight:700;color:#1a1a6e;margin:20px 0 8px;border-left:3px solid #e63329;padding-left:8px}
+table{width:100%;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07);border-collapse:collapse;margin-bottom:16px}
+th{background:#1a1a6e;color:#fff;padding:8px 10px;font-size:11px;font-weight:600;text-align:left;white-space:nowrap}
+td{padding:7px 10px;font-size:12px;border-bottom:1px solid #f2f2f2;color:#333;vertical-align:middle}
 tr:last-child td{border-bottom:none}tr:hover td{background:#f8f9ff}
-.footer{font-size:11px;color:#aaa;margin-top:16px}
+.footer{font-size:11px;color:#aaa;margin-top:12px}
 </style></head><body>
-<h1>⚽ ペップ君 — 使用量ダッシュボード</h1>
+<h1>⚽ ペップ君 ダッシュボード</h1>
 <div class="cards">
-  <div class="card"><div class="card-label">今月のユーザー数</div><div class="card-value">${totalUsers}</div></div>
-  <div class="card"><div class="card-label">今月の総生成回数</div><div class="card-value">${totalMonthly}</div></div>
-  <div class="card"><div class="card-label">総APIコール</div><div class="card-value">${total.calls}</div></div>
-  <div class="card"><div class="card-label">推定総コスト</div><div class="card-value cost">$${total.cost.toFixed(4)}</div></div>
+  <div class="card"><div class="card-label">今月ユーザー</div><div class="card-value">${totalUsers}</div></div>
+  <div class="card"><div class="card-label">今月生成数</div><div class="card-value">${totalMonthly}</div></div>
+  <div class="card"><div class="card-label">継続ユーザー</div><div class="card-value green">${returningUsers}</div></div>
+  <div class="card"><div class="card-label">Proユーザー</div><div class="card-value">${proUsers}</div></div>
+  <div class="card"><div class="card-label">累計APIコスト</div><div class="card-value red">$${total.cost.toFixed(2)}</div></div>
 </div>
-<h2>今月のユーザー別（上位20件）</h2>
-<table><tr><th>UID</th><th>生成回数</th><th>プラン</th></tr>${userRows || '<tr><td colspan="3">今月のデータなし</td></tr>'}</table>
-<h2>種類別集計</h2>
-<table><tr><th>種類</th><th>コール数</th><th>推定コスト</th></tr>${typeRows}</table>
-<h2>直近20件</h2>
-<table><tr><th>日時</th><th>種類</th><th>モデル</th><th>入力</th><th>出力</th><th>コスト</th></tr>${recentRows}</table>
-<div class="footer">30秒ごとに自動更新 | /admin?pass=${ADMIN_PASS}</div>
+<h2>ユーザー一覧（上位30件）</h2>
+<table>
+  <tr><th>メール</th><th>チーム</th><th>今月</th><th>残り</th><th>累計</th><th>最終利用</th><th>状況</th><th>プラン</th></tr>
+  ${userRows || '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">データなし</td></tr>'}
+</table>
+<h2>直近API使用（15件）</h2>
+<table><tr><th>日時</th><th>種類</th><th>モデル</th><th>コスト</th></tr>${recentRows}</table>
+<div class="footer">30秒ごとに自動更新</div>
 </body></html>`);
 });
 

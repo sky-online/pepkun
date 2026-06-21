@@ -314,6 +314,35 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Email registration overlay (オンボーディング完了後) -->
+<div id="emailOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:#fff;border-radius:20px;max-width:360px;width:100%;padding:28px 28px 22px;text-align:center;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:38px;margin-bottom:10px">📧</div>
+    <div style="font-size:16px;font-weight:900;color:#1a1a6e;margin-bottom:6px">アカウントを作成しましょう</div>
+    <div style="font-size:12px;color:#888;margin-bottom:20px;line-height:1.7">メールアドレスを登録すると<br>別のブラウザでも履歴を引き継げます<br>Proプランの購入にも必要です</div>
+    <input id="emailInput" type="email" placeholder="your@email.com" oninput="document.getElementById('emailError').style.display='none'"
+      style="width:100%;border:1.5px solid #e0e6f0;border-radius:10px;padding:11px 14px;font-size:14px;margin-bottom:8px;box-sizing:border-box;font-family:inherit;outline:none">
+    <div id="emailError" style="color:#e63329;font-size:12px;margin-bottom:8px;display:none"></div>
+    <button onclick="submitEmail()" style="width:100%;background:#1a1a6e;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:10px;font-family:inherit">登録する</button>
+    <button onclick="skipEmail()" style="width:100%;background:none;border:none;color:#bbb;font-size:12px;cursor:pointer;padding:6px;font-family:inherit">後で登録する</button>
+  </div>
+</div>
+
+<!-- Login overlay (別ブラウザからの復元) -->
+<div id="loginOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:#fff;border-radius:20px;max-width:360px;width:100%;padding:28px 28px 22px;text-align:center;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:38px;margin-bottom:10px">⚽</div>
+    <div style="font-size:16px;font-weight:900;color:#1a1a6e;margin-bottom:6px">ペップ君へようこそ</div>
+    <div style="font-size:12px;color:#888;margin-bottom:20px;line-height:1.7">すでにアカウントをお持ちの方は<br>メールアドレスでログインできます</div>
+    <input id="loginEmailInput" type="email" placeholder="登録したメールアドレス" oninput="document.getElementById('loginError').style.display='none'"
+      style="width:100%;border:1.5px solid #e0e6f0;border-radius:10px;padding:11px 14px;font-size:14px;margin-bottom:8px;box-sizing:border-box;font-family:inherit;outline:none">
+    <div id="loginError" style="color:#e63329;font-size:12px;margin-bottom:8px;display:none"></div>
+    <button onclick="restoreAccount()" style="width:100%;background:#1a1a6e;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:12px;font-family:inherit">ログイン</button>
+    <div style="font-size:12px;color:#ccc;margin-bottom:12px">または</div>
+    <button onclick="startNewAccount()" style="width:100%;background:none;border:1.5px solid #e0e6f0;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;color:#555;font-family:inherit">新規登録する</button>
+  </div>
+</div>
+
 <!-- Onboarding overlay -->
 <div class="ob-overlay" id="obOverlay">
   <div class="ob-card">
@@ -449,7 +478,7 @@ async function loadProfile() {
     updateTeamBadge(currentProfile);
     if (!currentProfile || !currentProfile.setupDone) {
       clearChatStorage();
-      showOnboarding();
+      showLoginOverlay();
     } else {
       const restored = restoreChatFromStorage();
       if (!restored) showGreeting(currentProfile);
@@ -458,6 +487,55 @@ async function loadProfile() {
   } catch {
     showGreeting(null);
   }
+}
+
+// ─── メール登録 ────────────────────────────────────────────────────────────────
+async function submitEmail() {
+  const email = document.getElementById('emailInput').value.trim();
+  const errEl = document.getElementById('emailError');
+  if (!email) { errEl.textContent = 'メールアドレスを入力してください'; errEl.style.display = 'block'; return; }
+  try {
+    const res = await fetch('/api/account/email', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+    if (!json.ok) { errEl.textContent = json.error; errEl.style.display = 'block'; return; }
+    document.getElementById('emailOverlay').style.display = 'none';
+    if (currentProfile) currentProfile.email = email;
+    showToast('メールアドレスを登録しました');
+  } catch { errEl.textContent = '通信エラーが発生しました'; errEl.style.display = 'block'; }
+}
+
+function skipEmail() {
+  document.getElementById('emailOverlay').style.display = 'none';
+}
+
+// ─── ログイン（別ブラウザからの復元）──────────────────────────────────────────
+function showLoginOverlay() {
+  document.getElementById('loginOverlay').style.display = 'flex';
+}
+
+function startNewAccount() {
+  document.getElementById('loginOverlay').style.display = 'none';
+  showOnboarding();
+}
+
+async function restoreAccount() {
+  const email = document.getElementById('loginEmailInput').value.trim();
+  const errEl = document.getElementById('loginError');
+  if (!email) { errEl.textContent = 'メールアドレスを入力してください'; errEl.style.display = 'block'; return; }
+  try {
+    const res = await fetch('/api/account/restore', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+    if (!json.ok) { errEl.textContent = json.error; errEl.style.display = 'block'; return; }
+    document.getElementById('loginOverlay').style.display = 'none';
+    // クッキーが更新されたのでリロードして復元
+    window.location.reload();
+  } catch { errEl.textContent = '通信エラーが発生しました'; errEl.style.display = 'block'; }
 }
 
 function showGreeting(profile) {
@@ -1186,6 +1264,11 @@ async function completeOnboarding() {
     const { coachName, userCoachName, soccerStyle, coachingStyle } = obAnswers;
     const greeting = `${userCoachName}、${coachName}です！🔥\n\n${soccerStyle}で「${coachingStyle}」スタイルの指導をサポートします。一緒に最高のセッションを作りましょう！\n\nまずはチーム名と対象年代を教えてください。`;
     addMessage('coach', greeting, null);
+
+    // メール登録を促す
+    setTimeout(() => {
+      document.getElementById('emailOverlay').style.display = 'flex';
+    }, 800);
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '始める！';
