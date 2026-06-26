@@ -1326,7 +1326,7 @@ async function showProfile() {
     </div>
     <div class="pp-item">
       <div class="pp-label">プラン</div>
-      <div class="pp-value"><span style="color:${planColor};font-weight:700">${planLabel}</span>${!isPro ? ` <a href="/invite.html#pro" target="_blank" style="font-size:11px;margin-left:8px;color:#c07070;text-decoration:none">→ Pro にアップグレード</a>` : ''}</div>
+      <div class="pp-value"><span style="color:${planColor};font-weight:700">${planLabel}</span>${!isPro ? ` <button onclick="closeProfileDirect();showUpgradeModal()" style="font-size:11px;padding:2px 10px;border-radius:20px;border:1px solid #c07070;background:#fff;color:#c07070;cursor:pointer;margin-left:8px">Pro にアップグレード</button>` : ''}</div>
     </div>
     <div class="pp-item">
       <div class="pp-label">今月の使用</div>
