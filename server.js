@@ -565,7 +565,27 @@ app.post('/api/messages', (req, res) => {
   thread.push({ from: 'user', kind, text, at: new Date().toISOString(), read: false });
   writeJson(threadFile(uid), thread);
   res.json({ ok: true, messages: thread });
+  notifyAdmin(uid, kind, text).catch(e => console.error('[notify] failed:', e.message));
 });
+
+// 新着メッセージをGmail APIで管理者に通知（送信専用スコープのOAuth）
+async function notifyAdmin(uid, kind, text) {
+  const { GMAIL_CLIENT_ID: id, GMAIL_CLIENT_SECRET: secret, GMAIL_REFRESH_TOKEN: refresh, NOTIFY_TO: to } = process.env;
+  if (!id || !secret || !refresh || !to) return;
+  const tok = await (await fetch('https://oauth2.googleapis.com/token', { method: 'POST',
+    body: new URLSearchParams({ client_id: id, client_secret: secret, refresh_token: refresh, grant_type: 'refresh_token' }) })).json();
+  if (!tok.access_token) throw new Error('token: ' + JSON.stringify(tok));
+  const p = readJson(path.join(USERS_DIR_ROOT, uid, 'profile.json'), {});
+  const who = `${p.teamName || 'チーム未設定'}${p.email ? '（' + p.email + '）' : ''}`;
+  const b64 = s => Buffer.from(s, 'utf8').toString('base64');
+  const body = `ペップ君に新しいメッセージが届きました。\n\n送信者：${who}\n種類：${kind}\n\n${text}\n\n返信はアドミン画面から：\nhttps://${process.env.RAILWAY_PUBLIC_DOMAIN || 'pepkun-production.up.railway.app'}/admin#messages\n`;
+  const raw = [`To: ${to}`, `Subject: =?UTF-8?B?${b64(`【ペップ君】${kind}：${who}`)}?=`,
+    'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(body)].join('\r\n');
+  const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', { method: 'POST',
+    headers: { Authorization: `Bearer ${tok.access_token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ raw: Buffer.from(raw).toString('base64url') }) });
+  if (!r.ok) throw new Error('send ' + r.status + ' ' + (await r.text()).slice(0, 200));
+}
 
 // 管理者：返信・お知らせ・既読
 app.post('/admin/reply', (req, res) => {
