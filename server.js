@@ -362,8 +362,22 @@ function recordAdminFail(ip) {
 
 function resetAdminFail(ip) { adminFailMap.delete(ip); }
 
-app.get('/admin', (req, res) => {
+// 管理者セッション：パスワードから導出したトークンをhttpOnly Cookieに保存（URLにパスワードを出さない）
+const ADMIN_TOKEN = crypto.createHmac('sha256', ADMIN_PASS).update('pepkun-admin-session').digest('hex');
+function hasAdminCookie(req) {
+  const m = (req.headers.cookie || '').match(/(?:^|;\s*)pk_admin=([a-f0-9]+)/);
+  return !!m && m[1].length === ADMIN_TOKEN.length &&
+    crypto.timingSafeEqual(Buffer.from(m[1]), Buffer.from(ADMIN_TOKEN));
+}
+
+app.all('/admin', (req, res) => {
   const ip = getClientIp(req);
+
+  if (req.method === 'POST' && req.body && req.body.pass === ADMIN_PASS) {
+    resetAdminFail(ip);
+    res.setHeader('Set-Cookie', `pk_admin=${ADMIN_TOKEN}; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=${60 * 60 * 12}`);
+    return res.redirect(303, '/admin');
+  }
 
   if (isAdminLocked(ip)) {
     return res.status(429).send(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>Admin</title>
@@ -373,8 +387,9 @@ app.get('/admin', (req, res) => {
 <p style="margin-top:12px;font-size:14px">ログイン失敗が${LOCK_LIMIT}回を超えました。<br>30分後に再試行してください。</p></div></body></html>`);
   }
 
-  if (req.query.pass !== ADMIN_PASS) {
-    const count = req.query.pass !== undefined ? recordAdminFail(ip) : 0;
+  if (!hasAdminCookie(req)) {
+    const tried = (req.method === 'POST' && req.body && req.body.pass !== undefined) || req.query.pass !== undefined;
+    const count = tried ? recordAdminFail(ip) : 0;
     const warn  = count > 0 ? `<p style="color:#bf360c;font-size:13px;margin-top:8px">パスワードが違います（${count}/${LOCK_LIMIT}回）</p>` : '';
     return res.send(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>Admin</title>
 <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f0f4f8}
@@ -382,7 +397,7 @@ app.get('/admin', (req, res) => {
 input{border:1px solid #ddd;border-radius:6px;padding:10px 14px;font-size:14px;margin:12px 0;display:block;width:200px}
 button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 24px;cursor:pointer;font-size:14px}
 </style></head><body><div class="box"><h2>⚽ ペップ君 Admin</h2>
-<form method="GET"><input type="password" name="pass" placeholder="パスワード" autofocus>
+<form method="POST" action="/admin"><input type="password" name="pass" placeholder="パスワード" autofocus>
 <button type="submit">ログイン</button></form>${warn}</div></body></html>`);
   }
 
