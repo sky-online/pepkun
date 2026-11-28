@@ -119,8 +119,14 @@ function isProUser(uid) {
 function getLimit(uid) { return isProUser(uid) ? PRO_LIMIT : FREE_LIMIT; }
 
 // 初回アクセス時にUUID Cookieを自動発行
+// 使っている限りログイン状態が切れないよう、ページを開くたびにCookieの期限を1年延長
 app.use((req, res, next) => {
-  if (!getUserId(req) && !req.path.startsWith('/api/')) issueUserId(res);
+  if (!req.path.startsWith('/api/') && !req.path.startsWith('/admin')) {
+    const uid = getUserId(req);
+    if (!uid) issueUserId(res);
+    else if (req.path === '/' || req.path.endsWith('.html'))
+      res.setHeader('Set-Cookie', `pepkun_uid=${uid}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Lax`);
+  }
   next();
 });
 
@@ -354,16 +360,39 @@ app.post('/api/account/email', (req, res) => {
   res.json({ ok: true });
 });
 
-// ── /api/account/restore ──────────────────────────────────────────────────────
-app.post('/api/account/restore', (req, res) => {
-  const { email } = req.body;
+// ── /api/account/restore（メールに確認コードを送る）→ /api/account/verify ────────
+// ログイン状態はCookieで1年保持＋利用のたびに延長されるため、コード入力は「新しい端末・ブラウザ」のときだけ。
+const loginCodes = new Map(); // emailKey → { code, uid, exp, tries }
+app.post('/api/account/restore', async (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
   if (!email) return res.status(400).json({ ok: false, error: 'メールアドレスが必要です' });
-  const key = Buffer.from(email.toLowerCase()).toString('base64url');
+  const key = Buffer.from(email).toString('base64url');
   const emailFile = path.join(EMAILS_DIR, `${key}.json`);
   if (!fs.existsSync(emailFile)) return res.status(404).json({ ok: false, error: 'このメールアドレスは登録されていません' });
-  const { uid } = JSON.parse(fs.readFileSync(emailFile, 'utf8'));
-  res.setHeader('Set-Cookie', `pepkun_uid=${uid}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Lax`);
-  res.json({ ok: true, uid });
+  const prev = loginCodes.get(key);
+  if (prev && prev.exp - Date.now() > 9 * 60e3) return res.status(429).json({ ok: false, error: '少し時間をおいてから再送してください' });
+  const code = String(crypto.randomInt(0, 1e6)).padStart(6, '0');
+  loginCodes.set(key, { code, uid: readJson(emailFile, {}).uid, exp: Date.now() + 10 * 60e3, tries: 0 });
+  try {
+    await sendMail(email, `【ペップ君】ログイン確認コード：${code}`,
+      `ペップ君のログイン確認コードです。\n\n  ${code}\n\nアプリの画面にこの6桁を入力してください（10分間有効）。\nお心当たりがない場合は、このメールを破棄してください。\n`);
+  } catch (e) {
+    console.error('[login code]', e.message);
+    return res.status(500).json({ ok: false, error: '確認コードを送れませんでした。時間をおいてお試しください' });
+  }
+  res.json({ ok: true, sent: true });
+});
+
+app.post('/api/account/verify', (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const key = Buffer.from(email).toString('base64url');
+  const rec = loginCodes.get(key);
+  if (!rec || rec.exp < Date.now()) return res.status(400).json({ ok: false, error: 'コードの有効期限が切れました。もう一度送信してください' });
+  if (++rec.tries > 5) { loginCodes.delete(key); return res.status(429).json({ ok: false, error: '入力回数が多すぎます。もう一度送信してください' }); }
+  if (String(req.body?.code || '').trim() !== rec.code) return res.status(400).json({ ok: false, error: 'コードが違います' });
+  loginCodes.delete(key);
+  res.setHeader('Set-Cookie', `pepkun_uid=${rec.uid}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Lax`);
+  res.json({ ok: true });
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
@@ -600,16 +629,21 @@ app.post('/api/messages', (req, res) => {
 
 // 新着メッセージをGmail APIで管理者に通知（送信専用スコープのOAuth）
 async function notifyAdmin(uid, kind, text) {
-  const { GMAIL_CLIENT_ID: id, GMAIL_CLIENT_SECRET: secret, GMAIL_REFRESH_TOKEN: refresh, NOTIFY_TO: to } = process.env;
-  if (!id || !secret || !refresh || !to) return;
+  if (!process.env.NOTIFY_TO) return;
+  const p = readJson(path.join(USERS_DIR_ROOT, uid, 'profile.json'), {});
+  const who = `${p.teamName || 'チーム未設定'}${p.email ? '（' + p.email + '）' : ''}`;
+  const body = `ペップ君に新しいメッセージが届きました。\n\n送信者：${who}\n種類：${kind}\n\n${text}\n\n返信はアドミン画面から：\nhttps://${process.env.RAILWAY_PUBLIC_DOMAIN || 'pepkun-production.up.railway.app'}/admin#messages\n`;
+  await sendMail(process.env.NOTIFY_TO, `【ペップ君】${kind}：${who}`, body);
+}
+
+async function sendMail(to, subject, body) {
+  const { GMAIL_CLIENT_ID: id, GMAIL_CLIENT_SECRET: secret, GMAIL_REFRESH_TOKEN: refresh } = process.env;
+  if (!id || !secret || !refresh) throw new Error('mail not configured');
   const tok = await (await fetch('https://oauth2.googleapis.com/token', { method: 'POST',
     body: new URLSearchParams({ client_id: id, client_secret: secret, refresh_token: refresh, grant_type: 'refresh_token' }) })).json();
   if (!tok.access_token) throw new Error('token: ' + JSON.stringify(tok));
-  const p = readJson(path.join(USERS_DIR_ROOT, uid, 'profile.json'), {});
-  const who = `${p.teamName || 'チーム未設定'}${p.email ? '（' + p.email + '）' : ''}`;
   const b64 = s => Buffer.from(s, 'utf8').toString('base64');
-  const body = `ペップ君に新しいメッセージが届きました。\n\n送信者：${who}\n種類：${kind}\n\n${text}\n\n返信はアドミン画面から：\nhttps://${process.env.RAILWAY_PUBLIC_DOMAIN || 'pepkun-production.up.railway.app'}/admin#messages\n`;
-  const raw = [`To: ${to}`, `Subject: =?UTF-8?B?${b64(`【ペップ君】${kind}：${who}`)}?=`,
+  const raw = [`To: ${to}`, `Subject: =?UTF-8?B?${b64(subject)}?=`,
     'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(body)].join('\r\n');
   const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', { method: 'POST',
     headers: { Authorization: `Bearer ${tok.access_token}`, 'Content-Type': 'application/json' },

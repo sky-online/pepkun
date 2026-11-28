@@ -336,8 +336,13 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4
     <div style="font-size:12px;color:#888;margin-bottom:20px;line-height:1.7">すでにアカウントをお持ちの方は<br>メールアドレスでログインできます</div>
     <input id="loginEmailInput" type="email" placeholder="登録したメールアドレス" oninput="document.getElementById('loginError').style.display='none'"
       style="width:100%;border:1.5px solid #e0e6f0;border-radius:10px;padding:11px 14px;font-size:14px;margin-bottom:8px;box-sizing:border-box;font-family:inherit;outline:none">
+    <div id="loginCodeBox" style="display:none">
+      <div style="font-size:12px;color:#555;margin-bottom:8px;line-height:1.6">メールに届いた<b>6桁の確認コード</b>を入力してください<br><span style="color:#aaa">（届かない場合は迷惑メールフォルダもご確認ください）</span></div>
+      <input id="loginCodeInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456"
+        style="width:100%;border:1.5px solid #e0e6f0;border-radius:10px;padding:11px 14px;font-size:20px;letter-spacing:6px;text-align:center;margin-bottom:8px;box-sizing:border-box;font-family:inherit;outline:none">
+    </div>
     <div id="loginError" style="color:#e63329;font-size:12px;margin-bottom:8px;display:none"></div>
-    <button onclick="restoreAccount()" style="width:100%;background:#1a1a6e;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:12px;font-family:inherit">ログイン</button>
+    <button id="loginBtn" onclick="restoreAccount()" style="width:100%;background:#1a1a6e;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:12px;font-family:inherit">確認コードを送る</button>
     <div style="font-size:12px;color:#ccc;margin-bottom:12px">または</div>
     <button onclick="startNewAccount()" style="width:100%;background:none;border:1.5px solid #e0e6f0;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;color:#555;font-family:inherit">新規登録する</button>
   </div>
@@ -530,17 +535,32 @@ async function restoreAccount() {
   const email = document.getElementById('loginEmailInput').value.trim();
   const errEl = document.getElementById('loginError');
   if (!email) { errEl.textContent = 'メールアドレスを入力してください'; errEl.style.display = 'block'; return; }
+  const codeBox = document.getElementById('loginCodeBox');
+  const btn = document.getElementById('loginBtn');
+  const step2 = codeBox.style.display !== 'none';
+  btn.disabled = true;
   try {
-    const res = await fetch('/api/account/restore', {
+    const res = await fetch(step2 ? '/api/account/verify' : '/api/account/restore', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(step2 ? { email, code: document.getElementById('loginCodeInput').value } : { email }),
     });
     const json = await res.json();
-    if (!json.ok) { errEl.textContent = json.error; errEl.style.display = 'block'; return; }
+    btn.disabled = false;
+    if (!json.ok) {
+      errEl.textContent = json.error; errEl.style.display = 'block';
+      if (step2 && /期限|回数/.test(json.error)) { codeBox.style.display = 'none'; btn.textContent = '確認コードを送る'; }
+      return;
+    }
+    if (!step2) {
+      codeBox.style.display = 'block'; btn.textContent = 'ログイン';
+      document.getElementById('loginEmailInput').readOnly = true;
+      document.getElementById('loginCodeInput').focus();
+      return;
+    }
     document.getElementById('loginOverlay').style.display = 'none';
-    // クッキーが更新されたのでリロードして復元
+    // クッキーが更新されたのでリロードして復元（以後この端末ではログイン状態が保持される）
     window.location.reload();
-  } catch { errEl.textContent = '通信エラーが発生しました'; errEl.style.display = 'block'; }
+  } catch { btn.disabled = false; errEl.textContent = '通信エラーが発生しました'; errEl.style.display = 'block'; }
 }
 
 function showGreeting(profile) {
