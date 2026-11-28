@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>ペップ君 アイコン試作 v3</title>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4f8;margin:0;padding:24px;color:#1a1a6e}
+h1{font-size:20px}.row{display:flex;gap:24px;flex-wrap:wrap}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);width:340px}
+.card h2{font-size:16px;margin:0 0 6px}.card p{font-size:12px;color:#555;line-height:1.6;margin:0 0 12px}
+.sizes{display:flex;align-items:flex-end;gap:14px}
+.sizes svg{border-radius:22%;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+</style></head><body>
+<h1>⚽ ペップ君 アイコン試作 v3（人っぽく・斜め向き）</h1>
+<p style="font-size:13px">頭身・あご・鼻・耳を人間の比率に寄せ、顔を右斜め前（3/4）に向けました。丸メガネ／短髪／無精ひげ／黒タートルは継続。</p>
+<div class="row" id="row"></div>
+
+<!-- 共通の顔（3/4向き）。fillの差し替えで2案を作る -->
+<template id="face">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skin{{K}}" x1="0" x2="1"><stop offset="0" stop-color="#f3cfae"/><stop offset=".75" stop-color="#e9bd98"/><stop offset="1" stop-color="#d9a57f"/></linearGradient>
+  </defs>
+  <rect width="100" height="100" fill="{{BG}}"/>
+  <!-- 体：黒タートル（肩は少し左右非対称で斜め感） -->
+  <path d="M8 100 q4 -20 30 -24 l24 -1 q26 4 32 25z" fill="#141414"/>
+  <path d="M38 70 q12 6 24 0 l1 9 q-13 6 -26 0z" fill="#222"/>
+  <!-- 首 -->
+  <path d="M41 62 l0 12 q9 4 19 -1 l0 -12z" fill="#dfae88"/>
+  <!-- 後ろ側の耳（左） -->
+  <ellipse cx="29" cy="45" rx="4" ry="7" fill="#e2b18c"/>
+  <!-- 頭部：3/4向き（右側の頬が前に出て、あごが右寄り） -->
+  <path d="M31 30 q8 -16 28 -14 q16 2 18 18 q2 12 -2 22 q-4 12 -16 15 q-10 2 -18 -4 q-9 -7 -11 -20 q-2 -10 1 -17z" fill="url(#skin{{K}})"/>
+  <!-- 短髪（坊主寄り・うっすら） -->
+  <path d="M31 31 q6 -17 28 -15 q16 2 18 17 q-6 -9 -18 -10 q-16 -1 -24 8 q-3 4 -4 0z" fill="#3b2f28" opacity=".7"/>
+  <!-- 無精ひげ（あご〜ほほ、右寄り） -->
+  <path d="M36 54 q4 14 18 16 q14 -2 19 -15 q-3 7 -10 9 q-6 2 -12 1 q-9 -2 -15 -11z" fill="#3b2f28" opacity=".38"/>
+  <!-- 眉 -->
+  <path d="M41 36 q6 -3 11 -1" stroke="#2e241f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M60 35 q5 -2 10 1" stroke="#2e241f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 丸メガネ（奥側は少し小さく＝遠近） -->
+  <circle cx="47" cy="43" r="6.6" fill="#fff" fill-opacity=".18" stroke="#1d1d1d" stroke-width="1.8"/>
+  <ellipse cx="65" cy="42.5" rx="5.6" ry="6.2" fill="#fff" fill-opacity=".18" stroke="#1d1d1d" stroke-width="1.8"/>
+  <path d="M53.6 42.5 q2 -1.5 5.8 -0.5" stroke="#1d1d1d" stroke-width="1.6" fill="none"/>
+  <path d="M40.4 42 l-9 -1" stroke="#1d1d1d" stroke-width="1.6"/>
+  <!-- 目（右斜め前を見る） -->
+  <ellipse cx="48.5" cy="43.5" rx="1.9" ry="2.2" fill="#1d1d1d"/>
+  <ellipse cx="66.2" cy="43" rx="1.7" ry="2.1" fill="#1d1d1d"/>
+  <!-- 鼻（右に向いた線） -->
+  <path d="M58 45 q3 6 4 9 q-2 1.6 -5 0.6" stroke="#b9805c" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- 口 -->
+  {{MOUTH}}
+  <!-- ほお -->
+  <ellipse cx="44" cy="54" rx="3.5" ry="2" fill="#e63329" opacity=".12"/>
+  {{EXTRA}}
+</svg></template>
+
+<script>
+const variants = {
+  c1: { name:'C1 にっこり（紺）', desc:'口角を上げたにっこり。落ち着いた信頼感。右下にボール。', BG:'#1a1a6e',
+        MOUTH:'<path d="M48 60 q8 6 16 -1" stroke="#7a3b2a" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+        EXTRA:'<circle cx="84" cy="84" r="10" fill="#fff"/><polygon points="84,78 88.5,81.5 86.8,86.5 81.2,86.5 79.5,81.5" fill="#1a1a6e"/>' },
+  c2: { name:'C2 歯を見せて笑う（赤）', desc:'白い歯がのぞく笑顔。熱さと親しみ。ホーム画面で目立つ赤背景。', BG:'#e63329',
+        MOUTH:'<path d="M47 59 q9 9 18 -1 q-9 3 -18 1z" fill="#fff" stroke="#7a3b2a" stroke-width="1.8" stroke-linejoin="round"/>',
+        EXTRA:'' },
+  c3: { name:'C3 知将の微笑み（白）', desc:'少し口元だけ笑う知的な表情。指先をあごに。上品・プロ向け。', BG:'#eef1fb',
+        MOUTH:'<path d="M50 60 q6 3 12 -1" stroke="#7a3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>',
+        EXTRA:'<path d="M56 100 q2 -16 10 -24 q4 -3 6 1 q-4 8 -5 23z" fill="#e9bd98"/><path d="M66 76 q3 -6 7 -4" stroke="#d9a57f" stroke-width="3" stroke-linecap="round" fill="none"/>' },
+};
+const tpl = document.getElementById('face').innerHTML;
+const row = document.getElementById('row');
+for (const [k, v] of Object.entries(variants)) {
+  const svg = tpl.replaceAll('{{K}}', k).replace('{{BG}}', v.BG).replace('{{MOUTH}}', v.MOUTH).replace('{{EXTRA}}', v.EXTRA);
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<h2>${v.name}</h2><p>${v.desc}</p><div class="sizes">` +
+    [160,64,32,16].map((s,i) => svg.replaceAll(`skin${k}`, `skin${k}${i}`).replace('<svg ', `<svg width="${s}" height="${s}" `)).join('') + `</div>`;
+  row.appendChild(c);
+}
+</script>
+</body></html>

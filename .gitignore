@@ -4,3 +4,4 @@ data/
 *.log
 server_out.txt
 server_err.txt
+design/generated/

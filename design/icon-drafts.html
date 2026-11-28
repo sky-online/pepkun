@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>ペップ君 アイコン試作</title>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4f8;margin:0;padding:24px;color:#1a1a6e}
+h1{font-size:20px}.row{display:flex;gap:24px;flex-wrap:wrap}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);width:300px}
+.card h2{font-size:16px;margin:0 0 6px}.card p{font-size:12px;color:#555;line-height:1.6;margin:0 0 12px}
+.sizes{display:flex;align-items:flex-end;gap:14px}
+.sizes svg{border-radius:22%;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.tab{display:flex;align-items:center;gap:6px;background:#dfe3ea;border-radius:8px 8px 0 0;padding:6px 10px;font-size:12px;margin-top:14px;width:fit-content}
+</style></head><body>
+<h1>⚽ ペップ君 アイコン試作（A：キャラクター顔）</h1>
+<p style="font-size:13px">大＝ホーム画面（180px）／中＝64px／小＝ブラウザタブ（16px相当）。小さくしても見分けられるかがポイントです。</p>
+<div class="row" id="row"></div>
+
+<template id="a1">
+<!-- A1 ボールくん：サッカーボールの顔＋ホイッスル -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#1a1a6e"/>
+  <circle cx="50" cy="52" r="36" fill="#fff"/>
+  <polygon points="50,24 60,31 56,42 44,42 40,31" fill="#1a1a6e"/>
+  <path d="M17 46 l9 -3 5 8 -6 8 -8 -2z M83 46 l-9 -3 -5 8 6 8 8 -2z" fill="#1a1a6e"/>
+  <circle cx="40" cy="55" r="5" fill="#1a1a6e"/><circle cx="60" cy="55" r="5" fill="#1a1a6e"/>
+  <circle cx="41.5" cy="53.5" r="1.6" fill="#fff"/><circle cx="61.5" cy="53.5" r="1.6" fill="#fff"/>
+  <path d="M40 68 q10 9 20 0" stroke="#1a1a6e" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="31" cy="64" r="4" fill="#e63329" opacity=".35"/><circle cx="69" cy="64" r="4" fill="#e63329" opacity=".35"/>
+  <path d="M62 78 l14 6" stroke="#e63329" stroke-width="3"/><rect x="74" y="80" width="12" height="8" rx="3" fill="#e63329"/>
+</svg></template>
+
+<template id="a2">
+<!-- A2 コーチくん：キャップをかぶったコーチの顔 -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#e63329"/>
+  <circle cx="50" cy="58" r="30" fill="#ffd9b8"/>
+  <path d="M20 50 q30 -36 60 0z" fill="#1a1a6e"/>
+  <rect x="18" y="46" width="70" height="8" rx="4" fill="#1a1a6e"/>
+  <circle cx="50" cy="36" r="6" fill="#fff"/><polygon points="50,32 53,35 52,39 48,39 47,35" fill="#1a1a6e"/>
+  <circle cx="40" cy="62" r="4" fill="#1a1a6e"/><circle cx="60" cy="62" r="4" fill="#1a1a6e"/>
+  <path d="M42 74 q8 7 16 0" stroke="#1a1a6e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="32" cy="70" r="3.5" fill="#e63329" opacity=".4"/><circle cx="68" cy="70" r="3.5" fill="#e63329" opacity=".4"/>
+</svg></template>
+
+<template id="a3">
+<!-- A3 ふきだしボール：AIの相棒感。吹き出し型の中にボール顔 -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fff"/>
+  <path d="M14 20 h72 a8 8 0 0 1 8 8 v42 a8 8 0 0 1 -8 8 h-40 l-14 12 v-12 h-18 a8 8 0 0 1 -8 -8 v-42 a8 8 0 0 1 8 -8z" fill="#1a1a6e"/>
+  <circle cx="50" cy="49" r="22" fill="#fff"/>
+  <polygon points="50,31 57,36 54,44 46,44 43,36" fill="#1a1a6e"/>
+  <circle cx="42" cy="51" r="3.6" fill="#1a1a6e"/><circle cx="58" cy="51" r="3.6" fill="#1a1a6e"/>
+  <path d="M43 60 q7 6 14 0" stroke="#e63329" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+</svg></template>
+
+<script>
+const meta = {
+  a1: ['A1 ボールくん', 'サッカーボールそのものがキャラ。紺地に白で小さくても目立つ。赤いホイッスルで「コーチ役」を表現。'],
+  a2: ['A2 コーチくん', 'キャップをかぶったコーチの顔。人っぽさ・親しみが一番強い。赤地でホーム画面で目立つ。'],
+  a3: ['A3 ふきだしボール', '吹き出し×ボール顔で「AIと対話するアプリ」が伝わる。少しシンプル寄り。'],
+};
+const row = document.getElementById('row');
+for (const id of ['a1','a2','a3']) {
+  const svg = document.getElementById(id).innerHTML;
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<h2>${meta[id][0]}</h2><p>${meta[id][1]}</p><div class="sizes">` +
+    [120,64,32,16].map(s => svg.replace('<svg ', `<svg width="${s}" height="${s}" `)).join('') +
+    `</div><div class="tab">${svg.replace('<svg ', '<svg width="16" height="16" ')} ペップ君</div>`;
+  row.appendChild(c);
+}
+</script>
+</body></html>

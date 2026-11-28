@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>ペップ君 アイコン試作 v2</title>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo',sans-serif;background:#f0f4f8;margin:0;padding:24px;color:#1a1a6e}
+h1{font-size:20px}.row{display:flex;gap:24px;flex-wrap:wrap}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);width:320px}
+.card h2{font-size:16px;margin:0 0 6px}.card p{font-size:12px;color:#555;line-height:1.6;margin:0 0 12px}
+.sizes{display:flex;align-items:flex-end;gap:14px}
+.sizes svg{border-radius:22%;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+</style></head><body>
+<h1>⚽ ペップ君 アイコン試作 v2（名将ミックス顔）</h1>
+<p style="font-size:13px">要素：短い坊主頭＋無精ひげ（知将っぽさ）／丸メガネ＋黒タートルネック（イノベーター感）／大きな笑顔（熱血コーチ感）。特定の実在人物に似せず、オリジナルキャラとして成立する範囲でミックスしています。</p>
+<div class="row" id="row"></div>
+
+<template id="b1">
+<!-- B1 スタンダード：紺背景・正面・にっこり -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#1a1a6e"/>
+  <path d="M18 100 q0 -22 32 -24 q32 2 32 24z" fill="#111"/>
+  <rect x="40" y="70" width="20" height="10" rx="4" fill="#111"/>
+  <ellipse cx="50" cy="48" rx="24" ry="27" fill="#f1c9a5"/>
+  <path d="M26 42 q2 -24 24 -24 q22 0 24 24 q-4 -12 -24 -13 q-20 1 -24 13z" fill="#5b4a3f" opacity=".55"/>
+  <ellipse cx="26" cy="50" rx="3.5" ry="6" fill="#e8b894"/><ellipse cx="74" cy="50" rx="3.5" ry="6" fill="#e8b894"/>
+  <path d="M30 56 q2 18 20 19 q18 -1 20 -19 q-4 8 -20 9 q-16 -1 -20 -9z" fill="#6b5a4e" opacity=".45"/>
+  <circle cx="41" cy="48" r="7.5" fill="none" stroke="#222" stroke-width="2.2"/>
+  <circle cx="59" cy="48" r="7.5" fill="none" stroke="#222" stroke-width="2.2"/>
+  <path d="M48.5 47 h3" stroke="#222" stroke-width="2"/>
+  <circle cx="41" cy="48" r="2.6" fill="#222"/><circle cx="59" cy="48" r="2.6" fill="#222"/>
+  <path d="M35 38 q6 -3 11 0 M54 38 q5 -3 11 0" stroke="#3a2e27" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M41 61 q9 8 18 0z" fill="#fff" stroke="#3a2e27" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="80" cy="82" r="11" fill="#fff"/><polygon points="80,75 85,79 83,85 77,85 75,79" fill="#1a1a6e"/>
+</svg></template>
+
+<template id="b2">
+<!-- B2 熱血：赤背景・口を大きく開けて笑う・ひげ濃いめ -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#e63329"/>
+  <path d="M18 100 q0 -22 32 -24 q32 2 32 24z" fill="#111"/>
+  <ellipse cx="50" cy="48" rx="24" ry="27" fill="#f1c9a5"/>
+  <path d="M26 42 q2 -24 24 -24 q22 0 24 24 q-4 -12 -24 -13 q-20 1 -24 13z" fill="#4a3a30" opacity=".6"/>
+  <ellipse cx="26" cy="50" rx="3.5" ry="6" fill="#e8b894"/><ellipse cx="74" cy="50" rx="3.5" ry="6" fill="#e8b894"/>
+  <path d="M29 54 q1 21 21 22 q20 -1 21 -22 q-5 9 -21 10 q-16 -1 -21 -10z" fill="#4a3a30" opacity=".7"/>
+  <circle cx="41" cy="47" r="7.5" fill="#fff" fill-opacity=".25" stroke="#222" stroke-width="2.4"/>
+  <circle cx="59" cy="47" r="7.5" fill="#fff" fill-opacity=".25" stroke="#222" stroke-width="2.4"/>
+  <path d="M48.5 46 h3" stroke="#222" stroke-width="2"/>
+  <path d="M37 48 q4 -4 8 0 M55 48 q4 -4 8 0" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M34 36 q6 -5 12 -1 M54 35 q6 -4 12 1" stroke="#3a2e27" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <path d="M39 59 q11 14 22 0z" fill="#8b1e1e" stroke="#3a2e27" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M40 59.5 h20 v3 h-20z" fill="#fff"/>
+</svg></template>
+
+<template id="b3">
+<!-- B3 知将：白背景・ひかえめスマイル・ペンを持つ（戦術家感） -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#eef1fb"/>
+  <path d="M14 100 q0 -24 36 -26 q36 2 36 26z" fill="#111"/>
+  <ellipse cx="50" cy="47" rx="23" ry="26" fill="#f1c9a5"/>
+  <path d="M27 41 q2 -23 23 -23 q21 0 23 23 q-4 -11 -23 -12 q-19 1 -23 12z" fill="#7a6a5e" opacity=".45"/>
+  <ellipse cx="27" cy="49" rx="3.5" ry="6" fill="#e8b894"/><ellipse cx="73" cy="49" rx="3.5" ry="6" fill="#e8b894"/>
+  <path d="M31 56 q2 16 19 17 q17 -1 19 -17 q-4 7 -19 8 q-15 -1 -19 -8z" fill="#7a6a5e" opacity=".35"/>
+  <circle cx="41" cy="47" r="7" fill="none" stroke="#1a1a6e" stroke-width="2.4"/>
+  <circle cx="59" cy="47" r="7" fill="none" stroke="#1a1a6e" stroke-width="2.4"/>
+  <path d="M48 46 h4" stroke="#1a1a6e" stroke-width="2"/>
+  <circle cx="41" cy="47.5" r="2.4" fill="#222"/><circle cx="59" cy="47.5" r="2.4" fill="#222"/>
+  <path d="M36 38 q5 -2 10 0 M54 38 q5 -2 10 0" stroke="#3a2e27" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M43 61 q7 5 14 0" stroke="#3a2e27" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <path d="M66 96 l14 -30" stroke="#e63329" stroke-width="5" stroke-linecap="round"/>
+  <path d="M80 66 l2 -5" stroke="#1a1a6e" stroke-width="5" stroke-linecap="round"/>
+</svg></template>
+
+<script>
+const meta = {
+  b1: ['B1 スタンダード', '紺背景・丸メガネ・無精ひげ・黒タートル。にっこり笑顔で、右下にサッカーボール。ブランド色そのまま。'],
+  b2: ['B2 熱血', '赤背景・大笑い・ひげ濃いめ。タッチライン際で喜ぶ熱血コーチ感。ホーム画面で一番目立つ。'],
+  b3: ['B3 知将', '明るい背景・ひかえめスマイル・赤ペン。戦術ボードに書き込む知将・イノベーター寄り。'],
+};
+const row = document.getElementById('row');
+for (const id of ['b1','b2','b3']) {
+  const svg = document.getElementById(id).innerHTML;
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<h2>${meta[id][0]}</h2><p>${meta[id][1]}</p><div class="sizes">` +
+    [140,64,32,16].map(s => svg.replace('<svg ', `<svg width="${s}" height="${s}" `)).join('') + `</div>`;
+  row.appendChild(c);
+}
+</script>
+</body></html>
