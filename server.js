@@ -72,6 +72,10 @@ const testFile = path.join(DATA_ROOT, '.startup');
 fs.writeFileSync(testFile, new Date().toISOString(), 'utf8');
 console.log('[startup] data dir:', DATA_ROOT, '/ volume:', fs.existsSync(testFile) ? 'OK' : 'WARN - ephemeral');
 
+const readJson  = (fp, def) => { try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch { return def; } };
+const writeJson = (fp, v) => fs.writeFileSync(fp, JSON.stringify(v, null, 2), 'utf8');
+const isUid = s => /^[a-f0-9-]{36}$/.test(s || '');
+
 function getUserId(req) {
   const cookie = req.headers.cookie || '';
   const m = cookie.match(/pepkun_uid=([a-f0-9-]{36})/);
@@ -258,14 +262,37 @@ app.post('/api/generate', async (req, res) => {
 });
 
 // ── /api/sessions ─────────────────────────────────────────────────────────────
+// 保存メニューは作成者（uid）のものだけ見られる。
+// 旧データ（uidなし）は起動時に「チーム名が一致するユーザーが1人だけ」の場合のみ持ち主を割り当て、それ以外は誰にも表示しない。
+(function migrateLegacySessions() {
+  try {
+    const owners = {};
+    for (const d of fs.readdirSync(USERS_DIR_ROOT).filter(isUid)) {
+      const t = readJson(path.join(USERS_DIR_ROOT, d, 'profile.json'), {}).teamName;
+      if (t) (owners[t] = owners[t] || []).push(d);
+    }
+    let assigned = 0, orphan = 0;
+    for (const f of fs.readdirSync(SESSIONS_DIR).filter(f => f.endsWith('.json'))) {
+      const fp = path.join(SESSIONS_DIR, f), rec = readJson(fp, null);
+      if (!rec || rec.uid || rec.orphan) continue;
+      const cand = owners[rec.params?.teamName] || [];
+      if (cand.length === 1) { rec.uid = cand[0]; assigned++; } else { rec.orphan = true; orphan++; }
+      writeJson(fp, rec);
+    }
+    if (assigned || orphan) console.log(`[migrate sessions] assigned=${assigned} hidden=${orphan}`);
+  } catch (e) { console.error('[migrate sessions]', e.message); }
+})();
+
 app.post('/api/sessions', (req, res) => {
   try {
+    const uid = getUserId(req);
+    if (!uid) return res.status(401).json({ ok: false, error: '未認証' });
     const { params, session } = req.body;
     const now = new Date();
     const ts  = now.toISOString().replace(/[:.]/g, '-').slice(0, 16);
     const safeName = (params.teamName || '未設定').replace(/[^\w぀-鿿]/g, '_');
     const filename = `${ts}-${safeName}.json`;
-    const record   = { id: filename, savedAt: now.toISOString(), params, session };
+    const record   = { id: filename, uid, savedAt: now.toISOString(), params, session };
     fs.writeFileSync(path.join(SESSIONS_DIR, filename), JSON.stringify(record, null, 2), 'utf8');
     res.json({ ok: true, id: filename });
   } catch (err) {
@@ -276,14 +303,17 @@ app.post('/api/sessions', (req, res) => {
 
 app.get('/api/sessions', (req, res) => {
   try {
+    const uid = getUserId(req);
+    if (!uid) return res.json({ ok: true, sessions: [] });
     const files = fs.readdirSync(SESSIONS_DIR)
-      .filter(f => f.endsWith('.json')).sort().reverse().slice(0, 50);
+      .filter(f => f.endsWith('.json')).sort().reverse();
     const list = files.map(f => {
       try {
         const rec = JSON.parse(fs.readFileSync(path.join(SESSIONS_DIR, f), 'utf8'));
+        if (rec.uid !== uid) return null;
         return { id: rec.id, savedAt: rec.savedAt, title: rec.session?.title || '(タイトルなし)', teamName: rec.params?.teamName || '', ageGroup: rec.params?.ageGroup || '', theme: rec.params?.theme || '' };
       } catch { return null; }
-    }).filter(Boolean);
+    }).filter(Boolean).slice(0, 50);
     res.json({ ok: true, sessions: list });
   } catch (err) {
     console.error('[sessions list error]', err);
@@ -293,9 +323,12 @@ app.get('/api/sessions', (req, res) => {
 
 app.get('/api/sessions/:id', (req, res) => {
   try {
-    const fp = path.join(SESSIONS_DIR, req.params.id);
-    if (!fs.existsSync(fp)) return res.status(404).json({ ok: false, error: '見つかりません' });
-    res.json({ ok: true, data: JSON.parse(fs.readFileSync(fp, 'utf8')) });
+    const uid = getUserId(req);
+    const id  = path.basename(req.params.id);  // ディレクトリ外の読み取りを防ぐ
+    const fp  = path.join(SESSIONS_DIR, id);
+    const rec = id.endsWith('.json') && fs.existsSync(fp) ? readJson(fp, null) : null;
+    if (!uid || !rec || rec.uid !== uid) return res.status(404).json({ ok: false, error: '見つかりません' });
+    res.json({ ok: true, data: rec });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -538,10 +571,7 @@ const ANNOUNCE_FILE = path.join(__dirname, 'data', 'announcements.json');
 if (!fs.existsSync(MSG_DIR)) fs.mkdirSync(MSG_DIR, { recursive: true });
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-const readJson  = (fp, def) => { try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch { return def; } };
-const writeJson = (fp, v) => fs.writeFileSync(fp, JSON.stringify(v, null, 2), 'utf8');
 const threadFile = uid => path.join(MSG_DIR, `${uid}.json`);
-const isUid = s => /^[a-f0-9-]{36}$/.test(s || '');
 
 app.get('/api/messages', (req, res) => {
   const uid = getUserId(req);
