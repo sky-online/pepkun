@@ -34,21 +34,37 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
     console.error('[webhook] signature error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const uid     = session.client_reference_id;
-    if (uid) {
-      if (!fs.existsSync(SUBS_DIR)) fs.mkdirSync(SUBS_DIR, { recursive: true });
-      const validUntil = new Date();
-      validUntil.setMonth(validUntil.getMonth() + 1);
-      fs.writeFileSync(
-        path.join(SUBS_DIR, `${uid}.json`),
-        JSON.stringify({ isPro: true, validUntil: validUntil.toISOString(), stripeSessionId: session.id, createdAt: new Date().toISOString() }, null, 2),
-        'utf8'
-      );
+  if (!fs.existsSync(SUBS_DIR)) fs.mkdirSync(SUBS_DIR, { recursive: true });
+  const subFile = uid => path.join(SUBS_DIR, `${uid}.json`);
+  // サブスクIDから uid を逆引き
+  const uidBySub = subId => fs.readdirSync(SUBS_DIR).map(f => f.slice(0, -5))
+    .find(u => readJson(subFile(u), {}).subscriptionId === subId);
+  const periodEnd = sub => new Date(((sub.items?.data?.[0]?.current_period_end) || sub.current_period_end) * 1000).toISOString();
+
+  try {
+    const obj = event.data.object;
+    if (event.type === 'checkout.session.completed' && obj.client_reference_id) {
+      const uid = obj.client_reference_id;
+      let validUntil = new Date(); validUntil.setMonth(validUntil.getMonth() + 1); validUntil = validUntil.toISOString();
+      if (obj.subscription) validUntil = periodEnd(await stripe.subscriptions.retrieve(obj.subscription));
+      writeJson(subFile(uid), { isPro: true, validUntil, customerId: obj.customer, subscriptionId: obj.subscription,
+        stripeSessionId: obj.id, createdAt: new Date().toISOString() });
       console.log('[webhook] Pro activated:', uid);
     }
-  }
+    // 毎月の更新・解約予約・解約完了を反映（解約しても支払済み期間の終わりまではPro）
+    if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+      const uid = uidBySub(obj.id);
+      if (uid) {
+        const rec = readJson(subFile(uid), {});
+        rec.validUntil = event.type === 'customer.subscription.deleted'
+          ? new Date((obj.ended_at || Date.now() / 1000) * 1000).toISOString() : periodEnd(obj);
+        rec.cancelAtPeriodEnd = !!obj.cancel_at_period_end;
+        rec.status = obj.status;
+        writeJson(subFile(uid), rec);
+        console.log('[webhook]', event.type, uid, rec.status, rec.validUntil);
+      }
+    }
+  } catch (e) { console.error('[webhook] handler error:', e.message); return res.status(500).end(); }
   res.json({ received: true });
 });
 
@@ -158,7 +174,9 @@ app.get('/api/me', (req, res) => {
   const limit     = getLimit(uid);
   const remaining = Math.max(0, limit - used);
   const trial     = getTrial(uid);
-  res.json({ ok: true, uid, used, limit, isPro, remaining, trialEndsAt: trial.end, trialExpired: !isPro && trial.expired });
+  const sub       = readJson(path.join(SUBS_DIR, `${uid}.json`), null);
+  res.json({ ok: true, uid, used, limit, isPro, remaining, trialEndsAt: trial.end, trialExpired: !isPro && trial.expired,
+    proUntil: isPro ? sub?.validUntil : null, cancelAtPeriodEnd: !!sub?.cancelAtPeriodEnd, canManage: !!sub?.customerId });
 });
 
 // ── /api/chat ─────────────────────────────────────────────────────────────────
@@ -375,6 +393,22 @@ app.post('/api/account/email', (req, res) => {
   fs.writeFileSync(emailFile, JSON.stringify({ uid, registeredAt: new Date().toISOString() }, null, 2), 'utf8');
   saveProfile(uid, { email });
   res.json({ ok: true });
+});
+
+// ── /api/billing/portal：Stripeのお客様ポータル（解約・カード変更・領収書）へ ───
+app.post('/api/billing/portal', async (req, res) => {
+  const uid = getUserId(req);
+  const rec = uid ? readJson(path.join(SUBS_DIR, `${uid}.json`), null) : null;
+  if (!stripe) return res.status(500).json({ ok: false, error: '決済が設定されていません' });
+  if (!rec?.customerId) return res.status(404).json({ ok: false, error: 'Proプランのご契約が見つかりません' });
+  try {
+    const s = await stripe.billingPortal.sessions.create({
+      customer: rec.customerId, return_url: `https://${req.headers.host}/` });
+    res.json({ ok: true, url: s.url });
+  } catch (e) {
+    console.error('[portal]', e.message);
+    res.status(500).json({ ok: false, error: 'プラン管理画面を開けませんでした' });
+  }
 });
 
 // ── /api/account/restore（メールに確認コードを送る）→ /api/account/verify ────────
