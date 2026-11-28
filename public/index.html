@@ -590,6 +590,7 @@ async function loadUsage() {
     const json = await res.json();
     if (!json.ok) return;
     currentUid = json.uid;
+    window.pkTrial = { end: json.trialEndsAt, expired: json.trialExpired };
     updateUsageBanner(json.used, json.limit, json.isPro);
   } catch {}
 }
@@ -599,10 +600,16 @@ function updateUsageBanner(used, limit, isPro) {
   const textEl    = document.getElementById('usageText');
   const proBtn    = document.querySelector('.usage-pro-btn');
   const remaining = Math.max(0, limit - used);
-  const pct = Math.min(100, (used / limit) * 100);
+  const pct = limit > 0 ? Math.min(100, (used / limit) * 100) : 100;
+  const trial = window.pkTrial || {};
 
   const barColor = pct >= 80 ? 'warn' : '';
-  textEl.innerHTML = `今月 <span class="usage-bar-wrap"><span class="usage-bar ${barColor}" style="width:${pct}%"></span></span> <strong>${remaining}回</strong>残り${isPro ? '（Pro）' : '（無料）'}`;
+  if (!isPro && trial.expired) {
+    textEl.innerHTML = `無料期間は終了しました（Proで月20回まで使えます）`;
+  } else {
+    const until = !isPro && trial.end ? `・無料期間 ${new Date(trial.end).getMonth() + 1}/${new Date(trial.end).getDate()}まで` : '';
+    textEl.innerHTML = `今月 <span class="usage-bar-wrap"><span class="usage-bar ${barColor}" style="width:${pct}%"></span></span> <strong>${remaining}回</strong>残り${isPro ? '（Pro）' : '（無料' + until + '）'}`;
+  }
   banner.classList.remove('hidden');
   if (proBtn) proBtn.style.display = (!isPro && remaining === 0) ? '' : 'none';
 }

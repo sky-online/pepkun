@@ -56,7 +56,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ── ユーザー識別（UUID Cookie）────────────────────────────────────────────────
-const FREE_LIMIT  = parseInt(process.env.FREE_LIMIT  || '5',  10);
+const FREE_LIMIT  = parseInt(process.env.FREE_LIMIT  || '3',  10);
 const PRO_LIMIT   = parseInt(process.env.PRO_LIMIT   || '20', 10);
 const MONTHLY_DIR   = path.join(__dirname, 'data', 'monthly');
 const SUBS_DIR      = path.join(__dirname, 'data', 'subscriptions');
@@ -116,7 +116,20 @@ function isProUser(uid) {
   } catch { return false; }
 }
 
-function getLimit(uid) { return isProUser(uid) ? PRO_LIMIT : FREE_LIMIT; }
+// 無料期間：初回利用（既存ユーザーはこの機能の導入後の初回アクセス）から FREE_MONTHS か月
+const FREE_MONTHS = parseInt(process.env.FREE_MONTHS || '2', 10);
+const TRIALS_FILE = path.join(__dirname, 'data', 'trials.json');
+function getTrial(uid) {
+  const all = readJson(TRIALS_FILE, {});
+  if (!all[uid]) { all[uid] = new Date().toISOString(); writeJson(TRIALS_FILE, all); }
+  const end = new Date(all[uid]); end.setMonth(end.getMonth() + FREE_MONTHS);
+  return { start: all[uid], end: end.toISOString(), expired: Date.now() > end.getTime() };
+}
+
+function getLimit(uid) {
+  if (isProUser(uid)) return PRO_LIMIT;
+  return getTrial(uid).expired ? 0 : FREE_LIMIT;
+}
 
 // 初回アクセス時にUUID Cookieを自動発行
 // 使っている限りログイン状態が切れないよう、ページを開くたびにCookieの期限を1年延長
@@ -144,7 +157,8 @@ app.get('/api/me', (req, res) => {
   const isPro     = isProUser(uid);
   const limit     = getLimit(uid);
   const remaining = Math.max(0, limit - used);
-  res.json({ ok: true, uid, used, limit, isPro, remaining });
+  const trial     = getTrial(uid);
+  res.json({ ok: true, uid, used, limit, isPro, remaining, trialEndsAt: trial.end, trialExpired: !isPro && trial.expired });
 });
 
 // ── /api/chat ─────────────────────────────────────────────────────────────────
@@ -205,9 +219,12 @@ app.post('/api/generate', async (req, res) => {
         isPro,
         used,
         limit,
+        trialExpired: !isPro && limit === 0,
         error: isPro
           ? `今月の上限（${limit}回）に達しました。来月リセットされます。`
-          : `今月の無料枠（${FREE_LIMIT}回）を使い切りました。Proプラン（月500円）で月${PRO_LIMIT}回まで使えます。`,
+          : limit === 0
+            ? `無料期間（${FREE_MONTHS}か月）が終了しました。Proプラン（月500円）で月${PRO_LIMIT}回まで使えます。`
+            : `今月の無料枠（${FREE_LIMIT}回）を使い切りました。Proプラン（月500円）で月${PRO_LIMIT}回まで使えます。`,
       });
     }
 
@@ -488,7 +505,7 @@ button{background:#1a1a6e;color:#fff;border:none;border-radius:6px;padding:10px 
       const profile = fs.existsSync(profileFile) ? JSON.parse(fs.readFileSync(profileFile, 'utf8')) : {};
       const used      = monthData[uid] || 0;
       const isPro     = isProUser(uid);
-      const limit     = isPro ? PRO_LIMIT : FREE_LIMIT;
+      const limit     = getLimit(uid);
       const remaining = Math.max(0, limit - used);
       const returning = (profile.sessionCount || 0) > 1;
       return { uid, email: profile.email || '—', team: profile.teamName || '—',
@@ -682,5 +699,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n⚽ ペップ君 起動中`);
   console.log(`  PC      : http://localhost:${PORT}`);
   console.log(`  スマホ  : http://${ip}:${PORT}`);
-  console.log(`  無料上限: 月${FREE_LIMIT}回 / Pro: 月${PRO_LIMIT}回\n`);
+  console.log(`  無料: 初回から${FREE_MONTHS}か月・月${FREE_LIMIT}回 / Pro: 月${PRO_LIMIT}回\n`);
 });
